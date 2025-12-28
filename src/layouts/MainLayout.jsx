@@ -6,6 +6,7 @@ function MainLayout() {
       <header>
         <nav>
           <ul>
+            <li><Link to="/login">Login</Link></li>
             <li><Link to="/">Inicio</Link></li>
             <li><Link to="/rutinas">Rutinas</Link></li>
             <li><Link to="/dietas">Dietas</Link></li>

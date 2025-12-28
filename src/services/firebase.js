@@ -4,7 +4,10 @@ import { getFirestore } from "firebase/firestore";
 
 
 
-// Your web app's Firebase configuration
+/**
+ * Configuración de Firebase para la aplicación NutriFit.
+ * Inicializa la app y expone los servicios de Authentication y Firestore.
+ */
 const firebaseConfig = {
   apiKey: "AIzaSyDfVsQLvYUkwiASh_ivIgPcRyDDBebwPBk",
   authDomain: "nutrifit-5a037.firebaseapp.com",
@@ -14,7 +17,6 @@ const firebaseConfig = {
   appId: "1:1908666388:web:bab2659edb8f1a7f9ab701"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
