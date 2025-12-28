@@ -7,18 +7,22 @@ import DietPage from "./pages/DietPage.jsx";
 import RecipesPage from "./pages/RecipesPage.jsx";
 import ProgressPage from "./pages/ProgressPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import RequireAuth from "./components/RequireAuth.jsx";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/rutinas" element={<RoutinesPage />} />
-        <Route path="/dietas" element={<DietPage />} />
-        <Route path="/recetas" element={<RecipesPage />} />
-        <Route path="/progreso" element={<ProgressPage />} />
-        <Route path="/perfil" element={<ProfilePage />} />
+
+      <Route element={<RequireAuth />}>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/rutinas" element={<RoutinesPage />} />
+          <Route path="/dietas" element={<DietPage />} />
+          <Route path="/recetas" element={<RecipesPage />} />
+          <Route path="/progreso" element={<ProgressPage />} />
+          <Route path="/perfil" element={<ProfilePage />} />
+        </Route>
       </Route>
     </Routes>
   );
