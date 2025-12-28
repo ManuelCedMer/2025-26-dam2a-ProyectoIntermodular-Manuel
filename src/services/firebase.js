@@ -2,15 +2,19 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_AUTH_DOMAIN",
-  projectId: "TU_PROJECT_ID",
-  storageBucket: "TU_STORAGE_BUCKET",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID",
+  apiKey: "AIzaSyDfVsQLvYUkwiASh_ivIgPcRyDDBebwPBk",
+  authDomain: "nutrifit-5a037.firebaseapp.com",
+  projectId: "nutrifit-5a037",
+  storageBucket: "nutrifit-5a037.firebasestorage.app",
+  messagingSenderId: "1908666388",
+  appId: "1:1908666388:web:bab2659edb8f1a7f9ab701"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
