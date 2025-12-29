@@ -4,9 +4,12 @@ import {
   getDocs,
   query,
   where,
-  orderBy,
+  doc,
+  updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
+
 
 /**
  * Devuelve las rutinas de un usuario ordenadas por fecha de creación.
@@ -16,11 +19,7 @@ export async function getRoutinesByUser(userId) {
   const routinesRef = collection(db, "routines");
 
   // Solo rutinas del usuario actual.
-  const q = query(
-    routinesRef,
-    where("userId", "==", userId),
-    orderBy("createdAt", "desc"),
-  );
+  const q = query(routinesRef, where("userId", "==", userId));
 
   const snapshot = await getDocs(q);
 
@@ -51,4 +50,31 @@ export async function createRoutine({ userId, name, daysOfWeek }) {
 
   // Devuelvo el objeto con el id asignado por Firestore.
   return { id: docRef.id, ...newRoutine };
+}
+
+/**
+ * Actualiza una rutina existente.
+ * [ROUTINES-02] Editar rutina.
+ */
+export async function updateRoutine(id, { name, daysOfWeek }) {
+  const routineRef = doc(db, "routines", id);
+
+  const updatedFields = {
+    name,
+    daysOfWeek,
+    updatedAt: new Date(),
+  };
+
+  await updateDoc(routineRef, updatedFields);
+
+  return { id, ...updatedFields };
+}
+
+/**
+ * Elimina una rutina por id.
+ * [ROUTINES-02] Eliminar rutina.
+ */
+export async function deleteRoutine(id) {
+  const routineRef = doc(db, "routines", id);
+  await deleteDoc(routineRef);
 }
