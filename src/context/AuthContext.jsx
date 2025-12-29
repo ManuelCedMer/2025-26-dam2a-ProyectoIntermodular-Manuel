@@ -7,6 +7,8 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from "firebase/auth";
+import { db } from "../services/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 /**
  * Contexto de autenticación.
@@ -36,6 +38,16 @@ export function AuthProvider({ children }) {
     if (name) {
       await updateProfile(cred.user, { displayName: name });
     }
+    // Crear documento de perfil básico en Firestore (colección "users").
+    const userRef = doc(db, "users", cred.user.uid);
+
+    await setDoc(userRef, {
+    displayName: name || "",
+    email: cred.user.email,
+    age: null, // Se podrá editar más adelante.
+    goal: "mantener", // valor por defecto.
+    createdAt: new Date(),
+  });
     return cred.user;
   }
 
