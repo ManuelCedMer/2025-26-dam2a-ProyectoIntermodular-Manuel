@@ -8,6 +8,8 @@ import RecipesPage from "./pages/RecipesPage.jsx";
 import ProgressPage from "./pages/ProgressPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
+import RoutineDetailPage from "./pages/RoutineDetailPage.jsx";
+
 
 function App() {
   return (
@@ -17,7 +19,10 @@ function App() {
       <Route element={<RequireAuth />}>
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
+          {/* Lista de rutinas */}
           <Route path="/rutinas" element={<RoutinesPage />} />
+          {/* Detalle de una rutina concreta (ejercicios) */}
+          <Route path="/rutinas/:routineId" element={<RoutineDetailPage />} />
           <Route path="/dietas" element={<DietPage />} />
           <Route path="/recetas" element={<RecipesPage />} />
           <Route path="/progreso" element={<ProgressPage />} />

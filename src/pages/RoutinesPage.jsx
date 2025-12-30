@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
+import { Link } from "react-router-dom";
 import {
   getRoutinesByUser,
   createRoutine,
@@ -340,7 +341,13 @@ function RoutinesPage() {
                 onClick={() => handleDeleteRoutine(routine.id)}
               >
                 Eliminar
-              </button>
+              </button>{" "}
+              <Link
+                to={`/rutinas/${routine.id}`}
+                state={{ routineName: routine.name }}
+              >
+                Ver ejercicios
+              </Link>
             </li>
           ))}
         </ul>
