@@ -7,6 +7,19 @@ import {
   updateExercise,
   deleteExercise,
 } from "../services/routineExercisesService.js";
+import {
+  getCompletedExerciseIds,
+  setExerciseCompleted,
+} from "../services/routineExerciseCompletionsService.js";
+
+// Devuelve la fecha de hoy en formato YYYY-MM-DD para usar en <input type="date" />.
+ function getTodayDateString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+ }
 
 /**
  * Pantalla de detalle de una rutina.
@@ -26,6 +39,13 @@ function RoutineDetailPage() {
   // Lista de ejercicios de esta rutina.
   const [exercises, setExercises] = useState([]);
 
+  // Fecha seleccionada para marcar completados.
+  const [selectedDate, setSelectedDate] = useState(getTodayDateString());
+
+  // IDs de ejercicios completados para la rutina y fecha seleccionadas.
+  const [completedIds, setCompletedIds] = useState([]);
+
+
   // Formulario de creación.
   const [name, setName] = useState("");
   const [sets, setSets] = useState("");
@@ -39,11 +59,11 @@ function RoutineDetailPage() {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
+  
   /**
    * Carga los ejercicios de la rutina al entrar en la página.
    */
-  useEffect(() => {
+   useEffect(() => {
     if (!user) return;
 
     async function loadExercises() {
@@ -67,6 +87,62 @@ function RoutineDetailPage() {
 
     loadExercises();
   }, [user, routineId]);
+
+    /**
+   * Carga qué ejercicios están completados para la rutina y fecha actuales.
+   * [ROUTINES-03] Consultar ejercicios completados por fecha.
+   */
+  useEffect(() => {
+    if (!user) return;
+
+    async function loadCompleted() {
+      try {
+        const ids = await getCompletedExerciseIds({
+          userId: user.uid,
+          routineId,
+          date: selectedDate,
+        });
+        setCompletedIds(ids);
+      } catch (error) {
+        console.error("Error al cargar ejercicios completados:", error);
+        // No mostramos error al usuario para no saturar la interfaz,
+        // pero lo dejamos en consola para depuración.
+      }
+    }
+
+    loadCompleted();
+  }, [user, routineId, selectedDate]);
+
+    /**
+   * Marca o desmarca un ejercicio como completado para la fecha seleccionada.
+   * [ROUTINES-03]
+   */
+  async function handleToggleCompleted(exerciseId, isCompleted) {
+    try {
+      await setExerciseCompleted({
+        userId: user.uid,
+        routineId,
+        exerciseId,
+        date: selectedDate,
+        completed: isCompleted,
+      });
+
+      // Actualizamos la lista local de completados sin recargar todo.
+      setCompletedIds((prev) => {
+        if (isCompleted) {
+          // Añadimos el id si no estaba.
+          if (prev.includes(exerciseId)) return prev;
+          return [...prev, exerciseId];
+        } else {
+          // Lo quitamos de la lista.
+          return prev.filter((id) => id !== exerciseId);
+        }
+      });
+    } catch (error) {
+      console.error("Error al actualizar completado:", error);
+      // Si quisieras, podrías mostrar un pequeño mensaje de error en pantalla.
+    }
+  }
 
   /**
    * Maneja el envío del formulario de creación de ejercicio.
@@ -230,6 +306,8 @@ function RoutineDetailPage() {
       setLoading(false);
     }
   }
+  
+
 
   if (!user) {
     return (
@@ -248,6 +326,22 @@ function RoutineDetailPage() {
       <p>
         <Link to="/rutinas">← Volver a mis rutinas</Link>
       </p>
+      {/* Selector de fecha para la sesión */}
+      <section>
+        <label>
+          Fecha de la sesión
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(event) => setSelectedDate(event.target.value)}
+          />
+        </label>
+        <p>
+          Estás marcando ejercicios completados para el día:{" "}
+          <strong>{selectedDate}</strong>
+        </p>
+      </section>
+
 
       {/* Nombre de la rutina si lo tenemos disponible */}
       {routineName && <h3>{routineName}</h3>}
@@ -354,23 +448,39 @@ function RoutineDetailPage() {
         )}
 
         <ul>
-          {exercises.map((exercise) => (
-            <li key={exercise.id}>
-              <strong>{exercise.name}</strong>{" "}
-              {exercise.sets ? `${exercise.sets} series` : ""}{" "}
-              {exercise.reps ? `x ${exercise.reps} repeticiones` : ""}
-              {"  "}
-              <button type="button" onClick={() => startEditExercise(exercise)}>
-                Editar
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDeleteExercise(exercise.id)}
-              >
-                Eliminar
-              </button>
-            </li>
-          ))}
+          {exercises.map((exercise) => {
+            const isCompleted = completedIds.includes(exercise.id);
+
+            return (
+              <li key={exercise.id}>
+                {/* Checkbox para marcar el ejercicio como completado */}
+                <label style={{ marginRight: "8px" }}>
+                  <input
+                    type="checkbox"
+                    checked={isCompleted}
+                    onChange={(event) =>
+                      handleToggleCompleted(exercise.id, event.target.checked)
+                    }
+                  />
+                  Completado
+                </label>
+
+                <strong>{exercise.name}</strong>{" "}
+                {exercise.sets ? `${exercise.sets} series` : ""}{" "}
+                {exercise.reps ? `x ${exercise.reps} repeticiones` : ""}
+                {"  "}
+                <button type="button" onClick={() => startEditExercise(exercise)}>
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteExercise(exercise.id)}
+                >
+                  Eliminar
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>
