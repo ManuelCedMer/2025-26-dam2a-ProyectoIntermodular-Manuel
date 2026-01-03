@@ -10,6 +10,10 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import RoutineDetailPage from "./pages/RoutineDetailPage.jsx";
 import DietDetailPage from "./pages/DietDetailPage.jsx";
+import RecipeDetailPage from "./pages/RecipeDetailPage.jsx";
+import SeedRecipesPage from "./pages/SeedRecipesPage.jsx";
+
+
 
 
 
@@ -25,11 +29,14 @@ function App() {
           <Route path="/rutinas" element={<RoutinesPage />} />
           {/* Detalle de una rutina concreta (ejercicios) */}
           <Route path="/rutinas/:routineId" element={<RoutineDetailPage />} />
-         <Route path="/dietas" element={<DietPage />} />
+          <Route path="/dietas" element={<DietPage />} />
           <Route path="/dietas/:dietId" element={<DietDetailPage />} />
           <Route path="/recetas" element={<RecipesPage />} />
+          <Route path="/recetas/:recipeId" element={<RecipeDetailPage />} />
           <Route path="/progreso" element={<ProgressPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
+          {/* Ruta temporal para insertar recetas de prueba */}
+          <Route path="/admin/seed-recipes" element={<SeedRecipesPage />} />
         </Route>
       </Route>
     </Routes>
