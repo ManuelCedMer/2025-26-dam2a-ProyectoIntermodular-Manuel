@@ -6,6 +6,7 @@ import {
   updateDiet,
   deleteDiet,
 } from "../services/dietService.js";
+import { Link } from "react-router-dom";
 
 /**
  * Pantalla de gestión de planes de alimentación [DIET].
@@ -281,25 +282,30 @@ function DietPage() {
           <p>No tienes ningún plan de alimentación creado todavía.</p>
         )}
 
-        <ul>
-          {diets.map((diet) => (
-            <li key={diet.id}>
-              <strong>{diet.name}</strong>{" "}
-              {diet.description && (
-                <span> - {diet.description}</span>
-              )}{" "}
-              <button type="button" onClick={() => startEditDiet(diet)}>
-                Editar
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDeleteDiet(diet.id)}
-              >
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
+       <ul>
+        {diets.map((diet) => (
+          <li key={diet.id}>
+            <strong>{diet.name}</strong>{" "}
+            {diet.description && <span> - {diet.description}</span>}{" "}
+            <button type="button" onClick={() => startEditDiet(diet)}>
+              Editar
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDeleteDiet(diet.id)}
+            >
+              Eliminar
+            </button>{" "}
+            <Link
+              to={`/dietas/${diet.id}`}
+              state={{ dietName: diet.name }}
+            >
+              Ver comidas
+            </Link>
+          </li>
+        ))}
+      </ul>
+
       </section>
     </div>
   );
