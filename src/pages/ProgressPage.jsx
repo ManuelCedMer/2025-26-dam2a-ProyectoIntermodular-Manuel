@@ -4,8 +4,9 @@ import {
   getProgressEntriesByUser,
   saveDailyProgress,
 } from "../services/progressService.js";
+import { getUserProfile } from "../services/userProfileService.js";
 
-// Importamos los componentes de Recharts para los gráficos.
+// Componentes de Recharts para los gráficos.
 import {
   LineChart,
   Line,
@@ -38,6 +39,28 @@ function parseDateFromString(dateString) {
   const [year, month, day] = dateString.split("-");
   if (!year || !month || !day) return null;
   return new Date(Number(year), Number(month) - 1, Number(day));
+}
+
+/**
+ * Normaliza el objetivo a una forma interna manejable.
+ * Intento cubrir variantes posibles: "adelgazar", "perder peso", etc.
+ */
+function normalizeGoal(goal) {
+  if (!goal) return null;
+  const g = goal.toLowerCase();
+
+  if (g.includes("adelgaz") || g.includes("bajar")) {
+    return "adelgazar";
+  }
+  if (g.includes("mantener")) {
+    return "mantener";
+  }
+  if (g.includes("masa") || g.includes("muscular") || g.includes("ganar")) {
+    return "ganar_masa_muscular";
+  }
+
+  // Si no reconozco el texto, devuelvo null.
+  return null;
 }
 
 /**
@@ -86,20 +109,102 @@ function filterEntriesByRange(entries, range) {
 }
 
 /**
+ * Calcula un mensaje de feedback en base al objetivo y
+ * al balance calórico medio de los últimos días.
+ *
+ * - goalNormalizado: "adelgazar" | "mantener" | "ganar_masa_muscular" | null
+ * - entries: historial completo ordenado de más reciente a más antiguo.
+ */
+function calculateFeedback(goalNormalizado, entries) {
+  if (!goalNormalizado || entries.length === 0) {
+    return "";
+  }
+
+  // Tomamos como máximo los últimos 7 días con datos de calorías.
+  const recentEntries = entries.slice(0, 7);
+
+  const diffs = recentEntries
+    .map((entry) => {
+      if (
+        entry.caloriesIn === null ||
+        entry.caloriesIn === undefined ||
+        entry.caloriesOut === null ||
+        entry.caloriesOut === undefined
+      ) {
+        return null;
+      }
+      return entry.caloriesIn - entry.caloriesOut;
+    })
+    .filter((diff) => diff !== null);
+
+  // Si no hay suficientes datos de calorías, no mostramos nada.
+  if (diffs.length === 0) {
+    return "";
+  }
+
+  const sum = diffs.reduce((acc, value) => acc + value, 0);
+  const avgDiff = sum / diffs.length;
+  const avgRounded = Math.round(avgDiff);
+
+  let baseMessage = `En los últimos ${diffs.length} días tu balance calórico medio ha sido de ${avgRounded} kcal/día. `;
+  let extraMessage = "";
+
+  if (goalNormalizado === "adelgazar") {
+    if (avgRounded <= -300) {
+      extraMessage =
+        "Este déficit calórico es coherente con un objetivo de pérdida de peso (siempre que sea sostenible y saludable para ti).";
+    } else if (avgRounded < 100) {
+      extraMessage =
+        "Estás muy cerca de un balance neutro. Si quieres perder algo más, podrías plantearte un ligero déficit adicional (por ejemplo 200–300 kcal/día).";
+    } else {
+      extraMessage =
+        "Ahora mismo estás en superávit calórico, lo que suele dificultar la pérdida de peso. Si tu objetivo es adelgazar, revisa tu ingesta y/o el gasto energético.";
+    }
+  } else if (goalNormalizado === "mantener") {
+    if (Math.abs(avgRounded) <= 200) {
+      extraMessage =
+        "Tu balance está bastante cerca del mantenimiento, lo que es coherente con mantener el peso actual.";
+    } else if (avgRounded > 200) {
+      extraMessage =
+        "Tienes un superávit calórico apreciable. Si notas que subes de peso y no es tu objetivo, podrías reducir ligeramente la ingesta.";
+    } else {
+      extraMessage =
+        "Tienes un déficit calórico apreciable. Si notas que bajas de peso y no es tu objetivo, podrías aumentar un poco la ingesta.";
+    }
+  } else if (goalNormalizado === "ganar_masa_muscular") {
+    if (avgRounded >= 200 && avgRounded <= 500) {
+      extraMessage =
+        "Este superávit calórico moderado suele ser adecuado para favorecer la ganancia de masa muscular, siempre que vaya acompañado de entrenamiento de fuerza.";
+    } else if (avgRounded > 500) {
+      extraMessage =
+        "El superávit es bastante alto. Puede ayudarte a ganar peso rápido, pero también aumentar la ganancia de grasa. Quizás un superávit algo más moderado sea más interesante.";
+    } else {
+      extraMessage =
+        "Tu balance está cerca del mantenimiento o en ligero déficit. Si te cuesta ganar masa muscular, podrías aumentar un poco las calorías diarias.";
+    }
+  }
+
+  return baseMessage + extraMessage;
+}
+
+/**
  * Pantalla de progreso [PROGRESS].
  *
- * Bloque 1:
- *  - Registro diario de calorías consumidas y gastadas [PROGRESS-01].
- *  - Registro de peso y notas [PROGRESS-02].
- *  - Listado de historial en forma de tabla.
+ * - Bloque 1:
+ *   Registro diario de calorías, peso y notas [PROGRESS-01][PROGRESS-02].
+ *   Historial en tabla.
  *
- * Bloque 2 :
- *  - Gráficos de calorías y peso según rango de fechas [PROGRESS-03].
+ * - Bloque 2:
+ *   Gráficos de calorías y peso por rango de fechas [PROGRESS-03].
+ *
+ * - Bloque 3:
+ *   Mensaje automático de feedback según el objetivo del usuario
+ *   y su balance calórico reciente [PROGRESS-04].
  */
 function ProgressPage() {
   const { user } = useAuth();
 
-  // Fecha seleccionada para el formulario.
+  // Fecha del formulario.
   const [date, setDate] = useState(getTodayDateString());
 
   // Campos del formulario.
@@ -108,44 +213,73 @@ function ProgressPage() {
   const [weight, setWeight] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Historial completo de entradas de progreso.
+  // Historial completo de progreso.
   const [entries, setEntries] = useState([]);
 
-  // Rango de fechas seleccionado para los gráficos.
+  // Perfil del usuario (para leer el objetivo).
+  const [goalRaw, setGoalRaw] = useState(null);
+  const [normalizedGoal, setNormalizedGoal] = useState(null);
+
+  // Rango de fechas para los gráficos.
   const [range, setRange] = useState("30d");
+
+  // Mensaje de feedback calculado.
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   /**
-   * Carga el historial de progreso del usuario al entrar en la página.
+   * Carga el historial de progreso y el perfil del usuario al entrar en la página.
    */
   useEffect(() => {
     if (!user) return;
 
-    async function loadProgress() {
+    async function loadData() {
       try {
         setLoading(true);
         setErrorMessage("");
 
-        const entriesFromDb = await getProgressEntriesByUser(user.uid);
+        const [entriesFromDb, profile] = await Promise.all([
+          getProgressEntriesByUser(user.uid),
+          getUserProfile(user.uid),
+        ]);
 
+        // El historial de progreso lo guardamos ordenado de más reciente a más antiguo
         setEntries(entriesFromDb);
+
+        if (profile && profile.goal) {
+          setGoalRaw(profile.goal);
+          setNormalizedGoal(normalizeGoal(profile.goal));
+        } else {
+          setGoalRaw(null);
+          setNormalizedGoal(null);
+        }
       } catch (error) {
-        console.error("Error al cargar el progreso:", error);
-        setErrorMessage("No se ha podido cargar el historial de progreso.");
+        console.error("Error al cargar progreso o perfil:", error);
+        setErrorMessage(
+          "No se ha podido cargar el historial de progreso o el perfil de usuario.",
+        );
       } finally {
         setLoading(false);
       }
     }
 
-    loadProgress();
+    loadData();
   }, [user]);
 
   /**
+   * Cada vez que cambian el historial o el objetivo normalizado,
+   * recalculamos el mensaje de feedback.
+   */
+  useEffect(() => {
+    const message = calculateFeedback(normalizedGoal, entries);
+    setFeedbackMessage(message);
+  }, [normalizedGoal, entries]);
+
+  /**
    * Convierte los valores de los inputs a números o null.
-   * Si el campo está vacío o no es un número, devolvemos null.
    */
   function parseNumberOrNull(value) {
     const trimmed = value.trim();
@@ -172,7 +306,6 @@ function ProgressPage() {
     const parsedCaloriesOut = parseNumberOrNull(caloriesOut);
     const parsedWeight = parseNumberOrNull(weight);
 
-    // No obligamos a rellenar todo, pero al menos una cosa.
     if (
       parsedCaloriesIn === null &&
       parsedCaloriesOut === null &&
@@ -200,9 +333,7 @@ function ProgressPage() {
         notes: notes.trim(),
       });
 
-      // Actualizamos el historial en memoria:
-      // - Si ya existía entrada para esa fecha, la sustituimos.
-      // - Si no existía, la añadimos y reordenamos (fecha descendente).
+      // Actualizamos el historial en memoria.
       setEntries((prev) => {
         const existingIndex = prev.findIndex(
           (entry) => entry.date === savedEntry.date,
@@ -238,11 +369,10 @@ function ProgressPage() {
     );
   }
 
-  // Aplicamos el filtro de rango sobre las entradas.
+  // Aplicamos filtro de rango para los gráficos.
   const filteredEntries = filterEntriesByRange(entries, range);
 
-  // Preparamos los datos para los gráficos, ordenados por fecha ascendente
-  // para que el eje X vaya de más antiguo a más reciente.
+  // Datos para los gráficos, ordenados de más antiguo a más reciente.
   const chartData = [...filteredEntries].sort((a, b) =>
     a.date > b.date ? 1 : -1,
   );
@@ -350,7 +480,6 @@ function ProgressPage() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                {/* Línea de calorías consumidas */}
                 <Line
                   type="monotone"
                   dataKey="caloriesIn"
@@ -359,7 +488,6 @@ function ProgressPage() {
                   dot={false}
                   connectNulls
                 />
-                {/* Línea de calorías gastadas */}
                 <Line
                   type="monotone"
                   dataKey="caloriesOut"
@@ -403,6 +531,32 @@ function ProgressPage() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+        )}
+      </section>
+
+      {/* Mensaje automático de feedback según objetivo */}
+      <section>
+        <h3>Mensaje de feedback según tu objetivo</h3>
+
+        {goalRaw ? (
+          <p>
+            Objetivo actual en tu perfil: <strong>{goalRaw}</strong>
+          </p>
+        ) : (
+          <p>
+            No se ha encontrado un objetivo configurado en tu perfil. Puedes
+            editarlo en la pantalla de perfil para obtener mensajes más
+            personalizados.
+          </p>
+        )}
+
+        {feedbackMessage && <p>{feedbackMessage}</p>}
+
+        {!feedbackMessage && goalRaw && (
+          <p>
+            Registra varios días con calorías consumidas y gastadas para poder
+            generar un mensaje de feedback más preciso.
+          </p>
         )}
       </section>
 
