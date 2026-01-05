@@ -5,76 +5,89 @@ import {
   saveUserProfile,
 } from "../services/userProfileService.js";
 
-
 /**
- * Pantalla de perfil y configuración [PROFILE].
+ * Pantalla de perfil de usuario [PROFILE].
+ *
  * Permite:
- *  - Ver los datos básicos del usuario.
- *  - Editar nombre, edad y objetivo principal [LOGIN-03].
+ *  - Ver el correo del usuario.
+ *  - Editar nombre visible, edad y objetivo principal [LOGIN-03].
  *  - Cerrar sesión [LOGIN-02].
+ *
+ * Forma parte de [UI-02]: tarjeta centrada, adaptable en móvil y escritorio.
  */
 function ProfilePage() {
   const { user, logout } = useAuth();
+
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [goal, setGoal] = useState("mantener");
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
-  // Cargar perfil desde Firestore al entrar en la página.
+  /**
+   * Carga los datos de perfil desde Firestore al entrar en la página.
+   */
   useEffect(() => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
 
     async function loadProfile() {
       try {
-        setLoading(true);
+        setLoadingProfile(true);
         setErrorMessage("");
-        setSuccessMessage("");
+        setMessage("");
 
         const profile = await getUserProfile(user.uid);
 
-        setDisplayName(profile.displayName || user.displayName || "");
-        setAge(profile.age !== null && profile.age !== undefined ? String(profile.age) : "");
+        // Si algún campo no existe aún, uso valores por defecto.
+        setDisplayName(profile.displayName || "");
+        setAge(
+          profile.age !== null && profile.age !== undefined
+            ? String(profile.age)
+            : "",
+        );
         setGoal(profile.goal || "mantener");
       } catch (error) {
         console.error("Error al cargar perfil:", error);
-        setErrorMessage("No se han podido cargar los datos de perfil.");
+        setErrorMessage("No se ha podido cargar el perfil.");
       } finally {
-        setLoading(false);
+        setLoadingProfile(false);
       }
     }
 
     loadProfile();
   }, [user]);
 
-  async function handleSaveProfile(event) {
+  /**
+   * Guarda los cambios de perfil en Firestore.
+   */
+  async function handleSubmit(event) {
     event.preventDefault();
 
     if (!displayName.trim()) {
       setErrorMessage("El nombre es obligatorio.");
-      setSuccessMessage("");
+      setMessage("");
       return;
     }
 
-    // Convertir edad a número o null.
-    const parsedAge = age.trim() === "" ? null : Number(age);
-
-    if (parsedAge !== null && Number.isNaN(parsedAge)) {
-      setErrorMessage("La edad debe ser un número.");
-      setSuccessMessage("");
-      return;
+    // Valido la edad: número dentro de un rango razonable o vacío.
+    let parsedAge = null;
+    if (age.trim() !== "") {
+      const n = Number(age);
+      if (Number.isNaN(n) || n < 0 || n > 120) {
+        setErrorMessage("La edad debe ser un número válido.");
+        setMessage("");
+        return;
+      }
+      parsedAge = n;
     }
 
     try {
-      setSaving(true);
+      setSavingProfile(true);
       setErrorMessage("");
-      setSuccessMessage("");
+      setMessage("");
 
       await saveUserProfile(user.uid, {
         displayName: displayName.trim(),
@@ -82,15 +95,18 @@ function ProfilePage() {
         goal,
       });
 
-      setSuccessMessage("Perfil guardado correctamente.");
+      setMessage("Perfil actualizado correctamente.");
     } catch (error) {
       console.error("Error al guardar perfil:", error);
-      setErrorMessage("No se han podido guardar los datos de perfil.");
-      setSuccessMessage("");
+      setErrorMessage("No se ha podido guardar el perfil.");
     } finally {
-      setSaving(false);
+      setSavingProfile(false);
     }
   }
+
+  /**
+   * Cierra la sesión actual del usuario.
+   */
   async function handleLogout() {
     try {
       await logout();
@@ -101,68 +117,109 @@ function ProfilePage() {
 
   if (!user) {
     return (
-      <div>
-        <h2>[PROFILE] Perfil y configuración</h2>
+      <div className="profile-page">
         <p>No hay sesión activa.</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h2>[PROFILE] Perfil y configuración</h2>
-       {errorMessage && <p>{errorMessage}</p>}
-      {successMessage && <p>{successMessage}</p>}
+    <div className="profile-page">
+      <section className="profile-card">
+        {/* Cabecera con avatar sencillo y correo */}
+        <div className="profile-header">
+          <div className="profile-avatar">
+            <span>
+              {(displayName || user.email || "?")
+                .trim()
+                .charAt(0)
+                .toUpperCase()}
+            </span>
+          </div>
 
-      <form onSubmit={handleSaveProfile}>
-        <div>
-          <label>Nombre</label>
-          <input
-            type="text"
-            value={displayName}
-            onChange={(event) => setDisplayName(event.target.value)}
-            required
-          />
+          <div className="profile-header-text">
+            <h2>[PROFILE] Perfil y configuración</h2>
+            <p className="profile-email">{user.email}</p>
+          </div>
         </div>
 
-        <div>
-          <label>Correo</label>
-          {/* El correo no se edita aquí, solo se muestra. */}
-          <input type="email" value={user.email} disabled />
-        </div>
+        {/* Formulario de edición de perfil */}
+        <form onSubmit={handleSubmit} className="profile-form">
+          <div className="profile-form-row">
+            <label>Nombre visible</label>
+            <input
+              type="text"
+              value={displayName}
+              onChange={(event) => setDisplayName(event.target.value)}
+              placeholder="Ej: Carlos Rodríguez"
+              disabled={loadingProfile}
+            />
+          </div>
 
-        <div>
-          <label>Edad</label>
-          <input
-            type="number"
-            value={age}
-            onChange={(event) => setAge(event.target.value)}
-            min="0"
-          />
-        </div>
+          <div className="profile-form-row">
+            <label>Edad</label>
+            <input
+              type="number"
+              value={age}
+              onChange={(event) => setAge(event.target.value)}
+              min="0"
+              max="120"
+              placeholder="Ej: 28"
+              disabled={loadingProfile}
+            />
+          </div>
 
-        <div>
-          <label>Objetivo principal</label>
-          <select
-            value={goal}
-            onChange={(event) => setGoal(event.target.value)}
+          <div className="profile-form-row">
+            <label>Objetivo principal</label>
+            <select
+              value={goal}
+              onChange={(event) => setGoal(event.target.value)}
+              disabled={loadingProfile}
+            >
+              <option value="adelgazar">Adelgazar</option>
+              <option value="mantener">Mantener</option>
+              <option value="ganar">Ganar masa muscular</option>
+            </select>
+          </div>
+
+          {/* Mensajes de estado */}
+          {errorMessage && (
+            <p className="profile-message profile-message--error">
+              {errorMessage}
+            </p>
+          )}
+
+          {message && (
+            <p className="profile-message profile-message--success">
+              {message}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="profile-button"
+            disabled={savingProfile || loadingProfile}
           >
-            <option value="adelgazar">Adelgazar</option>
-            <option value="mantener">Mantener</option>
-            <option value="ganar_masa">Ganar masa muscular</option>
-          </select>
+            {savingProfile ? "Guardando..." : "Guardar cambios"}
+          </button>
+        </form>
+
+        <hr className="profile-divider" />
+
+        {/* Bloque de cierre de sesión */}
+        <div className="profile-logout">
+          <p className="profile-logout-text">
+            Si quieres salir de tu cuenta actual, puedes cerrar sesión aquí.
+          </p>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="profile-button profile-button--secondary"
+          >
+            Cerrar sesión
+          </button>
         </div>
-
-        <button type="submit" disabled={saving}>
-          {saving ? "Guardando..." : "Guardar perfil"}
-        </button>
-      </form>
-
-      <hr />
-
-      <button type="button" onClick={handleLogout}>
-        Cerrar sesión
-      </button>
+      </section>
     </div>
   );
 }

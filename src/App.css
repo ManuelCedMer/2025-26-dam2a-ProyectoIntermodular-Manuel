@@ -219,3 +219,149 @@
     padding-inline: 1.25rem;
   }
 }
+
+/* -------------------------- */
+/* Pantalla de perfil [UI-02] */
+/* -------------------------- */
+
+.profile-page {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 420px;
+
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+
+  border-radius: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Cabecera con avatar y texto */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.profile-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.profile-header-text h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.profile-email {
+  margin: 0.1rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Formulario de perfil */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.profile-form-row label {
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.profile-form-row input,
+.profile-form-row select {
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.6rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+/* Mensajes de estado */
+.profile-message {
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.profile-message--error {
+  color: #b91c1c;
+}
+
+.profile-message--success {
+  color: #15803d;
+}
+
+/* Botón de guardar */
+.profile-button {
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-color: #4f46e5;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Separador dentro de la tarjeta de perfil */
+.profile-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 0.75rem 0;
+}
+
+/* Bloque de cierre de sesión */
+.profile-logout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-logout-text {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Variante secundaria del botón de perfil */
+.profile-button--secondary {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+/* Responsive: en móvil simplemente ocupa todo el ancho disponible,
+   el max-width ya se encarga de que no crezca demasiado en escritorio. */
+@media (max-width: 640px) {
+  .profile-card {
+    margin-top: 0.5rem;
+    padding-inline: 1.25rem;
+  }
+}
+
