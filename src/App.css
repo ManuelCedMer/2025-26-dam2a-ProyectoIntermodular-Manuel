@@ -76,3 +76,146 @@
     padding: 0.4rem 0.6rem;
   }
 }
+/* -------------------- */
+/* Pantalla de inicio   */
+/* -------------------- */
+
+.home-page {
+  display: flex;
+  justify-content: center;
+}
+
+/* Tarjeta principal que imita el mockup de HOME */
+.home-main-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem 1.75rem;
+
+  border-radius: 24px;
+  background: linear-gradient(180deg, #eef2ff 0%, #ffffff 40%, #ffffff 100%);
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.12);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+
+/* Texto de saludo */
+.home-greeting {
+  margin-top: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Contenedor del anillo de calorías */
+.home-calories-ring {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background:
+    conic-gradient(#fb923c 0 70%, #e5e7eb 70% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Círculo interior blanco para crear el efecto "donut" */
+.home-calories-inner {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: inset 0 0 0 1px #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Textos dentro del anillo */
+.home-calories-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  margin-bottom: 0.1rem;
+}
+
+.home-calories-percentage {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.1rem;
+  line-height: 1.1;
+}
+
+.home-calories-detail {
+  font-size: 0.65rem;
+  color: #6b7280;
+    line-height: 1.1;
+}
+
+/* Mensaje corto debajo del anillo */
+.home-feedback {
+  font-size: 0.85rem;
+  color: #4b5563;
+  background-color: #e5f2ff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+}
+
+/* Contenedor de las tarjetas de acción */
+.home-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Tarjeta de acción (Rutina de hoy / Comidas / Buscar recetas) */
+.home-action-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+
+  text-decoration: none;
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+/* Icono de la tarjeta (emojis por ahora) */
+.home-action-icon {
+  font-size: 1.3rem;
+}
+
+/* Texto de la tarjeta */
+.home-action-text {
+  font-weight: 500;
+}
+
+/* En hover, un poco más de sombra para dar sensación de botón */
+.home-action-card:hover {
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
+}
+
+/* Responsive: en pantallas pequeñas, que ocupe casi todo el ancho */
+@media (max-width: 640px) {
+  .home-main-card {
+    margin-top: 0.5rem;
+    padding-inline: 1.25rem;
+  }
+}
