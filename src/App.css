@@ -4,6 +4,13 @@
   display: flex;
   flex-direction: column;
 }
+/*Configuración global de box-sizing para que bordes y padding cuenten dentro del anch/alto*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 
 /* Cabecera con logo y barra de navegación */
 .app-header {
@@ -605,5 +612,20 @@
   border-color: #16a34a;
   background-color: #ecfdf3;
   color: #166534;
+}
+
+/* --- [DIET][UI-02] Layout responsive de la pantalla de dietas --- */
+
+.diet-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 24px;
+}
+
+/* En pantallas pequeñas, una sola columna */
+@media (max-width: 900px) {
+  .diet-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
