@@ -43,7 +43,6 @@ function parseDateFromString(dateString) {
 
 /**
  * Normaliza el objetivo a una forma interna manejable.
- * Intento cubrir variantes posibles: "adelgazar", "perder peso", etc.
  */
 function normalizeGoal(goal) {
   if (!goal) return null;
@@ -59,7 +58,6 @@ function normalizeGoal(goal) {
     return "ganar_masa_muscular";
   }
 
-  // Si no reconozco el texto, devuelvo null.
   return null;
 }
 
@@ -111,16 +109,12 @@ function filterEntriesByRange(entries, range) {
 /**
  * Calcula un mensaje de feedback en base al objetivo y
  * al balance calórico medio de los últimos días.
- *
- * - goalNormalizado: "adelgazar" | "mantener" | "ganar_masa_muscular" | null
- * - entries: historial completo ordenado de más reciente a más antiguo.
  */
 function calculateFeedback(goalNormalizado, entries) {
   if (!goalNormalizado || entries.length === 0) {
     return "";
   }
 
-  // Tomamos como máximo los últimos 7 días con datos de calorías.
   const recentEntries = entries.slice(0, 7);
 
   const diffs = recentEntries
@@ -137,7 +131,6 @@ function calculateFeedback(goalNormalizado, entries) {
     })
     .filter((diff) => diff !== null);
 
-  // Si no hay suficientes datos de calorías, no mostramos nada.
   if (diffs.length === 0) {
     return "";
   }
@@ -189,17 +182,6 @@ function calculateFeedback(goalNormalizado, entries) {
 
 /**
  * Pantalla de progreso [PROGRESS].
- *
- * - Bloque 1:
- *   Registro diario de calorías, peso y notas [PROGRESS-01][PROGRESS-02].
- *   Historial en tabla.
- *
- * - Bloque 2:
- *   Gráficos de calorías y peso por rango de fechas [PROGRESS-03].
- *
- * - Bloque 3:
- *   Mensaje automático de feedback según el objetivo del usuario
- *   y su balance calórico reciente [PROGRESS-04].
  */
 function ProgressPage() {
   const { user } = useAuth();
@@ -246,7 +228,6 @@ function ProgressPage() {
           getUserProfile(user.uid),
         ]);
 
-        // El historial de progreso lo guardamos ordenado de más reciente a más antiguo
         setEntries(entriesFromDb);
 
         if (profile && profile.goal) {
@@ -333,7 +314,6 @@ function ProgressPage() {
         notes: notes.trim(),
       });
 
-      // Actualizamos el historial en memoria.
       setEntries((prev) => {
         const existingIndex = prev.findIndex(
           (entry) => entry.date === savedEntry.date,
@@ -362,9 +342,11 @@ function ProgressPage() {
 
   if (!user) {
     return (
-      <div>
-        <h2>[PROGRESS] Registro y seguimiento de progreso</h2>
-        <p>No hay usuario autenticado.</p>
+      <div className="progress-page">
+        <div className="progress-card">
+          <h2>[PROGRESS] Registro y seguimiento de progreso</h2>
+          <p>No hay usuario autenticado.</p>
+        </div>
       </div>
     );
   }
@@ -378,246 +360,264 @@ function ProgressPage() {
   );
 
   return (
-    <div>
-      <h2>[PROGRESS] Registro diario de calorías y peso</h2>
-
-      {/* Formulario de registro diario */}
-      <section>
-        <h3>Registrar progreso del día</h3>
-
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Fecha</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(event) => setDate(event.target.value)}
-            />
+    <div className="progress-page">
+      <section className="progress-layout">
+        {/* Columna izquierda: encabezado, mensajes, formulario y tabla */}
+        <div className="progress-left">
+          <div className="progress-card">
+            <h2>[PROGRESS] Registro diario de calorías y peso</h2>
+            <p className="progress-subtitle">
+              Registra tus calorías, peso y notas del día para poder visualizar
+              la evolución a lo largo del tiempo.
+            </p>
           </div>
 
-          <div>
-            <label>Calorías consumidas (kcal)</label>
-            <input
-              type="number"
-              value={caloriesIn}
-              onChange={(event) => setCaloriesIn(event.target.value)}
-              min="0"
-              placeholder="Ej: 2200"
-            />
-          </div>
+          {errorMessage && (
+            <div className="progress-card progress-message progress-message--error">
+              {errorMessage}
+            </div>
+          )}
 
-          <div>
-            <label>Calorías gastadas (kcal)</label>
-            <input
-              type="number"
-              value={caloriesOut}
-              onChange={(event) => setCaloriesOut(event.target.value)}
-              min="0"
-              placeholder="Ej: 500"
-            />
-          </div>
+          {successMessage && (
+            <div className="progress-card progress-message progress-message--ok">
+              {successMessage}
+            </div>
+          )}
 
-          <div>
-            <label>Peso (kg)</label>
-            <input
-              type="number"
-              value={weight}
-              onChange={(event) => setWeight(event.target.value)}
-              min="0"
-              step="0.1"
-              placeholder="Ej: 72.5"
-            />
-          </div>
+          {/* Formulario de registro */}
+          <div className="progress-card">
+            <h3>Registrar progreso del día</h3>
 
-          <div>
-            <label>Notas (opcional)</label>
-            <textarea
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
-              placeholder="Por ejemplo: día de descanso, entrenamiento fuerte..."
-            />
-          </div>
-
-          {errorMessage && <p>{errorMessage}</p>}
-          {successMessage && <p>{successMessage}</p>}
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Guardando..." : "Guardar progreso del día"}
-          </button>
-        </form>
-      </section>
-
-      {/* Selector de rango para los gráficos */}
-      <section>
-        <h3>Rango de fechas para los gráficos</h3>
-        <div>
-          <label>Rango</label>
-          <select
-            value={range}
-            onChange={(event) => setRange(event.target.value)}
-          >
-            <option value="7d">Últimos 7 días</option>
-            <option value="30d">Últimos 30 días</option>
-            <option value="180d">Últimos 6 meses</option>
-            <option value="365d">Último año</option>
-            <option value="all">Todo el historial</option>
-          </select>
-        </div>
-      </section>
-
-      {/* Gráfico de calorías */}
-      <section>
-        <h3>Gráfico de calorías</h3>
-
-        {chartData.length === 0 ? (
-          <p>No hay datos suficientes para mostrar el gráfico.</p>
-        ) : (
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="caloriesIn"
-                  name="Calorías consumidas"
-                  stroke="#8884d8"
-                  dot={false}
-                  connectNulls
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label>Fecha</label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(event) => setDate(event.target.value)}
                 />
-                <Line
-                  type="monotone"
-                  dataKey="caloriesOut"
-                  name="Calorías gastadas"
-                  stroke="#82ca9d"
-                  dot={false}
-                  connectNulls
+              </div>
+
+              <div>
+                <label>Calorías consumidas (kcal)</label>
+                <input
+                  type="number"
+                  value={caloriesIn}
+                  onChange={(event) => setCaloriesIn(event.target.value)}
+                  min="0"
+                  placeholder="Ej: 2200"
                 />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </section>
+              </div>
 
-      {/* Gráfico de peso */}
-      <section>
-        <h3>Gráfico de peso</h3>
-
-        {chartData.every(
-          (entry) =>
-            entry.weight === null || entry.weight === undefined,
-        ) ? (
-          <p>No hay datos de peso suficientes para mostrar el gráfico.</p>
-        ) : (
-          <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="weight"
-                  name="Peso (kg)"
-                  stroke="#ff7300"
-                  dot={false}
-                  connectNulls
+              <div>
+                <label>Calorías gastadas (kcal)</label>
+                <input
+                  type="number"
+                  value={caloriesOut}
+                  onChange={(event) => setCaloriesOut(event.target.value)}
+                  min="0"
+                  placeholder="Ej: 500"
                 />
-              </LineChart>
-            </ResponsiveContainer>
+              </div>
+
+              <div>
+                <label>Peso (kg)</label>
+                <input
+                  type="number"
+                  value={weight}
+                  onChange={(event) => setWeight(event.target.value)}
+                  min="0"
+                  step="0.1"
+                  placeholder="Ej: 72.5"
+                />
+              </div>
+
+              <div>
+                <label>Notas (opcional)</label>
+                <textarea
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder="Por ejemplo: día de descanso, entrenamiento fuerte..."
+                />
+              </div>
+
+              <button type="submit" disabled={loading}>
+                {loading ? "Guardando..." : "Guardar progreso del día"}
+              </button>
+            </form>
           </div>
-        )}
-      </section>
 
-      {/* Mensaje automático de feedback según objetivo */}
-      <section>
-        <h3>Mensaje de feedback según tu objetivo</h3>
+          {/* Historial en tabla */}
+          <div className="progress-card">
+            <h3>Historial de progreso</h3>
 
-        {goalRaw ? (
-          <p>
-            Objetivo actual en tu perfil: <strong>{goalRaw}</strong>
-          </p>
-        ) : (
-          <p>
-            No se ha encontrado un objetivo configurado en tu perfil. Puedes
-            editarlo en la pantalla de perfil para obtener mensajes más
-            personalizados.
-          </p>
-        )}
+            {loading && entries.length === 0 && (
+              <p>Cargando historial de progreso...</p>
+            )}
 
-        {feedbackMessage && <p>{feedbackMessage}</p>}
+            {!loading && entries.length === 0 && (
+              <p>Todavía no has registrado ningún día.</p>
+            )}
 
-        {!feedbackMessage && goalRaw && (
-          <p>
-            Registra varios días con calorías consumidas y gastadas para poder
-            generar un mensaje de feedback más preciso.
-          </p>
-        )}
-      </section>
-
-      {/* Historial de progreso en tabla */}
-      <section>
-        <h3>Historial de progreso</h3>
-
-        {loading && entries.length === 0 && (
-          <p>Cargando historial de progreso...</p>
-        )}
-
-        {!loading && entries.length === 0 && (
-          <p>Todavía no has registrado ningún día.</p>
-        )}
-
-        {entries.length > 0 && (
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Calorías consumidas</th>
-                <th>Calorías gastadas</th>
-                <th>Diferencia</th>
-                <th>Peso (kg)</th>
-                <th>Notas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry) => {
-                const diff =
-                  (entry.caloriesIn || 0) - (entry.caloriesOut || 0);
-
-                return (
-                  <tr key={entry.id}>
-                    <td>{entry.date}</td>
-                    <td>
-                      {entry.caloriesIn !== null &&
-                      entry.caloriesIn !== undefined
-                        ? entry.caloriesIn
-                        : "-"}
-                    </td>
-                    <td>
-                      {entry.caloriesOut !== null &&
-                      entry.caloriesOut !== undefined
-                        ? entry.caloriesOut
-                        : "-"}
-                    </td>
-                    <td>{diff !== 0 ? diff : "-"}</td>
-                    <td>
-                      {entry.weight !== null &&
-                      entry.weight !== undefined
-                        ? entry.weight
-                        : "-"}
-                    </td>
-                    <td>{entry.notes || "-"}</td>
+            {entries.length > 0 && (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Calorías consumidas</th>
+                    <th>Calorías gastadas</th>
+                    <th>Diferencia</th>
+                    <th>Peso (kg)</th>
+                    <th>Notas</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
+                </thead>
+                <tbody>
+                  {entries.map((entry) => {
+                    const diff =
+                      (entry.caloriesIn || 0) - (entry.caloriesOut || 0);
+
+                    return (
+                      <tr key={entry.id}>
+                        <td>{entry.date}</td>
+                        <td>
+                          {entry.caloriesIn !== null &&
+                          entry.caloriesIn !== undefined
+                            ? entry.caloriesIn
+                            : "-"}
+                        </td>
+                        <td>
+                          {entry.caloriesOut !== null &&
+                          entry.caloriesOut !== undefined
+                            ? entry.caloriesOut
+                            : "-"}
+                        </td>
+                        <td>{diff !== 0 ? diff : "-"}</td>
+                        <td>
+                          {entry.weight !== null &&
+                          entry.weight !== undefined
+                            ? entry.weight
+                            : "-"}
+                        </td>
+                        <td>{entry.notes || "-"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
+        {/* Columna derecha: rango, gráficos y feedback */}
+        <div className="progress-right">
+          <div className="progress-card">
+            <h3>Rango de fechas para los gráficos</h3>
+            <div>
+              <label>Rango</label>
+              <select
+                value={range}
+                onChange={(event) => setRange(event.target.value)}
+              >
+                <option value="7d">Últimos 7 días</option>
+                <option value="30d">Últimos 30 días</option>
+                <option value="180d">Últimos 6 meses</option>
+                <option value="365d">Último año</option>
+                <option value="all">Todo el historial</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Gráfico de calorías */}
+          <div className="progress-card progress-chart-card">
+            <h3>Gráfico de calorías</h3>
+
+            {chartData.length === 0 ? (
+              <p>No hay datos suficientes para mostrar el gráfico.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="caloriesIn"
+                    name="Calorías consumidas"
+                    stroke="#8884d8"
+                    dot={false}
+                    connectNulls
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="caloriesOut"
+                    name="Calorías gastadas"
+                    stroke="#82ca9d"
+                    dot={false}
+                    connectNulls
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          {/* Gráfico de peso */}
+          <div className="progress-card progress-chart-card">
+            <h3>Gráfico de peso</h3>
+
+            {chartData.every(
+              (entry) =>
+                entry.weight === null || entry.weight === undefined,
+            ) ? (
+              <p>No hay datos de peso suficientes para mostrar el gráfico.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="weight"
+                    name="Peso (kg)"
+                    stroke="#ff7300"
+                    dot={false}
+                    connectNulls
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          {/* Feedback según objetivo */}
+          <div className="progress-card">
+            <h3>Mensaje de feedback según tu objetivo</h3>
+
+            {goalRaw ? (
+              <p>
+                Objetivo actual en tu perfil: <strong>{goalRaw}</strong>
+              </p>
+            ) : (
+              <p>
+                No se ha encontrado un objetivo configurado en tu perfil. Puedes
+                editarlo en la pantalla de perfil para obtener mensajes más
+                personalizados.
+              </p>
+            )}
+
+            {feedbackMessage && <p>{feedbackMessage}</p>}
+
+            {!feedbackMessage && goalRaw && (
+              <p>
+                Registra varios días con calorías consumidas y gastadas para
+                poder generar un mensaje de feedback más preciso.
+              </p>
+            )}
+          </div>
+        </div>
       </section>
     </div>
   );
