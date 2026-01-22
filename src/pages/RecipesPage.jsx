@@ -165,110 +165,148 @@ function RecipesPage() {
     }
   }
 
-  if (!user) {
+    if (!user) {
     return (
-      <div>
-        <h2>[RECIPES] Búsqueda de recetas</h2>
+      <div className="recipes-page">
         <p>No hay usuario autenticado.</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h2>[RECIPES] Búsqueda de recetas</h2>
+    <div className="recipes-page">
+      <section className="recipes-layout">
+        {/* Columna izquierda: filtros + resultados */}
+        <div className="recipes-left">
+          <header className="recipes-header">
+            <h2>[RECIPES] Búsqueda de recetas</h2>
+            <p className="recipes-subtitle">
+              Busca por ingrediente o tipo de comida y guarda tus favoritas.
+            </p>
+          </header>
 
-      {/* Formulario de filtros */}
-      <section>
-        <h3>Filtros de búsqueda</h3>
+          {/* Formulario de filtros */}
+          <div className="recipes-filters">
+            <h3>Filtros de búsqueda</h3>
 
-        <form onSubmit={handleSearch}>
-          <div>
-            <label>Ingrediente</label>
-            <input
-              type="text"
-              value={ingredientText}
-              onChange={(event) => setIngredientText(event.target.value)}
-              placeholder="Ej: pollo, arroz, avena..."
-            />
-          </div>
+            <form onSubmit={handleSearch}>
+              <div>
+                <label>Ingrediente</label>
+                <input
+                  type="text"
+                  value={ingredientText}
+                  onChange={(event) => setIngredientText(event.target.value)}
+                  placeholder="Ej: pollo, arroz, avena..."
+                />
+              </div>
 
-          <div>
-            <label>Tipo de comida</label>
-            <select
-              value={mealType}
-              onChange={(event) => setMealType(event.target.value)}
-            >
-              {availableMealTypes.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Buscando..." : "Buscar"}
-          </button>
-        </form>
-      </section>
-            {/* Sección de recetas favoritas del usuario */}
-      <section>
-        <h3>Mis recetas favoritas</h3>
-
-        {favoriteRecipes.length === 0 ? (
-          <p>Todavía no tienes recetas marcadas como favoritas.</p>
-        ) : (
-          <ul>
-            {favoriteRecipes.map((fav) => (
-              <li key={fav.recipeId}>
-                <strong>{fav.title}</strong>{" "}
-                {fav.mealType && <span>({fav.mealType})</span>}{" "}
-                {Array.isArray(fav.tags) && fav.tags.length > 0 && (
-                  <span> - {fav.tags.join(", ")}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {errorMessage && <p>{errorMessage}</p>}
-
-      {/* Resultados de búsqueda */}
-      <section>
-        <h3>Resultados</h3>
-
-        {loading && recipes.length === 0 && <p>Cargando recetas...</p>}
-
-        {!loading && recipes.length === 0 && (
-          <p>No se han encontrado recetas con los filtros actuales.</p>
-        )}
-
-                <ul>
-          {recipes.map((recipe) => {
-            const isFavorite = favoriteIds.includes(recipe.id);
-
-            return (
-              <li key={recipe.id}>
-                <strong>{recipe.title}</strong>{" "}
-                {recipe.mealType && <span>({recipe.mealType})</span>}{" "}
-                {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
-                  <span> - {recipe.tags.join(", ")}</span>
-                )}{" "}
-                <Link to={`/recetas/${recipe.id}`}>Ver detalle</Link>{" "}
-                <button
-                  type="button"
-                  onClick={() => handleToggleFavorite(recipe)}
+              <div>
+                <label>Tipo de comida</label>
+                <select
+                  value={mealType}
+                  onChange={(event) => setMealType(event.target.value)}
                 >
-                  {isFavorite
-                    ? "Quitar de favoritos"
-                    : "Añadir a favoritos"}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                  {availableMealTypes.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button type="submit" disabled={loading}>
+                {loading ? "Buscando..." : "Buscar"}
+              </button>
+            </form>
+          </div>
+
+          {/* Mensaje de error general */}
+          {errorMessage && (
+            <p className="recipes-message recipes-message--error">
+              {errorMessage}
+            </p>
+          )}
+
+          {/* Resultados de búsqueda */}
+          <div className="recipes-list-card">
+            <h3>Resultados</h3>
+
+            {loading && recipes.length === 0 && (
+              <p>Cargando recetas...</p>
+            )}
+
+            {!loading && recipes.length === 0 && (
+              <p>No se han encontrado recetas con los filtros actuales.</p>
+            )}
+
+            <ul className="recipes-list">
+              {recipes.map((recipe) => {
+                const isFavorite = favoriteIds.includes(recipe.id);
+
+                return (
+                  <li
+                    key={recipe.id}
+                    className="recipes-list-item"
+                  >
+                    <div>
+                      <strong>{recipe.title}</strong>{" "}
+                      {recipe.mealType && (
+                        <span>({recipe.mealType})</span>
+                      )}{" "}
+                      {Array.isArray(recipe.tags) &&
+                        recipe.tags.length > 0 && (
+                          <span> - {recipe.tags.join(", ")}</span>
+                        )}
+                    </div>
+
+                    <div>
+                      <Link to={`/recetas/${recipe.id}`}>
+                        Ver detalle
+                      </Link>{" "}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleFavorite(recipe)}
+                      >
+                        {isFavorite
+                          ? "Quitar de favoritos"
+                          : "Añadir a favoritos"}
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
+        {/* Columna derecha: favoritos */}
+        <aside className="recipes-detail-card">
+          <h3>Mis recetas favoritas</h3>
+
+          {favoriteRecipes.length === 0 ? (
+            <p>
+              Todavía no tienes recetas marcadas como favoritas.
+            </p>
+          ) : (
+            <ul className="recipes-list">
+              {favoriteRecipes.map((fav) => (
+                <li
+                  key={fav.recipeId}
+                  className="recipes-list-item"
+                >
+                  <div>
+                    <strong>{fav.title}</strong>{" "}
+                    {fav.mealType && <span>({fav.mealType})</span>}{" "}
+                    {Array.isArray(fav.tags) &&
+                      fav.tags.length > 0 && (
+                        <span> - {fav.tags.join(", ")}</span>
+                      )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
       </section>
     </div>
   );

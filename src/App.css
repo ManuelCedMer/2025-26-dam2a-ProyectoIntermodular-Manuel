@@ -365,3 +365,166 @@
   }
 }
 
+/* --------------------------- */
+/* Pantalla de recetas [UI-02] */
+/* --------------------------- */
+
+.recipes-page {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.recipes-layout {
+  width: 100%;
+  max-width: 960px;
+
+  display: grid;
+  gap: 1rem;
+
+  /* En escritorio: dos columnas (listado + detalle) */
+  grid-template-columns: 1.2fr 1fr;
+}
+
+/* Ajuste a una sola columna en pantallas pequeñas */
+@media (max-width: 768px) {
+  .recipes-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Columna izquierda */
+.recipes-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recipes-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.recipes-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* Bloque de filtros */
+.recipes-filters {
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  background-color: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+}
+
+/* Listado de recetas */
+.recipes-list-card {
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  background-color: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recipes-list-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.recipes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Un item de receta en el listado */
+.recipes-list-item {
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.7rem;
+  border: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  cursor: pointer;
+}
+
+.recipes-list-item:hover {
+  background-color: #f3f4f6;
+}
+
+.recipes-list-item--selected {
+  border-color: #4f46e5;
+  background-color: #eef2ff;
+}
+
+/* Columna derecha: detalle */
+.recipes-detail-card {
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background-color: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recipes-detail-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Títulos y textos del detalle */
+.recipes-detail-title {
+  margin: 0.4rem 0 0.2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.recipes-detail-section-title {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.recipes-detail-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.recipes-detail-text {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Botón de favoritos o acciones en detalle */
+.recipes-detail-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.recipes-detail-button {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #4f46e5;
+  background-color: #4f46e5;
+  color: #ffffff;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+
