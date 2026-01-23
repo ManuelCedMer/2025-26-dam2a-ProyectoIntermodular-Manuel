@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendPasswordResetEmail, // [LOGIN-RECOVER]
 } from "firebase/auth";
 import { db } from "../services/firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -35,19 +36,22 @@ export function AuthProvider({ children }) {
    */
   async function register({ name, email, password }) {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
+
     if (name) {
       await updateProfile(cred.user, { displayName: name });
     }
+
     // Crear documento de perfil básico en Firestore (colección "users").
     const userRef = doc(db, "users", cred.user.uid);
 
     await setDoc(userRef, {
-    displayName: name || "",
-    email: cred.user.email,
-    age: null, // Se podrá editar más adelante.
-    goal: "mantener", // valor por defecto.
-    createdAt: new Date(),
-  });
+      displayName: name || "",
+      email: cred.user.email,
+      age: null,
+      goal: "mantener",
+      createdAt: new Date(),
+    });
+
     return cred.user;
   }
 
@@ -65,12 +69,20 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   }
 
+  /**
+   * Envía correo de recuperación de contraseña [LOGIN-RECOVER].
+   */
+  function recoverPassword(email) {
+    return sendPasswordResetEmail(auth, email);
+  }
+
   const value = {
     user,
     loading,
     register,
     login,
     logout,
+    recoverPassword, // [LOGIN-RECOVER]
   };
 
   return (
