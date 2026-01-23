@@ -10,10 +10,9 @@ import {
 
 /**
  * Pantalla de gestión de rutinas [ROUTINES].
- * En este bloque:
- *  - Listo las rutinas del usuario [ROUTINES-04].
- *  - Permito crear rutinas nuevas con nombre y días [ROUTINES-01].
- * - Permito editar y eliminar rutinas [ROUTINES-02].
+ * - Listar rutinas del usuario [ROUTINES-04].
+ * - Crear rutinas nuevas con nombre y días [ROUTINES-01].
+ * - Editar y eliminar rutinas [ROUTINES-02].
  */
 function RoutinesPage() {
   const { user } = useAuth();
@@ -36,12 +35,116 @@ function RoutinesPage() {
   // Días disponibles para seleccionar en el formulario.
   const availableDays = ["L", "M", "X", "J", "V", "S", "D"];
 
+  // Etiquetas legibles para mostrar en pantalla.
+  const dayLabels = {
+    L: "Lunes",
+    M: "Martes",
+    X: "Miércoles",
+    J: "Jueves",
+    V: "Viernes",
+    S: "Sábado",
+    D: "Domingo",
+  };
+
+  // Estilos básicos en línea con HOME / DIET / PROGRESS.
+  const pageStyles = {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "24px 16px 40px",
+  };
+
+  const columnStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  };
+
+  const cardStyles = {
+    backgroundColor: "#ffffff",
+    borderRadius: "16px",
+    padding: "16px 18px",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
+    border: "1px solid rgba(148, 163, 184, 0.3)",
+  };
+
+  const sectionTitleStyles = {
+    marginBottom: "8px",
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#111827",
+  };
+
+  const labelStyles = {
+    display: "block",
+    marginBottom: "4px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#374151",
+  };
+
+  const inputStyles = {
+    width: "100%",
+    padding: "8px 10px",
+    borderRadius: "8px",
+    border: "1px solid #d1d5db",
+    fontSize: "14px",
+  };
+
+  const primaryButtonStyles = {
+    padding: "8px 14px",
+    borderRadius: "999px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    background:
+      "linear-gradient(135deg, rgba(56,189,248,0.95), rgba(37,99,235,0.95))",
+    color: "#ffffff",
+  };
+
+  const ghostButtonStyles = {
+    padding: "6px 10px",
+    borderRadius: "999px",
+    border: "1px solid #d1d5db",
+    cursor: "pointer",
+    fontSize: "13px",
+    backgroundColor: "#f9fafb",
+    color: "#374151",
+  };
+
+  const dangerButtonStyles = {
+    padding: "6px 10px",
+    borderRadius: "999px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "13px",
+    backgroundColor: "#fee2e2",
+    color: "#b91c1c",
+  };
+
+  const smallTextStyles = {
+    fontSize: "13px",
+    color: "#6b7280",
+  };
+
+  const dayChipStyles = (selected) => ({
+    padding: "4px 10px",
+    borderRadius: "999px",
+    border: selected ? "none" : "1px solid #e5e7eb",
+    backgroundColor: selected ? "#2563eb" : "#f9fafb",
+    color: selected ? "#ffffff" : "#374151",
+    fontSize: "13px",
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+  });
+
   /**
    * Carga las rutinas del usuario actual al entrar en la página
    * o cuando cambie el usuario.
    */
   useEffect(() => {
-    // Si aún no tenemos usuario (por algún motivo), no hago nada.
     if (!user) return;
 
     async function loadRoutines() {
@@ -67,10 +170,8 @@ function RoutinesPage() {
    */
   function handleDayChange(day) {
     if (daysOfWeek.includes(day)) {
-      // Si el día ya estaba seleccionado, lo quito.
       setDaysOfWeek(daysOfWeek.filter((d) => d !== day));
     } else {
-      // Si no estaba, lo añado.
       setDaysOfWeek([...daysOfWeek, day]);
     }
   }
@@ -102,10 +203,8 @@ function RoutinesPage() {
         daysOfWeek,
       });
 
-      // Actualizo la lista en memoria añadiendo la nueva rutina.
       setRoutines((prev) => [newRoutine, ...prev]);
 
-      // Reseteo el formulario.
       setName("");
       setDaysOfWeek([]);
     } catch (error) {
@@ -115,9 +214,9 @@ function RoutinesPage() {
       setLoading(false);
     }
   }
-   /**
+
+  /**
    * Inicia la edición de una rutina.
-   * Rellena el formulario de edición con los datos actuales.
    */
   function startEditRoutine(routine) {
     setEditingId(routine.id);
@@ -127,7 +226,7 @@ function RoutinesPage() {
   }
 
   /**
-   * Cancela la edición y limpia el formulario de edición.
+   * Cancela la edición.
    */
   function cancelEdit() {
     setEditingId(null);
@@ -148,7 +247,7 @@ function RoutinesPage() {
 
   /**
    * Maneja el envío del formulario de edición de rutina.
-   * [ROUTINES-02] Editar rutina.
+   * [ROUTINES-02]
    */
   async function handleUpdateRoutine(event) {
     event.preventDefault();
@@ -172,11 +271,14 @@ function RoutinesPage() {
         daysOfWeek: editDaysOfWeek,
       });
 
-      // Actualizamos la rutina en el estado local.
       setRoutines((prev) =>
         prev.map((routine) =>
           routine.id === editingId
-            ? { ...routine, name: editName.trim(), daysOfWeek: editDaysOfWeek }
+            ? {
+                ...routine,
+                name: editName.trim(),
+                daysOfWeek: editDaysOfWeek,
+              }
             : routine,
         ),
       );
@@ -192,15 +294,13 @@ function RoutinesPage() {
 
   /**
    * Elimina una rutina después de confirmarlo.
-   * [ROUTINES-02] Eliminar rutina.
+   * [ROUTINES-02]
    */
   async function handleDeleteRoutine(id) {
     const confirmDelete = window.confirm(
       "¿Seguro que quieres eliminar esta rutina?",
     );
-    if (!confirmDelete) {
-      return;
-    }
+    if (!confirmDelete) return;
 
     try {
       setLoading(true);
@@ -208,10 +308,8 @@ function RoutinesPage() {
 
       await deleteRoutine(id);
 
-      // Quitamos la rutina de la lista local.
       setRoutines((prev) => prev.filter((routine) => routine.id !== id));
 
-      // Si estábamos editando esta rutina, salimos del modo edición.
       if (editingId === id) {
         cancelEdit();
       }
@@ -225,134 +323,292 @@ function RoutinesPage() {
 
   if (!user) {
     return (
-      <div>
+      <div style={pageStyles}>
         <h2>[ROUTINES] Gestión de rutinas</h2>
         <p>No hay usuario autenticado.</p>
       </div>
     );
   }
 
-
   return (
-    <div>
-      <h2>[ROUTINES] Gestión de rutinas</h2>
+    <main style={pageStyles}>
+      {/* Cabecera */}
+      <header style={{ marginBottom: "20px" }}>
+        <h2
+          style={{
+            fontSize: "24px",
+            fontWeight: "700",
+            marginBottom: "4px",
+            color: "#111827",
+          }}
+        >
+          [ROUTINES] Gestión de rutinas
+        </h2>
+        <p style={smallTextStyles}>
+          Crea tus rutinas de entrenamiento, asigna los días de la semana y
+          accede al detalle para gestionar los ejercicios de cada una.
+        </p>
 
-      {/* Formulario de creación de rutina */}
-      <section>
-        <h3>Crear nueva rutina</h3>
-
-        <form onSubmit={handleCreateRoutine}>
-          <div>
-            <label>Nombre de la rutina</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Ej: Rutina fuerza 3 días"
-              required
-            />
-          </div>
-
-          <div>
-            <p>Días de la semana</p>
-            {availableDays.map((day) => (
-              <label key={day} style={{ marginRight: "8px" }}>
-                <input
-                  type="checkbox"
-                  checked={daysOfWeek.includes(day)}
-                  onChange={() => handleDayChange(day)}
-                />
-                {day}
-              </label>
-            ))}
-          </div>
-
-          {errorMessage && <p>{errorMessage}</p>}
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Guardando..." : "Guardar rutina"}
-          </button>
-        </form>
-      </section>
-
-      {/* Formulario de edición de rutina */}
-      {editingId && (
-        <section>
-          <h3>Editar rutina</h3>
-
-          <form onSubmit={handleUpdateRoutine}>
-            <div>
-              <label>Nombre de la rutina</label>
-              <input
-                type="text"
-                value={editName}
-                onChange={(event) => setEditName(event.target.value)}
-                required
-              />
-            </div>
-
-            <div>
-              <p>Días de la semana</p>
-              {availableDays.map((day) => (
-                <label key={day} style={{ marginRight: "8px" }}>
-                  <input
-                    type="checkbox"
-                    checked={editDaysOfWeek.includes(day)}
-                    onChange={() => handleEditDayChange(day)}
-                  />
-                  {day}
-                </label>
-              ))}
-            </div>
-
-            <button type="submit" disabled={loading}>
-              {loading ? "Guardando..." : "Guardar cambios"}
-            </button>
-
-            <button type="button" onClick={cancelEdit}>
-              Cancelar
-            </button>
-          </form>
-        </section>
-      )}
-
-      {/* Listado de rutinas del usuario */}
-      <section>
-        <h3>Mis rutinas</h3>
-
-        {loading && routines.length === 0 && <p>Cargando rutinas...</p>}
-
-        {!loading && routines.length === 0 && (
-          <p>No tienes ninguna rutina creada todavía.</p>
+        {errorMessage && (
+          <p style={{ marginTop: "8px", color: "#b91c1c" }}>{errorMessage}</p>
         )}
+      </header>
 
-        <ul>
-          {routines.map((routine) => (
-            <li key={routine.id}>
-              <strong>{routine.name}</strong>{" "}
-              <span>
-                ({routine.daysOfWeek && routine.daysOfWeek.join(", ")})
-              </span>{" "}
-              <button type="button" onClick={() => startEditRoutine(routine)}>
-                Editar
-              </button>
+      {/* Contenedor principal en dos columnas */}
+      <div className="routines-layout">
+        {/* Columna izquierda: creación y edición */}
+        <div style={columnStyle}>
+          {/* Creación */}
+          <section style={cardStyles}>
+            <h3 style={sectionTitleStyles}>Crear nueva rutina</h3>
+            <p style={smallTextStyles}>
+              Define un nombre y selecciona los días en los que vas a realizar
+              esta rutina.
+            </p>
+
+            <form
+              onSubmit={handleCreateRoutine}
+              style={{
+                marginTop: "12px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+              }}
+            >
+              <div>
+                <label style={labelStyles}>Nombre de la rutina</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Ej: Fuerza torso 3 días"
+                  required
+                  style={inputStyles}
+                />
+              </div>
+
+              <div>
+                <label style={labelStyles}>Días de la semana</label>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {availableDays.map((day) => {
+                    const selected = daysOfWeek.includes(day);
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => handleDayChange(day)}
+                        style={dayChipStyles(selected)}
+                      >
+                        <span>{dayLabels[day] || day}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <button
-                type="button"
-                onClick={() => handleDeleteRoutine(routine.id)}
+                type="submit"
+                disabled={loading}
+                style={primaryButtonStyles}
               >
-                Eliminar
-              </button>{" "}
-              <Link
-                to={`/rutinas/${routine.id}`}
-                state={{ routineName: routine.name }}
+                {loading ? "Guardando..." : "Guardar rutina"}
+              </button>
+            </form>
+          </section>
+
+          {/* Edición */}
+          {editingId && (
+            <section style={cardStyles}>
+              <h3 style={sectionTitleStyles}>Editar rutina</h3>
+              <p style={smallTextStyles}>
+                Modifica el nombre o los días de la rutina seleccionada.
+              </p>
+
+              <form
+                onSubmit={handleUpdateRoutine}
+                style={{
+                  marginTop: "12px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
               >
-                Ver ejercicios
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+                <div>
+                  <label style={labelStyles}>Nombre de la rutina</label>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(event) => setEditName(event.target.value)}
+                    required
+                    style={inputStyles}
+                  />
+                </div>
+
+                <div>
+                  <label style={labelStyles}>Días de la semana</label>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "8px",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {availableDays.map((day) => {
+                      const selected = editDaysOfWeek.includes(day);
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => handleEditDayChange(day)}
+                          style={dayChipStyles(selected)}
+                        >
+                          <span>{dayLabels[day] || day}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    style={primaryButtonStyles}
+                  >
+                    {loading ? "Guardando..." : "Guardar cambios"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    style={ghostButtonStyles}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </section>
+          )}
+        </div>
+
+        {/* Columna derecha: listado de rutinas */}
+        <div style={columnStyle}>
+          <section style={cardStyles}>
+            <h3 style={sectionTitleStyles}>Mis rutinas</h3>
+            <p style={smallTextStyles}>
+              Desde aquí puedes editar o eliminar tus rutinas y acceder a sus
+              ejercicios.
+            </p>
+
+            {loading && routines.length === 0 && (
+              <p style={{ marginTop: "12px" }}>Cargando rutinas...</p>
+            )}
+
+            {!loading && routines.length === 0 && (
+              <p style={{ marginTop: "12px" }}>
+                No tienes ninguna rutina creada todavía.
+              </p>
+            )}
+
+            {routines.length > 0 && (
+              <ul
+                style={{
+                  marginTop: "12px",
+                  listStyle: "none",
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                }}
+              >
+                {routines.map((routine) => (
+                  <li
+                    key={routine.id}
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: "12px",
+                      border: "1px solid #e5e7eb",
+                      backgroundColor: "#f9fafb",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "4px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                        gap: "8px",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <div>
+                        <strong>{routine.name}</strong>
+                        {Array.isArray(routine.daysOfWeek) &&
+                          routine.daysOfWeek.length > 0 && (
+                            <div style={smallTextStyles}>
+                              {routine.daysOfWeek
+                                .map((d) => dayLabels[d] || d)
+                                .join(" · ")}
+                            </div>
+                          )}
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        flexWrap: "wrap",
+                        marginTop: "4px",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => startEditRoutine(routine)}
+                        style={ghostButtonStyles}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDeleteRoutine(routine.id)
+                        }
+                        style={dangerButtonStyles}
+                      >
+                        Eliminar
+                      </button>
+                      <Link
+                        to={`/rutinas/${routine.id}`}
+                        state={{ routineName: routine.name }}
+                        style={{
+                          ...ghostButtonStyles,
+                          textDecoration: "none",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Ver ejercicios
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      </div>
+    </main>
   );
 }
 

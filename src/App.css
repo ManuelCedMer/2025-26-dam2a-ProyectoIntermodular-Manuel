@@ -629,3 +629,16 @@
   }
 }
 
+/* Layout en dos columnas para la pantalla de rutinas */
+.routines-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+  gap: 20px;
+}
+
+/* En pantallas pequeñas se apila en una sola columna */
+@media (max-width: 900px) {
+  .routines-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
