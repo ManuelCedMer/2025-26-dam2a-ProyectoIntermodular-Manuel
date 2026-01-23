@@ -13,7 +13,7 @@ function LoginForm({ onSubmit, errorMessage }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Iniciar sesión</h3>
+      
 
       <div>
         <label>Correo electrónico</label>

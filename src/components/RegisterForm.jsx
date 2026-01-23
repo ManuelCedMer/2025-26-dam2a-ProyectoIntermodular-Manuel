@@ -16,7 +16,7 @@ function RegisterForm({ onSubmit, errorMessage }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Crear cuenta</h3>
+      
 
       <div>
         <label>Nombre</label>
