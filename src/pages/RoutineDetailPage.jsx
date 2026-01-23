@@ -13,13 +13,13 @@ import {
 } from "../services/routineExerciseCompletionsService.js";
 
 // Devuelve la fecha de hoy en formato YYYY-MM-DD para usar en <input type="date" />.
- function getTodayDateString() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
- }
+function getTodayDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 /**
  * Pantalla de detalle de una rutina.
@@ -32,9 +32,7 @@ function RoutineDetailPage() {
   const { user } = useAuth();
 
   // Nombre de la rutina (lo recibimos vía state desde la lista de rutinas).
-  const [routineName, setRoutineName] = useState(
-    location.state?.routineName || "",
-  );
+  const [routineName] = useState(location.state?.routineName || "");
 
   // Lista de ejercicios de esta rutina.
   const [exercises, setExercises] = useState([]);
@@ -44,7 +42,6 @@ function RoutineDetailPage() {
 
   // IDs de ejercicios completados para la rutina y fecha seleccionadas.
   const [completedIds, setCompletedIds] = useState([]);
-
 
   // Formulario de creación.
   const [name, setName] = useState("");
@@ -59,11 +56,81 @@ function RoutineDetailPage() {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  
+
+  /* =========================
+     Estilos UI-02 (tarjetas)
+     ========================= */
+  const pageStyles = {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "24px 16px 40px",
+  };
+
+  const columnStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  };
+
+  const cardStyles = {
+    backgroundColor: "#ffffff",
+    borderRadius: "16px",
+    padding: "16px 18px",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
+    border: "1px solid rgba(148, 163, 184, 0.3)",
+  };
+
+  const labelStyles = {
+    display: "block",
+    marginBottom: "4px",
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#374151",
+  };
+
+  const inputStyles = {
+    width: "100%",
+    padding: "8px 10px",
+    borderRadius: "8px",
+    border: "1px solid #d1d5db",
+    fontSize: "14px",
+  };
+
+  const primaryButtonStyles = {
+    padding: "8px 14px",
+    borderRadius: "999px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
+    background:
+      "linear-gradient(135deg, rgba(56,189,248,0.95), rgba(37,99,235,0.95))",
+    color: "#ffffff",
+  };
+
+  const ghostButtonStyles = {
+    padding: "6px 10px",
+    borderRadius: "999px",
+    border: "1px solid #d1d5db",
+    cursor: "pointer",
+    fontSize: "13px",
+    backgroundColor: "#f9fafb",
+  };
+
+  const dangerButtonStyles = {
+    padding: "6px 10px",
+    borderRadius: "999px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "13px",
+    backgroundColor: "#fee2e2",
+    color: "#b91c1c",
+  };
+
   /**
    * Carga los ejercicios de la rutina al entrar en la página.
    */
-   useEffect(() => {
+  useEffect(() => {
     if (!user) return;
 
     async function loadExercises() {
@@ -88,7 +155,7 @@ function RoutineDetailPage() {
     loadExercises();
   }, [user, routineId]);
 
-    /**
+  /**
    * Carga qué ejercicios están completados para la rutina y fecha actuales.
    * [ROUTINES-03] Consultar ejercicios completados por fecha.
    */
@@ -105,15 +172,13 @@ function RoutineDetailPage() {
         setCompletedIds(ids);
       } catch (error) {
         console.error("Error al cargar ejercicios completados:", error);
-        // No mostramos error al usuario para no saturar la interfaz,
-        // pero lo dejamos en consola para depuración.
       }
     }
 
     loadCompleted();
   }, [user, routineId, selectedDate]);
 
-    /**
+  /**
    * Marca o desmarca un ejercicio como completado para la fecha seleccionada.
    * [ROUTINES-03]
    */
@@ -127,20 +192,13 @@ function RoutineDetailPage() {
         completed: isCompleted,
       });
 
-      // Actualizamos la lista local de completados sin recargar todo.
-      setCompletedIds((prev) => {
-        if (isCompleted) {
-          // Añadimos el id si no estaba.
-          if (prev.includes(exerciseId)) return prev;
-          return [...prev, exerciseId];
-        } else {
-          // Lo quitamos de la lista.
-          return prev.filter((id) => id !== exerciseId);
-        }
-      });
+      setCompletedIds((prev) =>
+        isCompleted
+          ? [...new Set([...prev, exerciseId])]
+          : prev.filter((id) => id !== exerciseId),
+      );
     } catch (error) {
       console.error("Error al actualizar completado:", error);
-      // Si quisieras, podrías mostrar un pequeño mensaje de error en pantalla.
     }
   }
 
@@ -182,7 +240,6 @@ function RoutineDetailPage() {
 
       setExercises((prev) => [newExercise, ...prev]);
 
-      // Limpiar formulario.
       setName("");
       setSets("");
       setReps("");
@@ -306,12 +363,10 @@ function RoutineDetailPage() {
       setLoading(false);
     }
   }
-  
-
 
   if (!user) {
     return (
-      <div>
+      <div style={pageStyles}>
         <h2>[ROUTINES] Detalle de rutina</h2>
         <p>No hay usuario autenticado.</p>
       </div>
@@ -319,171 +374,188 @@ function RoutineDetailPage() {
   }
 
   return (
-    <div>
-      <h2>[ROUTINES] Ejercicios de la rutina</h2>
-
-      {/* Enlace para volver a la lista de rutinas */}
-      <p>
+    <main style={pageStyles}>
+      <header style={{ marginBottom: "20px" }}>
         <Link to="/rutinas">← Volver a mis rutinas</Link>
-      </p>
-      {/* Selector de fecha para la sesión */}
-      <section>
-        <label>
-          Fecha de la sesión
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(event) => setSelectedDate(event.target.value)}
-          />
-        </label>
-        <p>
-          Estás marcando ejercicios completados para el día:{" "}
-          <strong>{selectedDate}</strong>
-        </p>
-      </section>
+        <h2>[ROUTINES] Ejercicios de la rutina</h2>
+        {routineName && <h3>{routineName}</h3>}
+        {errorMessage && <p>{errorMessage}</p>}
+      </header>
 
-
-      {/* Nombre de la rutina si lo tenemos disponible */}
-      {routineName && <h3>{routineName}</h3>}
-
-      {errorMessage && <p>{errorMessage}</p>}
-
-      {/* Formulario de creación de ejercicio */}
-      <section>
-        <h4>Añadir ejercicio</h4>
-
-        <form onSubmit={handleCreateExercise}>
-          <div>
-            <label>Nombre del ejercicio</label>
+      {/* Layout en dos columnas [UI-02] */}
+      <div className="routine-detail-layout">
+        {/* Columna izquierda */}
+        <div style={columnStyle}>
+          <section style={cardStyles}>
+            <label style={labelStyles}>Fecha de la sesión</label>
             <input
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Ej: Sentadillas, Press banca..."
-              required
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              style={inputStyles}
             />
-          </div>
+          </section>
 
-          <div>
-            <label>Series</label>
-            <input
-              type="number"
-              value={sets}
-              onChange={(event) => setSets(event.target.value)}
-              min="0"
-            />
-          </div>
-
-          <div>
-            <label>Repeticiones</label>
-            <input
-              type="number"
-              value={reps}
-              onChange={(event) => setReps(event.target.value)}
-              min="0"
-            />
-          </div>
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Guardando..." : "Guardar ejercicio"}
-          </button>
-        </form>
-      </section>
-
-      {/* Formulario de edición de ejercicio */}
-      {editingId && (
-        <section>
-          <h4>Editar ejercicio</h4>
-
-          <form onSubmit={handleUpdateExercise}>
-            <div>
-              <label>Nombre del ejercicio</label>
+          <section style={cardStyles}>
+            <h4>Añadir ejercicio</h4>
+            <form
+              onSubmit={handleCreateExercise}
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            >
               <input
                 type="text"
-                value={editName}
-                onChange={(event) => setEditName(event.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ej: Sentadillas"
                 required
+                style={inputStyles}
               />
-            </div>
-
-            <div>
-              <label>Series</label>
               <input
                 type="number"
-                value={editSets}
-                onChange={(event) => setEditSets(event.target.value)}
-                min="0"
+                value={sets}
+                onChange={(e) => setSets(e.target.value)}
+                placeholder="Series"
+                style={inputStyles}
               />
-            </div>
-
-            <div>
-              <label>Repeticiones</label>
               <input
                 type="number"
-                value={editReps}
-                onChange={(event) => setEditReps(event.target.value)}
-                min="0"
+                value={reps}
+                onChange={(e) => setReps(e.target.value)}
+                placeholder="Repeticiones"
+                style={inputStyles}
               />
-            </div>
+              <button type="submit" disabled={loading} style={primaryButtonStyles}>
+                {loading ? "Guardando..." : "Guardar ejercicio"}
+              </button>
+            </form>
+          </section>
 
-            <button type="submit" disabled={loading}>
-              {loading ? "Guardando..." : "Guardar cambios"}
-            </button>
+          {/* Formulario de edición de ejercicio */}
+          {editingId && (
+            <section style={cardStyles}>
+              <h4>Editar ejercicio</h4>
+              <form
+                onSubmit={handleUpdateExercise}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  required
+                  style={inputStyles}
+                />
+                <input
+                  type="number"
+                  value={editSets}
+                  onChange={(e) => setEditSets(e.target.value)}
+                  placeholder="Series"
+                  style={inputStyles}
+                />
+                <input
+                  type="number"
+                  value={editReps}
+                  onChange={(e) => setEditReps(e.target.value)}
+                  placeholder="Repeticiones"
+                  style={inputStyles}
+                />
 
-            <button type="button" onClick={cancelEdit}>
-              Cancelar
-            </button>
-          </form>
-        </section>
-      )}
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    style={primaryButtonStyles}
+                  >
+                    {loading ? "Guardando..." : "Guardar cambios"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    style={ghostButtonStyles}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </section>
+          )}
+        </div>
 
-      {/* Listado de ejercicios */}
-      <section>
-        <h4>Ejercicios de esta rutina</h4>
+        {/* Columna derecha */}
+        <div style={columnStyle}>
+          <section style={cardStyles}>
+            <h4>Ejercicios de esta rutina</h4>
 
-        {loading && exercises.length === 0 && <p>Cargando ejercicios...</p>}
+            {loading && exercises.length === 0 && (
+              <p>Cargando ejercicios...</p>
+            )}
 
-        {!loading && exercises.length === 0 && (
-          <p>Esta rutina todavía no tiene ejercicios.</p>
-        )}
+            {!loading && exercises.length === 0 && (
+              <p>Esta rutina todavía no tiene ejercicios.</p>
+            )}
 
-        <ul>
-          {exercises.map((exercise) => {
-            const isCompleted = completedIds.includes(exercise.id);
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              {exercises.map((exercise) => {
+                const isCompleted = completedIds.includes(exercise.id);
 
-            return (
-              <li key={exercise.id}>
-                {/* Checkbox para marcar el ejercicio como completado */}
-                <label style={{ marginRight: "8px" }}>
-                  <input
-                    type="checkbox"
-                    checked={isCompleted}
-                    onChange={(event) =>
-                      handleToggleCompleted(exercise.id, event.target.checked)
-                    }
-                  />
-                  Completado
-                </label>
+                return (
+                  <li
+                    key={exercise.id}
+                    style={{
+                      padding: "8px 0",
+                      borderBottom: "1px solid #e5e7eb",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={isCompleted}
+                        onChange={(e) =>
+                          handleToggleCompleted(
+                            exercise.id,
+                            e.target.checked,
+                          )
+                        }
+                      />{" "}
+                      <strong>{exercise.name}</strong>{" "}
+                      {exercise.sets ? `${exercise.sets} series` : ""}{" "}
+                      {exercise.reps ? `x ${exercise.reps}` : ""}
+                    </label>
 
-                <strong>{exercise.name}</strong>{" "}
-                {exercise.sets ? `${exercise.sets} series` : ""}{" "}
-                {exercise.reps ? `x ${exercise.reps} repeticiones` : ""}
-                {"  "}
-                <button type="button" onClick={() => startEditExercise(exercise)}>
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteExercise(exercise.id)}
-                >
-                  Eliminar
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    </div>
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      <button
+                        type="button"
+                        onClick={() => startEditExercise(exercise)}
+                        style={ghostButtonStyles}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDeleteExercise(exercise.id)
+                        }
+                        style={dangerButtonStyles}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        </div>
+      </div>
+    </main>
   );
 }
 

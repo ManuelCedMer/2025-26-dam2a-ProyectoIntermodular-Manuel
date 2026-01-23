@@ -642,3 +642,16 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Layout responsive del detalle de rutina [UI-02] */
+.routine-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .routine-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
