@@ -45,9 +45,39 @@ function RecipeDetailPage() {
     loadRecipe();
   }, [user, recipeId]);
 
+  /* =========================
+     Estilos UI-02 (tarjetas)
+     ========================= */
+  const pageStyles = {
+    maxWidth: "900px",
+    margin: "0 auto",
+    padding: "24px 16px 40px",
+  };
+
+  const cardStyles = {
+    backgroundColor: "#ffffff",
+    borderRadius: "16px",
+    padding: "16px 18px",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
+    border: "1px solid rgba(148, 163, 184, 0.3)",
+    marginBottom: "16px",
+  };
+
+  const sectionTitleStyles = {
+    fontSize: "18px",
+    fontWeight: "600",
+    marginBottom: "8px",
+    color: "#111827",
+  };
+
+  const smallTextStyles = {
+    fontSize: "14px",
+    color: "#374151",
+  };
+
   if (!user) {
     return (
-      <div>
+      <div style={pageStyles}>
         <h2>[RECIPES] Detalle de receta</h2>
         <p>No hay usuario autenticado.</p>
       </div>
@@ -56,7 +86,7 @@ function RecipeDetailPage() {
 
   if (loading && !recipe) {
     return (
-      <div>
+      <div style={pageStyles}>
         <h2>[RECIPES] Detalle de receta</h2>
         <p>Cargando receta...</p>
       </div>
@@ -65,7 +95,7 @@ function RecipeDetailPage() {
 
   if (errorMessage && !recipe) {
     return (
-      <div>
+      <div style={pageStyles}>
         <h2>[RECIPES] Detalle de receta</h2>
         <p>{errorMessage}</p>
         <p>
@@ -77,7 +107,7 @@ function RecipeDetailPage() {
 
   if (!recipe) {
     return (
-      <div>
+      <div style={pageStyles}>
         <h2>[RECIPES] Detalle de receta</h2>
         <p>No se ha encontrado la receta.</p>
         <p>
@@ -90,35 +120,52 @@ function RecipeDetailPage() {
   // Normalizamos ingredientes y pasos por si son string o array.
   const ingredients = Array.isArray(recipe.ingredients)
     ? recipe.ingredients
-    : String(recipe.ingredients || "").split("\n").filter((line) => line.trim() !== "");
+    : String(recipe.ingredients || "")
+        .split("\n")
+        .filter((line) => line.trim() !== "");
 
   const steps = Array.isArray(recipe.steps)
     ? recipe.steps
-    : String(recipe.steps || "").split("\n").filter((line) => line.trim() !== "");
+    : String(recipe.steps || "")
+        .split("\n")
+        .filter((line) => line.trim() !== "");
 
   return (
-    <div>
-      <h2>[RECIPES] Detalle de receta</h2>
-
-      <p>
+    <main style={pageStyles}>
+      <header style={{ marginBottom: "20px" }}>
         <Link to="/recetas">← Volver a la búsqueda</Link>
-      </p>
+        <h2 style={{ fontSize: "24px", fontWeight: "700" }}>
+          [RECIPES] Detalle de receta
+        </h2>
+      </header>
 
-      <h3>{recipe.title}</h3>
+      {/* Información principal de la receta */}
+      <section style={cardStyles}>
+        <h3 style={{ fontSize: "20px", fontWeight: "700" }}>
+          {recipe.title}
+        </h3>
 
-      {recipe.mealType && <p>Tipo de comida: {recipe.mealType}</p>}
-
-      {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
-        <p>Etiquetas: {recipe.tags.join(", ")}</p>
-      )}
-
-      {recipe.estimatedCalories !== null &&
-        recipe.estimatedCalories !== undefined && (
-          <p>Calorías aproximadas: {recipe.estimatedCalories} kcal</p>
+        {recipe.mealType && (
+          <p style={smallTextStyles}>Tipo de comida: {recipe.mealType}</p>
         )}
 
-      <section>
-        <h4>Ingredientes</h4>
+        {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
+          <p style={smallTextStyles}>
+            Etiquetas: {recipe.tags.join(", ")}
+          </p>
+        )}
+
+        {recipe.estimatedCalories !== null &&
+          recipe.estimatedCalories !== undefined && (
+            <p style={smallTextStyles}>
+              Calorías aproximadas: {recipe.estimatedCalories} kcal
+            </p>
+          )}
+      </section>
+
+      {/* Ingredientes */}
+      <section style={cardStyles}>
+        <h4 style={sectionTitleStyles}>Ingredientes</h4>
         {ingredients.length === 0 ? (
           <p>No se han especificado ingredientes.</p>
         ) : (
@@ -130,8 +177,9 @@ function RecipeDetailPage() {
         )}
       </section>
 
-      <section>
-        <h4>Pasos</h4>
+      {/* Pasos */}
+      <section style={cardStyles}>
+        <h4 style={sectionTitleStyles}>Pasos</h4>
         {steps.length === 0 ? (
           <p>No se han especificado pasos.</p>
         ) : (
@@ -142,7 +190,7 @@ function RecipeDetailPage() {
           </ol>
         )}
       </section>
-    </div>
+    </main>
   );
 }
 
