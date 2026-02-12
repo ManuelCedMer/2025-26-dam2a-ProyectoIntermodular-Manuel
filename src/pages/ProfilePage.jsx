@@ -129,7 +129,7 @@ function ProfilePage() {
 
   return (
     <div className="profile-page">
-      <section className="profile-card">
+      <section className="profile-card card">
         {/* Cabecera con avatar sencillo y correo */}
         <div className="profile-header">
           <div className="profile-avatar">
@@ -152,6 +152,7 @@ function ProfilePage() {
           <div className="profile-form-row">
             <label>Nombre visible</label>
             <input
+              className="input"
               type="text"
               value={displayName}
               onChange={(event) => setDisplayName(event.target.value)}
@@ -163,6 +164,7 @@ function ProfilePage() {
           <div className="profile-form-row">
             <label>Edad</label>
             <input
+              className="input"
               type="number"
               value={age}
               onChange={(event) => setAge(event.target.value)}
@@ -176,6 +178,7 @@ function ProfilePage() {
           <div className="profile-form-row">
             <label>Objetivo principal</label>
             <select
+              className="select"
               value={goal}
               onChange={(event) => setGoal(event.target.value)}
               disabled={loadingProfile}
@@ -189,6 +192,7 @@ function ProfilePage() {
           <div className="profile-form-row">
             <label>Tema visual</label>
             <select
+              className="select"
               value={theme}
               onChange={(event) => setTheme(event.target.value)}
               disabled={loadingProfile}
@@ -214,7 +218,7 @@ function ProfilePage() {
 
           <button
             type="submit"
-            className="profile-button"
+            className="btn btn-primary"
             disabled={savingProfile || loadingProfile}
           >
             {savingProfile ? "Guardando..." : "Guardar cambios"}
@@ -224,7 +228,7 @@ function ProfilePage() {
         <hr className="profile-divider" />
 
         {/* Bloque de cierre de sesión */}
-        <div className="profile-logout">
+        <div className="btn btn-secondary">
           <p className="profile-logout-text">
             Si quieres salir de tu cuenta actual, puedes cerrar sesión aquí.
           </p>
