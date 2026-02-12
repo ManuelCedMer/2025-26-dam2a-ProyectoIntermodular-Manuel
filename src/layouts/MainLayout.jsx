@@ -1,4 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
+import { getUserProfile } from "../services/userProfileService.js";
+
 
 /**
  * Layout principal de la aplicación.
@@ -7,7 +11,24 @@ import { NavLink, Outlet } from "react-router-dom";
  *  - Barra de navegación [UI-01] con enlaces a las páginas principales.
  *  - Contenedor <main> donde se dibuja cada pantalla con <Outlet />.
  */
+
 function MainLayout() {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+
+    async function applyTheme() {
+      const profile = await getUserProfile(user.uid);
+      const theme = profile.theme || "light";
+
+      document.body.classList.remove("theme-light", "theme-dark");
+      document.body.classList.add(`theme-${theme}`);
+    }
+
+    applyTheme();
+  }, [user]);
+  
   return (
     <div className="app-layout">
       <header className="app-header">

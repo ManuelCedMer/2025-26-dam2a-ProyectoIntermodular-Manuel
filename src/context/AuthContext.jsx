@@ -6,10 +6,10 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
-  sendPasswordResetEmail, // [LOGIN-RECOVER]
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { db } from "../services/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 /**
  * Contexto de autenticación.
@@ -20,16 +20,36 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState("light");
 
   // Escucha cambios de sesión (login, logout, recarga de página)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser || null);
+
+      if (firebaseUser) {
+        try {
+          const userRef = doc(db, "users", firebaseUser.uid);
+          const snapshot = await getDoc(userRef);
+          const profile = snapshot.data();
+          setTheme(profile?.theme || "light");
+        } catch (error) {
+          console.error("Error al cargar tema del usuario:", error);
+          setTheme("light");
+        }
+      }
+
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
+  // Aplica clase al body cuando cambia el tema
+  useEffect(() => {
+    document.body.classList.remove("theme-light", "theme-dark");
+    document.body.classList.add(`theme-${theme}`);
+  }, [theme]);
 
   /**
    * Registra un nuevo usuario [LOGIN-01].
@@ -41,7 +61,6 @@ export function AuthProvider({ children }) {
       await updateProfile(cred.user, { displayName: name });
     }
 
-    // Crear documento de perfil básico en Firestore (colección "users").
     const userRef = doc(db, "users", cred.user.uid);
 
     await setDoc(userRef, {
@@ -49,6 +68,7 @@ export function AuthProvider({ children }) {
       email: cred.user.email,
       age: null,
       goal: "mantener",
+      theme: "light",
       createdAt: new Date(),
     });
 
@@ -79,10 +99,12 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     loading,
+    theme,
+    setTheme, // IMPORTANTE
     register,
     login,
     logout,
-    recoverPassword, // [LOGIN-RECOVER]
+    recoverPassword,
   };
 
   return (

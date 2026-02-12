@@ -16,11 +16,13 @@ import {
  * Forma parte de [UI-02]: tarjeta centrada, adaptable en móvil y escritorio.
  */
 function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout, theme, setTheme } = useAuth();
+
 
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [goal, setGoal] = useState("mantener");
+  
 
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -49,6 +51,7 @@ function ProfilePage() {
             : "",
         );
         setGoal(profile.goal || "mantener");
+        setTheme(profile.theme || "light");
       } catch (error) {
         console.error("Error al cargar perfil:", error);
         setErrorMessage("No se ha podido cargar el perfil.");
@@ -93,6 +96,7 @@ function ProfilePage() {
         displayName: displayName.trim(),
         age: parsedAge,
         goal,
+        theme,
       });
 
       setMessage("Perfil actualizado correctamente.");
@@ -181,6 +185,19 @@ function ProfilePage() {
               <option value="ganar">Ganar masa muscular</option>
             </select>
           </div>
+
+          <div className="profile-form-row">
+            <label>Tema visual</label>
+            <select
+              value={theme}
+              onChange={(event) => setTheme(event.target.value)}
+              disabled={loadingProfile}
+            >
+              <option value="light">Claro</option>
+              <option value="dark">Oscuro</option>
+            </select>
+          </div>
+
 
           {/* Mensajes de estado */}
           {errorMessage && (

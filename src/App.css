@@ -816,3 +816,36 @@
   color: #15803d;
   margin-top: 0.4rem;
 }
+
+
+/* Modo claro / oscuro [UI-03] */
+
+
+body.theme-light {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+body.theme-dark {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+/* Ajustes específicos en dark */
+body.theme-dark .app-header {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+body.theme-dark .app-nav-link {
+  color: #e2e8f0;
+}
+
+body.theme-dark .profile-card,
+body.theme-dark .login-card,
+body.theme-dark .progress-card,
+body.theme-dark .recipes-detail-card,
+body.theme-dark .recipes-list-card {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}

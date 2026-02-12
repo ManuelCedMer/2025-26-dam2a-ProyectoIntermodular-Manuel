@@ -16,6 +16,7 @@ export async function getUserProfile(userId) {
       email: "",
       age: null,
       goal: "mantener",
+      theme:"light",
     };
   }
 
@@ -26,13 +27,14 @@ export async function getUserProfile(userId) {
  * Guarda el perfil de un usuario en la colección "users".
  * [LOGIN-03] Editar datos básicos de perfil.
  */
-export async function saveUserProfile(userId, { displayName, age, goal }) {
+export async function saveUserProfile(userId, { displayName, age, goal ,theme}) {
   const userRef = doc(db, "users", userId);
 
   const data = {
     displayName,
     age,
     goal,
+    theme,
     updatedAt: new Date(),
   };
 
