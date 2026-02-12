@@ -1,18 +1,68 @@
-/* Layout general de la aplicación */
-.app-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+
+/* =============================== */
+/* Variables globales de tema [UI-03] */
+/* =============================== */
+
+/* Tema claro: fondo azul muy clarito */
+body.theme-light {
+  --app-bg: #eef2f7; 
+  --text: #111827;
+  --muted: #6b7280;
+
+  --surface: #f9fafb;
+  --card: #ffffff; 
+  --border: #e5e7eb;
+
+  --primary: #4f46e5;
+  --primary-soft: #eef2ff;
+
+  --shadow-lg: 0 18px 30px rgba(15, 23, 42, 0.12);
+  --shadow-md: 0 14px 28px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 10px 20px rgba(15, 23, 42, 0.06);
+
+  background-color: var(--app-bg);
+  color: var(--text);
 }
-/*Configuración global de box-sizing para que bordes y padding cuenten dentro del anch/alto*/
+
+/* Tema oscuro: fondo oscuro, pero tarjetas blancas */
+body.theme-dark {
+  --app-bg: #0b1220;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+
+  
+  --surface: #111a2b;
+
+  --card: #ffffff; 
+  --border: #22304a; 
+
+  --primary: #60a5fa;
+  --primary-soft: rgba(96, 165, 250, 0.12);
+
+  --shadow-lg: 0 18px 30px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 14px 28px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 10px 20px rgba(0, 0, 0, 0.25);
+
+  background-color: var(--app-bg);
+  color: var(--text);
+}
+
+/* =============================== */
+/* Base / layout general */
+/* =============================== */
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-/* Cabecera con logo y barra de navegación */
 .app-header {
   display: flex;
   flex-wrap: wrap;
@@ -21,41 +71,36 @@
   gap: 0.5rem;
 
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #f9fafb;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--surface);
 }
 
-/* Nombre de la app */
 .app-logo {
   font-weight: 600;
   font-size: 1.1rem;
 }
 
-/* Contenedor de los enlaces de navegación */
 .app-nav {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-/* Estilo base de los enlaces de la barra de navegación */
 .app-nav-link {
   text-decoration: none;
   font-size: 0.9rem;
   padding: 0.35rem 0.75rem;
   border-radius: 0.375rem;
   border: 1px solid transparent;
-  color: #374151;
+  color: var(--text);
 }
 
-/* Enlace activo [UI-01] */
 .app-nav-link--active {
-  border-color: #4f46e5;
-  background-color: #eef2ff;
-  color: #111827;
+  border-color: var(--primary);
+  background-color: var(--primary-soft);
+  color: var(--text);
 }
 
-/* Zona principal de contenido */
 .app-main {
   flex: 1;
   width: 100%;
@@ -64,12 +109,10 @@
   padding: 1rem;
 }
 
-/* Un poco de separación entre secciones de cada página */
 .app-main section {
   margin-bottom: 1.5rem;
 }
 
-/* Responsive sencillo: en pantallas pequeñas, la barra se apila en vertical */
 @media (max-width: 640px) {
   .app-header {
     align-items: flex-start;
@@ -83,16 +126,41 @@
     padding: 0.4rem 0.6rem;
   }
 }
-/* -------------------- */
-/* Pantalla de inicio   */
-/* -------------------- */
+
+/* =============================== */
+/* Tarjetas blancas */
+/* =============================== */
+
+.profile-card,
+.login-card,
+.progress-card,
+.recipes-detail-card,
+.recipes-list-card,
+.recipes-filters,
+.home-main-card,
+.home-action-card {
+  background-color: #ffffff !important;
+  color: #111827;
+}
+
+
+.profile-form-row input,
+.profile-form-row select,
+.auth-form input {
+  background-color: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
+
+/* =============================== */
+/* Pantalla de inicio */
+/* =============================== */
 
 .home-page {
   display: flex;
   justify-content: center;
 }
 
-/* Tarjeta principal que imita el mockup de HOME */
 .home-main-card {
   position: relative;
   width: 100%;
@@ -104,7 +172,7 @@
 
   border-radius: 24px;
   background: linear-gradient(180deg, #eef2ff 0%, #ffffff 40%, #ffffff 100%);
-  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow-lg);
 
   display: flex;
   flex-direction: column;
@@ -112,8 +180,6 @@
   gap: 1.25rem;
 }
 
-
-/* Texto de saludo */
 .home-greeting {
   margin-top: 0.5rem;
   font-size: 1.4rem;
@@ -121,20 +187,17 @@
   color: #111827;
 }
 
-/* Contenedor del anillo de calorías */
 .home-calories-ring {
   position: relative;
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background:
-    conic-gradient(#fb923c 0 70%, #e5e7eb 70% 100%);
+  background: conic-gradient(#fb923c 0 70%, #e5e7eb 70% 100%);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Círculo interior blanco para crear el efecto "donut" */
 .home-calories-inner {
   width: 120px;
   height: 120px;
@@ -148,7 +211,6 @@
   justify-content: center;
 }
 
-/* Textos dentro del anillo */
 .home-calories-label {
   font-size: 0.65rem;
   letter-spacing: 0.08em;
@@ -167,10 +229,9 @@
 .home-calories-detail {
   font-size: 0.65rem;
   color: #6b7280;
-    line-height: 1.1;
+  line-height: 1.1;
 }
 
-/* Mensaje corto debajo del anillo */
 .home-feedback {
   font-size: 0.85rem;
   color: #4b5563;
@@ -179,7 +240,6 @@
   border-radius: 999px;
 }
 
-/* Contenedor de las tarjetas de acción */
 .home-actions {
   width: 100%;
   display: flex;
@@ -188,7 +248,6 @@
   margin-top: 0.25rem;
 }
 
-/* Tarjeta de acción (Rutina de hoy / Comidas / Buscar recetas) */
 .home-action-card {
   display: flex;
   align-items: center;
@@ -204,22 +263,18 @@
   font-size: 0.95rem;
 }
 
-/* Icono de la tarjeta (emojis por ahora) */
 .home-action-icon {
   font-size: 1.3rem;
 }
 
-/* Texto de la tarjeta */
 .home-action-text {
   font-weight: 500;
 }
 
-/* En hover, un poco más de sombra para dar sensación de botón */
 .home-action-card:hover {
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
 }
 
-/* Responsive: en pantallas pequeñas, que ocupe casi todo el ancho */
 @media (max-width: 640px) {
   .home-main-card {
     margin-top: 0.5rem;
@@ -227,9 +282,9 @@
   }
 }
 
-/* -------------------------- */
-/* Pantalla de perfil [UI-02] */
-/* -------------------------- */
+/* =============================== */
+/* Perfil [UI-02] */
+/* =============================== */
 
 .profile-page {
   display: flex;
@@ -246,14 +301,13 @@
 
   border-radius: 20px;
   background-color: #ffffff;
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-md);
 
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* Cabecera con avatar y texto */
 .profile-header {
   display: flex;
   align-items: center;
@@ -277,6 +331,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
+  color: #111827;
 }
 
 .profile-email {
@@ -285,7 +340,6 @@
   color: #6b7280;
 }
 
-/* Formulario de perfil */
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -303,16 +357,6 @@
   color: #374151;
 }
 
-.profile-form-row input,
-.profile-form-row select {
-  width: 100%;
-  padding: 0.4rem 0.55rem;
-  border-radius: 0.6rem;
-  border: 1px solid #d1d5db;
-  font-size: 0.9rem;
-}
-
-/* Mensajes de estado */
 .profile-message {
   font-size: 0.85rem;
   margin-top: 0.25rem;
@@ -326,27 +370,24 @@
   color: #15803d;
 }
 
-/* Botón de guardar */
 .profile-button {
   margin-top: 0.25rem;
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
   border: 1px solid transparent;
-  background-color: #4f46e5;
+  background-color: var(--primary);
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
 }
 
-/* Separador dentro de la tarjeta de perfil */
 .profile-divider {
   border: none;
   border-top: 1px solid #e5e7eb;
   margin: 0.75rem 0;
 }
 
-/* Bloque de cierre de sesión */
 .profile-logout {
   display: flex;
   flex-direction: column;
@@ -358,13 +399,11 @@
   color: #6b7280;
 }
 
-/* Variante secundaria del botón de perfil */
 .profile-button--secondary {
   background-color: #e5e7eb;
   color: #111827;
 }
-/* Responsive: en móvil simplemente ocupa todo el ancho disponible,
-   el max-width ya se encarga de que no crezca demasiado en escritorio. */
+
 @media (max-width: 640px) {
   .profile-card {
     margin-top: 0.5rem;
@@ -372,9 +411,9 @@
   }
 }
 
-/* --------------------------- */
-/* Pantalla de recetas [UI-02] */
-/* --------------------------- */
+/* =============================== */
+/* Recetas [UI-02] */
+/* =============================== */
 
 .recipes-page {
   display: flex;
@@ -389,19 +428,15 @@
 
   display: grid;
   gap: 1rem;
-
-  /* En escritorio: dos columnas (listado + detalle) */
   grid-template-columns: 1.2fr 1fr;
 }
 
-/* Ajuste a una sola columna en pantallas pequeñas */
 @media (max-width: 768px) {
   .recipes-layout {
     grid-template-columns: 1fr;
   }
 }
 
-/* Columna izquierda */
 .recipes-left {
   display: flex;
   flex-direction: column;
@@ -412,6 +447,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
+  color: #111827;
 }
 
 .recipes-subtitle {
@@ -420,20 +456,18 @@
   color: #6b7280;
 }
 
-/* Bloque de filtros */
 .recipes-filters {
   padding: 0.75rem 0.9rem;
   border-radius: 0.9rem;
   background-color: #ffffff;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Listado de recetas */
 .recipes-list-card {
   padding: 0.75rem 0.9rem;
   border-radius: 0.9rem;
   background-color: #ffffff;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-sm);
 
   display: flex;
   flex-direction: column;
@@ -444,6 +478,7 @@
   margin: 0 0 0.4rem;
   font-size: 0.95rem;
   font-weight: 600;
+  color: #111827;
 }
 
 .recipes-list {
@@ -452,7 +487,6 @@
   margin: 0;
 }
 
-/* Un item de receta en el listado */
 .recipes-list-item {
   padding: 0.45rem 0.6rem;
   border-radius: 0.7rem;
@@ -464,6 +498,7 @@
   align-items: center;
 
   cursor: pointer;
+  color: #111827;
 }
 
 .recipes-list-item:hover {
@@ -471,29 +506,29 @@
 }
 
 .recipes-list-item--selected {
-  border-color: #4f46e5;
-  background-color: #eef2ff;
+  border-color: var(--primary);
+  background-color: var(--primary-soft);
 }
 
-/* Columna derecha: detalle */
 .recipes-detail-card {
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
   background-color: #ffffff;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-sm);
 
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  color: #111827;
 }
 
 .recipes-detail-card h3 {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
+  color: #111827;
 }
 
-/* Títulos y textos del detalle */
 .recipes-detail-title {
   margin: 0.4rem 0 0.2rem;
   font-size: 1.05rem;
@@ -517,7 +552,6 @@
   margin: 0;
 }
 
-/* Botón de favoritos o acciones en detalle */
 .recipes-detail-actions {
   margin-top: 0.5rem;
   display: flex;
@@ -527,16 +561,16 @@
 .recipes-detail-button {
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid #4f46e5;
-  background-color: #4f46e5;
+  border: 1px solid var(--primary);
+  background-color: var(--primary);
   color: #ffffff;
   font-size: 0.8rem;
   cursor: pointer;
 }
 
-/* ---------------------------- */
-/* Pantalla de progreso [UI-02] */
-/* ---------------------------- */
+/* =============================== */
+/* Progreso [UI-02] */
+/* =============================== */
 
 .progress-page {
   display: flex;
@@ -552,11 +586,9 @@
   display: grid;
   gap: 1rem;
 
-  /* En escritorio: dos columnas (form/lista + gráficos) */
   grid-template-columns: 1.1fr 1fr;
 }
 
-/* En móvil/tablet estrecha: una sola columna */
 @media (max-width: 900px) {
   .progress-layout {
     grid-template-columns: 1fr;
@@ -570,24 +602,23 @@
   gap: 0.75rem;
 }
 
-/* Tarjetas genéricas */
 .progress-card {
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
   background-color: #ffffff;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-sm);
+  color: #111827;
 }
 
-/* Tarjetas de gráficos: les damos altura fija para que Recharts tenga sitio */
 .progress-chart-card {
-  height: 320px; /* ajustable según veas el gráfico */
+  height: 320px;
 }
 
-/* Título y subtítulo */
 .progress-card h2 {
   margin: 0 0 0.4rem;
   font-size: 1.1rem;
   font-weight: 600;
+  color: #111827;
 }
 
 .progress-subtitle {
@@ -596,7 +627,6 @@
   color: #6b7280;
 }
 
-/* Mensajes de estado */
 .progress-message {
   font-size: 0.9rem;
   border-left: 4px solid transparent;
@@ -614,7 +644,9 @@
   color: #166534;
 }
 
-/* --- [DIET][UI-02] Layout responsive de la pantalla de dietas --- */
+/* =============================== */
+/* Layouts responsive DIET / ROUTINES */
+/* =============================== */
 
 .diet-layout {
   display: grid;
@@ -622,28 +654,24 @@
   gap: 24px;
 }
 
-/* En pantallas pequeñas, una sola columna */
 @media (max-width: 900px) {
   .diet-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* Layout en dos columnas para la pantalla de rutinas */
 .routines-layout {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
   gap: 20px;
 }
 
-/* En pantallas pequeñas se apila en una sola columna */
 @media (max-width: 900px) {
   .routines-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* Layout responsive del detalle de rutina [UI-02] */
 .routine-detail-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr);
@@ -655,12 +683,14 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-/* -------------------------- */
-/* Pantalla de login [UI-02] */
-/* -------------------------- */
+
+/* =============================== */
+/* Login [UI-02] */
+/* =============================== */
 
 .login-page {
-  min-height: calc(100vh - 64px); /* header */
+  min-height: 100vh;
+  background-color: var(--app-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -669,23 +699,33 @@
 
 .login-card {
   width: 100%;
-  max-width: 420px;
-
-  padding: 1.5rem 1.75rem;
-  border-radius: 20px;
-
+  max-width: 360px;
   background-color: #ffffff;
-  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.12);
+  border-radius: 18px;
+  padding: 1.5rem 1.4rem;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
 
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.9rem;
+}
+
+.login-header {
+  margin-bottom: 0.25rem;
+}
+
+.login-brand {
+  color: var(--primary);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
 }
 
 .login-header h2 {
-  margin: 0;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
+  margin: 0;
 }
 
 .login-subtitle {
@@ -694,11 +734,10 @@
   color: #6b7280;
 }
 
-/* Selector login / registro */
 .login-mode-selector {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .login-mode-selector button {
@@ -709,63 +748,20 @@
   background-color: #f9fafb;
   font-size: 0.85rem;
   cursor: pointer;
+  color: #111827;
 }
 
 .login-mode-button--active {
-  background-color: #4f46e5;
-  border-color: #4f46e5;
+  background-color: var(--primary);
+  border-color: var(--primary);
   color: #ffffff;
 }
 
-/* Responsive: ajustes suaves en móvil */
-@media (max-width: 640px) {
-  .login-card {
-    padding-inline: 1.25rem;
-  }
-}
-
-/* --- LOGIN [UI-02] --- */
-
-.login-page {
-  min-height: 100vh;
-  background-color: #eef2f7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 340px;
-  background-color: #ffffff;
-  border-radius: 18px;
-  padding: 1.5rem 1.4rem;
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
-  text-align: center;
-}
-
-.login-header {
-  margin-bottom: 1rem;
-}
-
-.login-brand {
-  color: #2563eb;
-  font-size: 1.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.login-header h2 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* Formularios */
 .auth-form {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+  text-align: left;
 }
 
 .auth-form input {
@@ -774,78 +770,52 @@
   border-radius: 0.6rem;
   border: 1px solid #d1d5db;
   font-size: 0.9rem;
+  background-color: #ffffff;
+  color: #111827;
 }
 
-/* Botones principales (FULL WIDTH) */
 .auth-button,
 .login-card button[type="submit"] {
   width: 100%;
-  padding: 0.45rem;
+  padding: 0.5rem;
   border-radius: 0.6rem;
   border: none;
-  background-color: #60a5fa;
+  background-color: var(--primary);
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
 }
 
-/* Enlaces tipo texto */
 .login-link {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   background: none;
   border: none;
   color: #374151;
   font-size: 0.8rem;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .login-link strong {
-  color: #2563eb;
+  color: var(--primary);
 }
 
-/* Mensajes */
 .login-error {
   font-size: 0.8rem;
   color: #b91c1c;
-  margin-top: 0.4rem;
+  margin-top: 0.25rem;
 }
 
 .login-success {
   font-size: 0.8rem;
   color: #15803d;
-  margin-top: 0.4rem;
+  margin-top: 0.25rem;
 }
 
-
-/* Modo claro / oscuro [UI-03] */
-
-
-body.theme-light {
-  background-color: #f3f4f6;
-  color: #111827;
+@media (max-width: 640px) {
+  .login-card {
+    padding-inline: 1.25rem;
+  }
 }
 
-body.theme-dark {
-  background-color: #0f172a;
-  color: #f1f5f9;
-}
-
-/* Ajustes específicos en dark */
-body.theme-dark .app-header {
-  background-color: #1e293b;
-  border-color: #334155;
-}
-
-body.theme-dark .app-nav-link {
-  color: #e2e8f0;
-}
-
-body.theme-dark .profile-card,
-body.theme-dark .login-card,
-body.theme-dark .progress-card,
-body.theme-dark .recipes-detail-card,
-body.theme-dark .recipes-list-card {
-  background-color: #1e293b;
-  color: #f1f5f9;
-}
