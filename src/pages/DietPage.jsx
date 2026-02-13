@@ -52,18 +52,19 @@ function DietPage() {
   };
 
   const cardStyles = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--card, #ffffff)",
+    color: "var(--card-text, #111827)",
     borderRadius: "16px",
     padding: "16px 18px",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
-    border: "1px solid rgba(148, 163, 184, 0.3)",
+    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
+    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
   };
 
   const sectionTitleStyles = {
     marginBottom: "8px",
     fontSize: "18px",
     fontWeight: "600",
-    color: "#111827",
+    color: "var(--card-text, #111827)",
   };
 
   const labelStyles = {
@@ -71,15 +72,17 @@ function DietPage() {
     marginBottom: "4px",
     fontSize: "14px",
     fontWeight: "500",
-    color: "#374151",
+    color: "var(--muted, #374151)",
   };
 
   const inputStyles = {
     width: "100%",
     padding: "8px 10px",
     borderRadius: "8px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--input-border, #d1d5db)",
     fontSize: "14px",
+    backgroundColor: "var(--input-bg, #ffffff)",
+    color: "var(--input-text, #111827)",
   };
 
   const textareaStyles = {
@@ -87,9 +90,11 @@ function DietPage() {
     padding: "8px 10px",
     minHeight: "80px",
     borderRadius: "8px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--input-border, #d1d5db)",
     fontSize: "14px",
     resize: "vertical",
+    backgroundColor: "var(--input-bg, #ffffff)",
+    color: "var(--input-text, #111827)",
   };
 
   const primaryButtonStyles = {
@@ -107,11 +112,11 @@ function DietPage() {
   const ghostButtonStyles = {
     padding: "6px 10px",
     borderRadius: "999px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--card-border, #d1d5db)",
     cursor: "pointer",
     fontSize: "13px",
-    backgroundColor: "#f9fafb",
-    color: "#374151",
+    backgroundColor: "var(--card-2, #f9fafb)",
+    color: "var(--card-text, #374151)",
   };
 
   const dangerButtonStyles = {
@@ -126,7 +131,7 @@ function DietPage() {
 
   const smallTextStyles = {
     fontSize: "13px",
-    color: "#6b7280",
+    color: "var(--muted, #6b7280)",
   };
 
   /**
@@ -301,7 +306,7 @@ function DietPage() {
             fontSize: "24px",
             fontWeight: "700",
             marginBottom: "4px",
-            color: "#111827",
+            color: "var(--text, #111827)",
           }}
         >
           [DIET] Planes de alimentación
@@ -323,9 +328,7 @@ function DietPage() {
         <div style={columnStyle}>
           {/* Formulario de creación de plan */}
           <section style={cardStyles}>
-            <h3 style={sectionTitleStyles}>
-              Crear nuevo plan de alimentación
-            </h3>
+            <h3 style={sectionTitleStyles}>Crear nuevo plan de alimentación</h3>
             <p style={smallTextStyles}>
               Define un nombre y una breve descripción del plan (por ejemplo
               “Dieta semanal equilibrio 2000 kcal”).
@@ -468,8 +471,9 @@ function DietPage() {
                     style={{
                       padding: "10px 12px",
                       borderRadius: "12px",
-                      border: "1px solid #e5e7eb",
-                      backgroundColor: "#f9fafb",
+                      border: "1px solid var(--card-border, #e5e7eb)",
+                      backgroundColor: "var(--card-2, #f9fafb)",
+                      color: "var(--card-text, #111827)",
                       display: "flex",
                       flexDirection: "column",
                       gap: "4px",
@@ -478,10 +482,7 @@ function DietPage() {
                     <div>
                       <strong>{diet.name}</strong>{" "}
                       {diet.description && (
-                        <span style={smallTextStyles}>
-                          {" "}
-                          — {diet.description}
-                        </span>
+                        <span style={smallTextStyles}> — {diet.description}</span>
                       )}
                     </div>
 

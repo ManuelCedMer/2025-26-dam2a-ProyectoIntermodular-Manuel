@@ -55,11 +55,12 @@ function RecipeDetailPage() {
   };
 
   const cardStyles = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--card, #ffffff)",
+    color: "var(--card-text, #111827)",
     borderRadius: "16px",
     padding: "16px 18px",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
-    border: "1px solid rgba(148, 163, 184, 0.3)",
+    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
+    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
     marginBottom: "16px",
   };
 
@@ -67,12 +68,12 @@ function RecipeDetailPage() {
     fontSize: "18px",
     fontWeight: "600",
     marginBottom: "8px",
-    color: "#111827",
+    color: "var(--card-text, #111827)",
   };
 
   const smallTextStyles = {
     fontSize: "14px",
-    color: "#374151",
+    color: "var(--muted, #374151)",
   };
 
   if (!user) {
@@ -141,18 +142,14 @@ function RecipeDetailPage() {
 
       {/* Información principal de la receta */}
       <section style={cardStyles}>
-        <h3 style={{ fontSize: "20px", fontWeight: "700" }}>
-          {recipe.title}
-        </h3>
+        <h3 style={{ fontSize: "20px", fontWeight: "700" }}>{recipe.title}</h3>
 
         {recipe.mealType && (
           <p style={smallTextStyles}>Tipo de comida: {recipe.mealType}</p>
         )}
 
         {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
-          <p style={smallTextStyles}>
-            Etiquetas: {recipe.tags.join(", ")}
-          </p>
+          <p style={smallTextStyles}>Etiquetas: {recipe.tags.join(", ")}</p>
         )}
 
         {recipe.estimatedCalories !== null &&

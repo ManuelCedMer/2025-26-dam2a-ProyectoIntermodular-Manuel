@@ -73,11 +73,12 @@ function RoutineDetailPage() {
   };
 
   const cardStyles = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--card, #ffffff)",
+    color: "var(--card-text, #111827)",
     borderRadius: "16px",
     padding: "16px 18px",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
-    border: "1px solid rgba(148, 163, 184, 0.3)",
+    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
+    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
   };
 
   const labelStyles = {
@@ -85,15 +86,17 @@ function RoutineDetailPage() {
     marginBottom: "4px",
     fontSize: "14px",
     fontWeight: "500",
-    color: "#374151",
+    color: "var(--muted, #374151)",
   };
 
   const inputStyles = {
     width: "100%",
     padding: "8px 10px",
     borderRadius: "8px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--input-border, #d1d5db)",
     fontSize: "14px",
+    backgroundColor: "var(--input-bg, #ffffff)",
+    color: "var(--input-text, #111827)",
   };
 
   const primaryButtonStyles = {
@@ -111,10 +114,11 @@ function RoutineDetailPage() {
   const ghostButtonStyles = {
     padding: "6px 10px",
     borderRadius: "999px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--card-border, #d1d5db)",
     cursor: "pointer",
     fontSize: "13px",
-    backgroundColor: "#f9fafb",
+    backgroundColor: "var(--card-2, #f9fafb)",
+    color: "var(--card-text, #374151)",
   };
 
   const dangerButtonStyles = {
@@ -379,7 +383,7 @@ function RoutineDetailPage() {
         <Link to="/rutinas">← Volver a mis rutinas</Link>
         <h2>[ROUTINES] Ejercicios de la rutina</h2>
         {routineName && <h3>{routineName}</h3>}
-        {errorMessage && <p>{errorMessage}</p>}
+        {errorMessage && <p style={{ color: "#b91c1c" }}>{errorMessage}</p>}
       </header>
 
       {/* Layout en dos columnas [UI-02] */}
@@ -424,7 +428,11 @@ function RoutineDetailPage() {
                 placeholder="Repeticiones"
                 style={inputStyles}
               />
-              <button type="submit" disabled={loading} style={primaryButtonStyles}>
+              <button
+                type="submit"
+                disabled={loading}
+                style={primaryButtonStyles}
+              >
                 {loading ? "Guardando..." : "Guardar ejercicio"}
               </button>
             </form>
@@ -490,9 +498,7 @@ function RoutineDetailPage() {
           <section style={cardStyles}>
             <h4>Ejercicios de esta rutina</h4>
 
-            {loading && exercises.length === 0 && (
-              <p>Cargando ejercicios...</p>
-            )}
+            {loading && exercises.length === 0 && <p>Cargando ejercicios...</p>}
 
             {!loading && exercises.length === 0 && (
               <p>Esta rutina todavía no tiene ejercicios.</p>
@@ -507,7 +513,7 @@ function RoutineDetailPage() {
                     key={exercise.id}
                     style={{
                       padding: "8px 0",
-                      borderBottom: "1px solid #e5e7eb",
+                      borderBottom: "1px solid var(--card-border, #e5e7eb)",
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
@@ -519,10 +525,7 @@ function RoutineDetailPage() {
                         type="checkbox"
                         checked={isCompleted}
                         onChange={(e) =>
-                          handleToggleCompleted(
-                            exercise.id,
-                            e.target.checked,
-                          )
+                          handleToggleCompleted(exercise.id, e.target.checked)
                         }
                       />{" "}
                       <strong>{exercise.name}</strong>{" "}
@@ -540,9 +543,7 @@ function RoutineDetailPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() =>
-                          handleDeleteExercise(exercise.id)
-                        }
+                        onClick={() => handleDeleteExercise(exercise.id)}
                         style={dangerButtonStyles}
                       >
                         Eliminar

@@ -1,20 +1,33 @@
-
 /* =============================== */
 /* Variables globales de tema [UI-03] */
 /* =============================== */
 
 /* Tema claro: fondo azul muy clarito */
 body.theme-light {
-  --app-bg: #eef2f7; 
+  --app-bg: #eef2f7;
   --text: #111827;
   --muted: #6b7280;
 
   --surface: #f9fafb;
-  --card: #ffffff; 
+
+  /* Cards (global) */
+  --card: #e9f2ff; 
+  --card-2: #ffffff; 
+  --card-text: #111827;
+  --card-border: rgba(17, 24, 39, 0.1);
+
+  /* Inputs */
+  --input-bg: #ffffff;
+  --input-text: #111827;
+  --input-border: #d1d5db;
+
   --border: #e5e7eb;
 
   --primary: #4f46e5;
   --primary-soft: #eef2ff;
+
+  --pill-bg: #e5f2ff;
+  --pill-text: #4b5563;
 
   --shadow-lg: 0 18px 30px rgba(15, 23, 42, 0.12);
   --shadow-md: 0 14px 28px rgba(15, 23, 42, 0.08);
@@ -24,20 +37,32 @@ body.theme-light {
   color: var(--text);
 }
 
-/* Tema oscuro: fondo oscuro, pero tarjetas blancas */
+/* Tema oscuro: fondo oscuro, con tarjetas adaptadas al tema */
 body.theme-dark {
   --app-bg: #0b1220;
   --text: #f1f5f9;
   --muted: #94a3b8;
 
-  
   --surface: #111a2b;
 
-  --card: #ffffff; 
-  --border: #22304a; 
+  /* Cards (global) */
+  --card: #111a2b; 
+  --card-2: rgba(255, 255, 255, 0.08); 
+  --card-text: #f1f5f9; 
+  --card-border: rgba(255, 255, 255, 0.12);
+
+  /* Inputs */
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-text: #f1f5f9;
+  --input-border: rgba(255, 255, 255, 0.14);
+
+  --border: #22304a;
 
   --primary: #60a5fa;
   --primary-soft: rgba(96, 165, 250, 0.12);
+
+  --pill-bg: rgba(96, 165, 250, 0.14);
+  --pill-text: #e2e8f0;
 
   --shadow-lg: 0 18px 30px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 14px 28px rgba(0, 0, 0, 0.3);
@@ -128,31 +153,6 @@ body.theme-dark {
 }
 
 /* =============================== */
-/* Tarjetas blancas */
-/* =============================== */
-
-.profile-card,
-.login-card,
-.progress-card,
-.recipes-detail-card,
-.recipes-list-card,
-.recipes-filters,
-.home-main-card,
-.home-action-card {
-  background-color: #ffffff !important;
-  color: #111827;
-}
-
-
-.profile-form-row input,
-.profile-form-row select,
-.auth-form input {
-  background-color: #ffffff;
-  color: #111827;
-  border: 1px solid #d1d5db;
-}
-
-/* =============================== */
 /* Pantalla de inicio */
 /* =============================== */
 
@@ -171,8 +171,15 @@ body.theme-dark {
   padding: 1.5rem 1.75rem;
 
   border-radius: 24px;
-  background: linear-gradient(180deg, #eef2ff 0%, #ffffff 40%, #ffffff 100%);
+  background: linear-gradient(
+    180deg,
+    var(--primary-soft) 0%,
+    var(--card) 40%,
+    var(--card) 100%
+  );
   box-shadow: var(--shadow-lg);
+  border: 1px solid var(--card-border);
+  color: var(--card-text);
 
   display: flex;
   flex-direction: column;
@@ -184,7 +191,7 @@ body.theme-dark {
   margin-top: 0.5rem;
   font-size: 1.4rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--card-text);
 }
 
 .home-calories-ring {
@@ -192,7 +199,7 @@ body.theme-dark {
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: conic-gradient(#fb923c 0 70%, #e5e7eb 70% 100%);
+  background: conic-gradient(#fb923c 0 70%, rgba(229, 231, 235, 0.9) 70% 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,8 +209,8 @@ body.theme-dark {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background-color: #ffffff;
-  box-shadow: inset 0 0 0 1px #e5e7eb;
+  background-color: var(--card-2);
+  box-shadow: inset 0 0 0 1px var(--card-border);
 
   display: flex;
   flex-direction: column;
@@ -214,28 +221,28 @@ body.theme-dark {
 .home-calories-label {
   font-size: 0.65rem;
   letter-spacing: 0.08em;
-  color: #6b7280;
+  color: var(--muted);
   margin-bottom: 0.1rem;
 }
 
 .home-calories-percentage {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--card-text);
   margin-bottom: 0.1rem;
   line-height: 1.1;
 }
 
 .home-calories-detail {
   font-size: 0.65rem;
-  color: #6b7280;
+  color: var(--muted);
   line-height: 1.1;
 }
 
 .home-feedback {
   font-size: 0.85rem;
-  color: #4b5563;
-  background-color: #e5f2ff;
+  color: var(--pill-text);
+  background-color: var(--pill-bg);
   padding: 0.5rem 0.75rem;
   border-radius: 999px;
 }
@@ -255,11 +262,12 @@ body.theme-dark {
 
   padding: 0.75rem 1rem;
   border-radius: 16px;
-  background-color: #ffffff;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+  background-color: var(--card-2);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
 
   text-decoration: none;
-  color: #111827;
+  color: var(--card-text);
   font-size: 0.95rem;
 }
 
@@ -272,7 +280,8 @@ body.theme-dark {
 }
 
 .home-action-card:hover {
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
 }
 
 @media (max-width: 640px) {
@@ -292,7 +301,7 @@ body.theme-dark {
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: #eef2f7;
+  background: var(--app-bg);
 }
 
 .auth-card {
@@ -319,7 +328,7 @@ body.theme-dark {
   margin: 0.35rem 0 0;
   font-size: 1.6rem;
   font-weight: 800;
-  color: #111827;
+  color: var(--card-text);
 }
 
 /* Form en columna (esto evita label+input en fila por CSS previo) */
@@ -336,7 +345,7 @@ body.theme-dark {
   gap: 0.35rem;
 }
 
-/* En auth, inputs un pelín más “mollosos” para parecerse al mock */
+
 .auth-form .input {
   padding: 0.75rem 0.9rem;
   border-radius: 14px;
@@ -357,7 +366,7 @@ body.theme-dark {
   border: 0;
   padding: 0;
   cursor: pointer;
-  color: rgba(17, 24, 39, 0.8);
+  color: var(--muted);
   font-size: 0.95rem;
 }
 
@@ -367,7 +376,8 @@ body.theme-dark {
   justify-content: center;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  background: rgba(17, 24, 39, 0.06);
+  background: var(--primary-soft);
+  border: 1px solid var(--card-border);
 }
 
 .auth-strong {
@@ -417,10 +427,11 @@ body.theme-dark {
     font-size: 1.35rem;
   }
 }
+
 .auth-forgot {
   display: flex;
   justify-content: flex-end;
-  margin-top: -0.25rem; 
+  margin-top: -0.25rem;
 }
 
 .auth-forgot-btn {
@@ -429,7 +440,7 @@ body.theme-dark {
   padding: 0;
   cursor: pointer;
   font-size: 0.95rem;
-  color: rgba(17, 24, 39, 0.75);
+  color: var(--muted);
 }
 
 .auth-forgot-btn:hover {
@@ -442,13 +453,14 @@ body.theme-dark {
   text-decoration: none;
 }
 
-
 /* =============================== */
 /* Componentes reutilizables (UI)  */
 /* =============================== */
 
 .card {
-  background: #ffffff; 
+  background: var(--card);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
   border-radius: 20px;
   padding: 1.25rem 1.5rem;
   box-shadow: var(--shadow-md, 0 14px 28px rgba(15, 23, 42, 0.08));
@@ -459,10 +471,10 @@ body.theme-dark {
   width: 100%;
   padding: 0.5rem 0.65rem;
   border-radius: 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--input-border);
   font-size: 0.9rem;
-  background: #ffffff; 
-  color: #111827;
+  background: var(--input-bg);
+  color: var(--input-text);
 }
 
 .input:focus,
@@ -488,8 +500,9 @@ body.theme-dark {
 }
 
 .btn-secondary {
-  background-color: #e5e7eb;
-  color: #111827;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
 }
 
 /* =============================== */
@@ -511,7 +524,6 @@ body.theme-dark {
   flex-direction: column;
   gap: 1rem;
 }
-
 
 .profile-header {
   display: flex;
@@ -536,13 +548,13 @@ body.theme-dark {
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--card-text);
 }
 
 .profile-email {
   margin: 0.1rem 0 0;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .profile-form {
@@ -559,7 +571,7 @@ body.theme-dark {
 
 .profile-form-row label {
   font-size: 0.85rem;
-  color: #374151;
+  color: var(--muted);
 }
 
 .profile-message {
@@ -589,7 +601,7 @@ body.theme-dark {
 
 .profile-divider {
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--card-border);
   margin: 0.75rem 0;
 }
 
@@ -601,12 +613,13 @@ body.theme-dark {
 
 .profile-logout-text {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .profile-button--secondary {
-  background-color: #e5e7eb;
-  color: #111827;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
 }
 
 @media (max-width: 640px) {
@@ -652,38 +665,42 @@ body.theme-dark {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text);
 }
 
 .recipes-subtitle {
   margin: 0.15rem 0 0;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .recipes-filters {
   padding: 0.75rem 0.9rem;
   border-radius: 0.9rem;
-  background-color: #ffffff;
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow-sm);
+  color: var(--card-text);
 }
 
 .recipes-list-card {
   padding: 0.75rem 0.9rem;
   border-radius: 0.9rem;
-  background-color: #ffffff;
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow-sm);
 
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  color: var(--card-text);
 }
 
 .recipes-list-card h3 {
   margin: 0 0 0.4rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--card-text);
 }
 
 .recipes-list {
@@ -695,7 +712,7 @@ body.theme-dark {
 .recipes-list-item {
   padding: 0.45rem 0.6rem;
   border-radius: 0.7rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--card-border);
   font-size: 0.9rem;
 
   display: flex;
@@ -703,11 +720,12 @@ body.theme-dark {
   align-items: center;
 
   cursor: pointer;
-  color: #111827;
+  color: var(--card-text);
+  background: transparent;
 }
 
 .recipes-list-item:hover {
-  background-color: #f3f4f6;
+  background-color: var(--primary-soft);
 }
 
 .recipes-list-item--selected {
@@ -718,20 +736,21 @@ body.theme-dark {
 .recipes-detail-card {
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
-  background-color: #ffffff;
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow-sm);
 
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  color: #111827;
+  color: var(--card-text);
 }
 
 .recipes-detail-card h3 {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--card-text);
 }
 
 .recipes-detail-title {
@@ -810,9 +829,10 @@ body.theme-dark {
 .progress-card {
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
-  background-color: #ffffff;
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow-sm);
-  color: #111827;
+  color: var(--card-text);
 }
 
 .progress-chart-card {
@@ -823,13 +843,13 @@ body.theme-dark {
   margin: 0 0 0.4rem;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--card-text);
 }
 
 .progress-subtitle {
   margin: 0;
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .progress-message {
@@ -905,7 +925,9 @@ body.theme-dark {
 .login-card {
   width: 100%;
   max-width: 360px;
-  background-color: #ffffff;
+  background-color: var(--card);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
   border-radius: 18px;
   padding: 1.5rem 1.4rem;
   box-shadow: var(--shadow-lg);
@@ -931,12 +953,13 @@ body.theme-dark {
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
+  color: var(--card-text);
 }
 
 .login-subtitle {
   margin: 0.25rem 0 0;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .login-mode-selector {
@@ -949,11 +972,11 @@ body.theme-dark {
   flex: 1;
   padding: 0.45rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background-color: #f9fafb;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-2);
   font-size: 0.85rem;
   cursor: pointer;
-  color: #111827;
+  color: var(--card-text);
 }
 
 .login-mode-button--active {
@@ -973,10 +996,10 @@ body.theme-dark {
   width: 100%;
   padding: 0.45rem 0.6rem;
   border-radius: 0.6rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--input-border);
   font-size: 0.9rem;
-  background-color: #ffffff;
-  color: #111827;
+  background-color: var(--input-bg);
+  color: var(--input-text);
 }
 
 .auth-button,
@@ -996,7 +1019,7 @@ body.theme-dark {
   margin-top: 0.25rem;
   background: none;
   border: none;
-  color: #374151;
+  color: var(--muted);
   font-size: 0.8rem;
   cursor: pointer;
   text-decoration: none;
@@ -1023,4 +1046,3 @@ body.theme-dark {
     padding-inline: 1.25rem;
   }
 }
-

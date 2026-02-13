@@ -79,18 +79,19 @@ function DietDetailPage() {
   };
 
   const cardStyles = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--card, #ffffff)",
+    color: "var(--card-text, #111827)",
     borderRadius: "16px",
     padding: "16px 18px",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
-    border: "1px solid rgba(148, 163, 184, 0.3)",
+    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
+    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
   };
 
   const sectionTitleStyles = {
     marginBottom: "8px",
     fontSize: "18px",
     fontWeight: "600",
-    color: "#111827",
+    color: "var(--card-text, #111827)",
   };
 
   const labelStyles = {
@@ -98,24 +99,27 @@ function DietDetailPage() {
     marginBottom: "4px",
     fontSize: "14px",
     fontWeight: "500",
-    color: "#374151",
+    color: "var(--muted, #374151)",
   };
 
   const inputStyles = {
     width: "100%",
     padding: "8px 10px",
     borderRadius: "8px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--input-border, #d1d5db)",
     fontSize: "14px",
+    backgroundColor: "var(--input-bg, #ffffff)",
+    color: "var(--input-text, #111827)",
   };
 
   const selectStyles = {
     width: "100%",
     padding: "8px 10px",
     borderRadius: "8px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--input-border, #d1d5db)",
     fontSize: "14px",
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--input-bg, #ffffff)",
+    color: "var(--input-text, #111827)",
   };
 
   const primaryButtonStyles = {
@@ -133,11 +137,11 @@ function DietDetailPage() {
   const ghostButtonStyles = {
     padding: "6px 10px",
     borderRadius: "999px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--card-border, #d1d5db)",
     cursor: "pointer",
     fontSize: "13px",
-    backgroundColor: "#f9fafb",
-    color: "#374151",
+    backgroundColor: "var(--card-2, #f9fafb)",
+    color: "var(--card-text, #374151)",
   };
 
   const dangerButtonStyles = {
@@ -152,7 +156,7 @@ function DietDetailPage() {
 
   const smallTextStyles = {
     fontSize: "13px",
-    color: "#6b7280",
+    color: "var(--muted, #6b7280)",
   };
 
   /**
@@ -240,8 +244,7 @@ function DietDetailPage() {
     setEditMealType(meal.mealType || "desayuno");
     setEditName(meal.name || "");
     setEditEstimatedCalories(
-      meal.estimatedCalories !== null &&
-      meal.estimatedCalories !== undefined
+      meal.estimatedCalories !== null && meal.estimatedCalories !== undefined
         ? String(meal.estimatedCalories)
         : "",
     );
@@ -354,13 +357,10 @@ function DietDetailPage() {
   const mealTypeOrder = ["desayuno", "comida", "cena", "snack"];
 
   const sortedMeals = [...meals].sort((a, b) => {
-    const dayDiff =
-      dayOrder.indexOf(a.dayOfWeek) - dayOrder.indexOf(b.dayOfWeek);
+    const dayDiff = dayOrder.indexOf(a.dayOfWeek) - dayOrder.indexOf(b.dayOfWeek);
     if (dayDiff !== 0) return dayDiff;
 
-    const typeDiff =
-      mealTypeOrder.indexOf(a.mealType) -
-      mealTypeOrder.indexOf(b.mealType);
+    const typeDiff = mealTypeOrder.indexOf(a.mealType) - mealTypeOrder.indexOf(b.mealType);
     if (typeDiff !== 0) return typeDiff;
 
     return a.name.localeCompare(b.name);
@@ -385,7 +385,7 @@ function DietDetailPage() {
                 fontSize: "24px",
                 fontWeight: "700",
                 marginBottom: "4px",
-                color: "#111827",
+                color: "var(--text, #111827)",
               }}
             >
               [DIET] Comidas del plan
@@ -485,9 +485,7 @@ function DietDetailPage() {
                 <input
                   type="number"
                   value={estimatedCalories}
-                  onChange={(event) =>
-                    setEstimatedCalories(event.target.value)
-                  }
+                  onChange={(event) => setEstimatedCalories(event.target.value)}
                   min="0"
                   style={inputStyles}
                 />
@@ -525,9 +523,7 @@ function DietDetailPage() {
                   <label style={labelStyles}>Día de la semana</label>
                   <select
                     value={editDayOfWeek}
-                    onChange={(event) =>
-                      setEditDayOfWeek(event.target.value)
-                    }
+                    onChange={(event) => setEditDayOfWeek(event.target.value)}
                     style={selectStyles}
                   >
                     {availableDays.map((day) => (
@@ -542,9 +538,7 @@ function DietDetailPage() {
                   <label style={labelStyles}>Tipo de comida</label>
                   <select
                     value={editMealType}
-                    onChange={(event) =>
-                      setEditMealType(event.target.value)
-                    }
+                    onChange={(event) => setEditMealType(event.target.value)}
                     style={selectStyles}
                   >
                     {availableMealTypes.map((type) => (
@@ -567,9 +561,7 @@ function DietDetailPage() {
                 </div>
 
                 <div>
-                  <label style={labelStyles}>
-                    Calorías estimadas (opcional)
-                  </label>
+                  <label style={labelStyles}>Calorías estimadas (opcional)</label>
                   <input
                     type="number"
                     value={editEstimatedCalories}
@@ -639,8 +631,9 @@ function DietDetailPage() {
                     style={{
                       padding: "10px 12px",
                       borderRadius: "12px",
-                      border: "1px solid #e5e7eb",
-                      backgroundColor: "#f9fafb",
+                      border: "1px solid var(--card-border, #e5e7eb)",
+                      backgroundColor: "var(--card-2, #f9fafb)",
+                      color: "var(--card-text, #111827)",
                       display: "flex",
                       flexDirection: "column",
                       gap: "4px",
@@ -669,8 +662,9 @@ function DietDetailPage() {
                             style={{
                               fontSize: "13px",
                               fontWeight: "600",
-                              color: "#111827",
-                              backgroundColor: "#e0f2fe",
+                              color: "var(--card-text, #111827)",
+                              backgroundColor: "var(--primary-soft, #e0f2fe)",
+                              border: "1px solid var(--card-border, #e5e7eb)",
                               borderRadius: "999px",
                               padding: "4px 8px",
                             }}

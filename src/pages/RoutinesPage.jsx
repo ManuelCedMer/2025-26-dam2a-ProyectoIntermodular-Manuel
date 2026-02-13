@@ -60,18 +60,19 @@ function RoutinesPage() {
   };
 
   const cardStyles = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--card, #ffffff)",
+    color: "var(--card-text, #111827)",
     borderRadius: "16px",
     padding: "16px 18px",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
-    border: "1px solid rgba(148, 163, 184, 0.3)",
+    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
+    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
   };
 
   const sectionTitleStyles = {
     marginBottom: "8px",
     fontSize: "18px",
     fontWeight: "600",
-    color: "#111827",
+    color: "var(--card-text, #111827)",
   };
 
   const labelStyles = {
@@ -79,15 +80,17 @@ function RoutinesPage() {
     marginBottom: "4px",
     fontSize: "14px",
     fontWeight: "500",
-    color: "#374151",
+    color: "var(--muted, #374151)",
   };
 
   const inputStyles = {
     width: "100%",
     padding: "8px 10px",
     borderRadius: "8px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--input-border, #d1d5db)",
     fontSize: "14px",
+    backgroundColor: "var(--input-bg, #ffffff)",
+    color: "var(--input-text, #111827)",
   };
 
   const primaryButtonStyles = {
@@ -105,11 +108,11 @@ function RoutinesPage() {
   const ghostButtonStyles = {
     padding: "6px 10px",
     borderRadius: "999px",
-    border: "1px solid #d1d5db",
+    border: "1px solid var(--card-border, #d1d5db)",
     cursor: "pointer",
     fontSize: "13px",
-    backgroundColor: "#f9fafb",
-    color: "#374151",
+    backgroundColor: "var(--card-2, #f9fafb)",
+    color: "var(--card-text, #374151)",
   };
 
   const dangerButtonStyles = {
@@ -124,15 +127,15 @@ function RoutinesPage() {
 
   const smallTextStyles = {
     fontSize: "13px",
-    color: "#6b7280",
+    color: "var(--muted, #6b7280)",
   };
 
   const dayChipStyles = (selected) => ({
     padding: "4px 10px",
     borderRadius: "999px",
-    border: selected ? "none" : "1px solid #e5e7eb",
-    backgroundColor: selected ? "#2563eb" : "#f9fafb",
-    color: selected ? "#ffffff" : "#374151",
+    border: selected ? "1px solid transparent" : "1px solid var(--card-border, #e5e7eb)",
+    backgroundColor: selected ? "var(--primary, #2563eb)" : "var(--card-2, #f9fafb)",
+    color: selected ? "#ffffff" : "var(--card-text, #374151)",
     fontSize: "13px",
     cursor: "pointer",
     display: "inline-flex",
@@ -339,7 +342,7 @@ function RoutinesPage() {
             fontSize: "24px",
             fontWeight: "700",
             marginBottom: "4px",
-            color: "#111827",
+            color: "var(--text, #111827)",
           }}
         >
           [ROUTINES] Gestión de rutinas
@@ -534,8 +537,9 @@ function RoutinesPage() {
                     style={{
                       padding: "10px 12px",
                       borderRadius: "12px",
-                      border: "1px solid #e5e7eb",
-                      backgroundColor: "#f9fafb",
+                      border: "1px solid var(--card-border, #e5e7eb)",
+                      backgroundColor: "var(--card-2, #f9fafb)",
+                      color: "var(--card-text, #111827)",
                       display: "flex",
                       flexDirection: "column",
                       gap: "4px",
@@ -580,9 +584,7 @@ function RoutinesPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() =>
-                          handleDeleteRoutine(routine.id)
-                        }
+                        onClick={() => handleDeleteRoutine(routine.id)}
                         style={dangerButtonStyles}
                       >
                         Eliminar
