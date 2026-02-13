@@ -18,11 +18,12 @@ import {
 function ProfilePage() {
   const { user, logout, theme, setTheme } = useAuth();
 
-
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [goal, setGoal] = useState("mantener");
+
   
+  const [draftTheme, setDraftTheme] = useState(theme || "light");
 
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -51,7 +52,10 @@ function ProfilePage() {
             : "",
         );
         setGoal(profile.goal || "mantener");
-        setTheme(profile.theme || "light");
+
+        const loadedTheme = profile.theme || "light";
+
+        setDraftTheme(loadedTheme);
       } catch (error) {
         console.error("Error al cargar perfil:", error);
         setErrorMessage("No se ha podido cargar el perfil.");
@@ -75,7 +79,7 @@ function ProfilePage() {
       return;
     }
 
-    // Valido la edad: número dentro de un rango razonable o vacío.
+    // Valido la edad
     let parsedAge = null;
     if (age.trim() !== "") {
       const n = Number(age);
@@ -96,8 +100,11 @@ function ProfilePage() {
         displayName: displayName.trim(),
         age: parsedAge,
         goal,
-        theme,
+        theme: draftTheme,
       });
+
+      
+      setTheme(draftTheme);
 
       setMessage("Perfil actualizado correctamente.");
     } catch (error) {
@@ -193,15 +200,14 @@ function ProfilePage() {
             <label>Tema visual</label>
             <select
               className="select"
-              value={theme}
-              onChange={(event) => setTheme(event.target.value)}
+              value={draftTheme}
+              onChange={(event) => setDraftTheme(event.target.value)}
               disabled={loadingProfile}
             >
               <option value="light">Claro</option>
               <option value="dark">Oscuro</option>
             </select>
           </div>
-
 
           {/* Mensajes de estado */}
           {errorMessage && (
@@ -228,7 +234,7 @@ function ProfilePage() {
         <hr className="profile-divider" />
 
         {/* Bloque de cierre de sesión */}
-        <div className="card card--tight">
+        <div className="profile-logout">
           <p className="profile-logout-text">
             Si quieres salir de tu cuenta actual, puedes cerrar sesión aquí.
           </p>
@@ -236,7 +242,6 @@ function ProfilePage() {
             type="button"
             onClick={handleLogout}
             className="btn btn-secondary"
-            disabled={savingProfile || loadingProfile}
           >
             Cerrar sesión
           </button>
