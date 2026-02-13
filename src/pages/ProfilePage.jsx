@@ -228,14 +228,15 @@ function ProfilePage() {
         <hr className="profile-divider" />
 
         {/* Bloque de cierre de sesión */}
-        <div className="btn btn-secondary">
+        <div className="card card--tight">
           <p className="profile-logout-text">
             Si quieres salir de tu cuenta actual, puedes cerrar sesión aquí.
           </p>
           <button
             type="button"
             onClick={handleLogout}
-            className="profile-button profile-button--secondary"
+            className="btn btn-secondary"
+            disabled={savingProfile || loadingProfile}
           >
             Cerrar sesión
           </button>

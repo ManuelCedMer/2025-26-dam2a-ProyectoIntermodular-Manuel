@@ -2,7 +2,7 @@
  * Formulario de registro [LOGIN-01].
  * Permite crear una cuenta nueva con correo y contraseña.
  */
-function RegisterForm({ onSubmit, errorMessage }) {
+function RegisterForm({ onSubmit, errorMessage, disabled = false }) {
   function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -15,32 +15,74 @@ function RegisterForm({ onSubmit, errorMessage }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      
-
-      <div>
-        <label>Nombre</label>
-        <input name="name" type="text" required />
+    <form onSubmit={handleSubmit} className="auth-form">
+      <div className="auth-field">
+        <label className="sr-only" htmlFor="register-name">
+          Nombre
+        </label>
+        <input
+          id="register-name"
+          className="input"
+          name="name"
+          type="text"
+          placeholder="Nombre completo"
+          required
+          disabled={disabled}
+        />
       </div>
 
-      <div>
-        <label>Correo electrónico</label>
-        <input name="email" type="email" required />
+      <div className="auth-field">
+        <label className="sr-only" htmlFor="register-email">
+          Correo electrónico
+        </label>
+        <input
+          id="register-email"
+          className="input"
+          name="email"
+          type="email"
+          placeholder="Correo electrónico"
+          required
+          disabled={disabled}
+        />
       </div>
 
-      <div>
-        <label>Contraseña</label>
-        <input name="password" type="password" required />
+      <div className="auth-field">
+        <label className="sr-only" htmlFor="register-password">
+          Contraseña
+        </label>
+        <input
+          id="register-password"
+          className="input"
+          name="password"
+          type="password"
+          placeholder="Contraseña"
+          required
+          disabled={disabled}
+        />
       </div>
 
-      <div>
-        <label>Repetir contraseña</label>
-        <input name="repeatPassword" type="password" required />
+      <div className="auth-field">
+        <label className="sr-only" htmlFor="register-repeat">
+          Confirmar contraseña
+        </label>
+        <input
+          id="register-repeat"
+          className="input"
+          name="repeatPassword"
+          type="password"
+          placeholder="Confirmar contraseña"
+          required
+          disabled={disabled}
+        />
       </div>
 
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && (
+        <p className="auth-message auth-message--error">{errorMessage}</p>
+      )}
 
-      <button type="submit">Registrarse</button>
+      <button type="submit" className="btn btn-primary" disabled={disabled}>
+        Crear cuenta
+      </button>
     </form>
   );
 }
