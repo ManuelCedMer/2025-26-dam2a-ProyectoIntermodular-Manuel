@@ -199,11 +199,16 @@ body.theme-dark {
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: conic-gradient(#fb923c 0 70%, rgba(229, 231, 235, 0.9) 70% 100%);
+
+  /* Por defecto 0% si no hay datos */
+  --ring-pct: 0%;
+
+  background: conic-gradient(#fb923c 0 var(--ring-pct), #e5e7eb var(--ring-pct) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 
 .home-calories-inner {
   width: 120px;

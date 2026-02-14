@@ -43,7 +43,7 @@ export async function getProgressEntriesByUser(userId) {
  */
 export async function saveDailyProgress({
   userId,
-  date, 
+  date,
   caloriesIn,
   caloriesOut,
   weight,
@@ -85,11 +85,30 @@ export async function saveDailyProgress({
     });
   }
 
-  // Devolvemos el objeto final (útil por si lo necesitas en el futuro).
   const finalSnapshot = await getDoc(progressDocRef);
 
   return {
     id: finalSnapshot.id,
     ...finalSnapshot.data(),
+  };
+}
+
+/**
+ * Devuelve el progreso de un usuario para una fecha concreta (YYYY-MM-DD).
+ * Usamos el id `${userId}_${date}` para leerlo directo.
+ */
+export async function getDailyProgressByDate({ userId, date }) {
+  const docId = `${userId}_${date}`;
+  const progressDocRef = doc(db, "progress", docId);
+
+  const snapshot = await getDoc(progressDocRef);
+
+  if (!snapshot.exists()) {
+    return null;
+  }
+
+  return {
+    id: snapshot.id,
+    ...snapshot.data(),
   };
 }

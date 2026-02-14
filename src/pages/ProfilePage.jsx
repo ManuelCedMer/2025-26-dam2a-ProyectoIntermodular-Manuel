@@ -11,6 +11,7 @@ import {
  * Permite:
  *  - Ver el correo del usuario.
  *  - Editar nombre visible, edad y objetivo principal [LOGIN-03].
+ *  - Editar meta calórica diaria (para HOME / progreso).
  *  - Cerrar sesión [LOGIN-02].
  *
  * Forma parte de [UI-02]: tarjeta centrada, adaptable en móvil y escritorio.
@@ -22,7 +23,9 @@ function ProfilePage() {
   const [age, setAge] = useState("");
   const [goal, setGoal] = useState("mantener");
 
-  
+  // Meta calórica diaria (kcal). 
+  const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState("");
+
   const [draftTheme, setDraftTheme] = useState(theme || "light");
 
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -53,8 +56,15 @@ function ProfilePage() {
         );
         setGoal(profile.goal || "mantener");
 
-        const loadedTheme = profile.theme || "light";
+        // Meta calórica diaria (si no existe, dejamos vacío para que el usuario la defina).
+        setDailyCaloriesGoal(
+          profile.dailyCaloriesGoal !== null &&
+            profile.dailyCaloriesGoal !== undefined
+            ? String(profile.dailyCaloriesGoal)
+            : "",
+        );
 
+        const loadedTheme = profile.theme || "light";
         setDraftTheme(loadedTheme);
       } catch (error) {
         console.error("Error al cargar perfil:", error);
@@ -91,6 +101,19 @@ function ProfilePage() {
       parsedAge = n;
     }
 
+    // Valido la meta calórica diaria
+    // Permitimos vacío (null) para que no sea obligatorio.
+    let parsedDailyCaloriesGoal = null;
+    if (dailyCaloriesGoal.trim() !== "") {
+      const n = Number(dailyCaloriesGoal);
+      if (Number.isNaN(n) || n < 800 || n > 6000) {
+        setErrorMessage("La meta calórica debe estar entre 800 y 6000 kcal.");
+        setMessage("");
+        return;
+      }
+      parsedDailyCaloriesGoal = Math.round(n);
+    }
+
     try {
       setSavingProfile(true);
       setErrorMessage("");
@@ -100,10 +123,10 @@ function ProfilePage() {
         displayName: displayName.trim(),
         age: parsedAge,
         goal,
+        dailyCaloriesGoal: parsedDailyCaloriesGoal,
         theme: draftTheme,
       });
 
-      
       setTheme(draftTheme);
 
       setMessage("Perfil actualizado correctamente.");
@@ -194,6 +217,20 @@ function ProfilePage() {
               <option value="mantener">Mantener</option>
               <option value="ganar">Ganar masa muscular</option>
             </select>
+          </div>
+
+          <div className="profile-form-row">
+            <label>Meta calórica diaria (kcal)</label>
+            <input
+              className="input"
+              type="number"
+              value={dailyCaloriesGoal}
+              onChange={(event) => setDailyCaloriesGoal(event.target.value)}
+              min="800"
+              max="6000"
+              placeholder="Ej: 2600"
+              disabled={loadingProfile}
+            />
           </div>
 
           <div className="profile-form-row">
