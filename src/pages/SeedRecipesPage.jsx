@@ -28,7 +28,7 @@ function SeedRecipesPage() {
 
   return (
     <div>
-      <h2>[ADMIN] Insertar recetas de prueba</h2>
+      <h2>Insertar recetas de prueba</h2>
       <p>
         Esta página es solo para desarrollo. Pulsa el botón una vez para crear
         20 recetas en la colección <strong>recipes</strong>.

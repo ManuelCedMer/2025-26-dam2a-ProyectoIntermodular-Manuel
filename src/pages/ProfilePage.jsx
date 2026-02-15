@@ -174,7 +174,7 @@ function ProfilePage() {
           </div>
 
           <div className="profile-header-text">
-            <h2>[PROFILE] Perfil y configuración</h2>
+            <h2>Perfil y configuración</h2>
             <p className="profile-email">{user.email}</p>
           </div>
         </div>

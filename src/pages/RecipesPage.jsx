@@ -168,7 +168,7 @@ function RecipesPage() {
     if (!user) {
     return (
       <div className="recipes-page">
-        <p>No hay usuario autenticado.</p>
+        <p>Inicia sesión para ver tu información.</p>
       </div>
     );
   }
@@ -179,7 +179,7 @@ function RecipesPage() {
         {/* Columna izquierda: filtros + resultados */}
         <div className="recipes-left">
           <header className="recipes-header">
-            <h2>[RECIPES] Búsqueda de recetas</h2>
+            <h2>Búsqueda de recetas</h2>
             <p className="recipes-subtitle">
               Busca por ingrediente o tipo de comida y guarda tus favoritas.
             </p>

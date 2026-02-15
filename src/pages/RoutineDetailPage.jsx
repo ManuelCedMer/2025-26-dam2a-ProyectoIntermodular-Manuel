@@ -371,8 +371,8 @@ function RoutineDetailPage() {
   if (!user) {
     return (
       <div style={pageStyles}>
-        <h2>[ROUTINES] Detalle de rutina</h2>
-        <p>No hay usuario autenticado.</p>
+        <h2>Detalle de rutina</h2>
+        <p>Inicia sesión para ver tu información.</p>
       </div>
     );
   }
@@ -381,7 +381,7 @@ function RoutineDetailPage() {
     <main style={pageStyles}>
       <header style={{ marginBottom: "20px" }}>
         <Link to="/rutinas">← Volver a mis rutinas</Link>
-        <h2>[ROUTINES] Ejercicios de la rutina</h2>
+        <h2>Ejercicios de la rutina</h2>
         {routineName && <h3>{routineName}</h3>}
         {errorMessage && <p style={{ color: "#b91c1c" }}>{errorMessage}</p>}
       </header>

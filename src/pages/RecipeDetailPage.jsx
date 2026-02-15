@@ -79,8 +79,8 @@ function RecipeDetailPage() {
   if (!user) {
     return (
       <div style={pageStyles}>
-        <h2>[RECIPES] Detalle de receta</h2>
-        <p>No hay usuario autenticado.</p>
+        <h2>Detalle de receta</h2>
+        <p>Inicia sesión para ver tu información.</p>
       </div>
     );
   }
@@ -88,7 +88,7 @@ function RecipeDetailPage() {
   if (loading && !recipe) {
     return (
       <div style={pageStyles}>
-        <h2>[RECIPES] Detalle de receta</h2>
+        <h2>Detalle de receta</h2>
         <p>Cargando receta...</p>
       </div>
     );
@@ -97,7 +97,7 @@ function RecipeDetailPage() {
   if (errorMessage && !recipe) {
     return (
       <div style={pageStyles}>
-        <h2>[RECIPES] Detalle de receta</h2>
+        <h2>Detalle de receta</h2>
         <p>{errorMessage}</p>
         <p>
           <Link to="/recetas">← Volver a la búsqueda</Link>
@@ -109,7 +109,7 @@ function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div style={pageStyles}>
-        <h2>[RECIPES] Detalle de receta</h2>
+        <h2>Detalle de receta</h2>
         <p>No se ha encontrado la receta.</p>
         <p>
           <Link to="/recetas">← Volver a la búsqueda</Link>

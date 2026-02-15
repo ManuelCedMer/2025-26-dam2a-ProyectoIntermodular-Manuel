@@ -47,7 +47,7 @@ function MainLayout() {
               "app-nav-link" + (isActive ? " app-nav-link--active" : "")
             }
           >
-            [HOME]
+            Inicio
           </NavLink>
 
           <NavLink
@@ -56,7 +56,7 @@ function MainLayout() {
               "app-nav-link" + (isActive ? " app-nav-link--active" : "")
             }
           >
-            [ROUTINES]
+            Rutinas
           </NavLink>
 
           <NavLink
@@ -65,7 +65,7 @@ function MainLayout() {
               "app-nav-link" + (isActive ? " app-nav-link--active" : "")
             }
           >
-            [DIET]
+            Dieta
           </NavLink>
 
           <NavLink
@@ -74,7 +74,7 @@ function MainLayout() {
               "app-nav-link" + (isActive ? " app-nav-link--active" : "")
             }
           >
-            [RECIPES]
+            Recetas
           </NavLink>
 
           <NavLink
@@ -83,7 +83,7 @@ function MainLayout() {
               "app-nav-link" + (isActive ? " app-nav-link--active" : "")
             }
           >
-            [PROGRESS]
+            Progreso
           </NavLink>
 
           <NavLink
@@ -92,7 +92,7 @@ function MainLayout() {
               "app-nav-link" + (isActive ? " app-nav-link--active" : "")
             }
           >
-            [PROFILE]
+            Perfil
           </NavLink>
         </nav>
       </header>

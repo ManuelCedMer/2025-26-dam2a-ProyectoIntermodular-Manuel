@@ -327,8 +327,8 @@ function RoutinesPage() {
   if (!user) {
     return (
       <div style={pageStyles}>
-        <h2>[ROUTINES] Gestión de rutinas</h2>
-        <p>No hay usuario autenticado.</p>
+        <h2>Gestión de rutinas</h2>
+        <p>Inicia sesión para ver tu información.</p>
       </div>
     );
   }
@@ -345,7 +345,7 @@ function RoutinesPage() {
             color: "var(--text, #111827)",
           }}
         >
-          [ROUTINES] Gestión de rutinas
+          Gestión de rutinas
         </h2>
         <p style={smallTextStyles}>
           Crea tus rutinas de entrenamiento, asigna los días de la semana y

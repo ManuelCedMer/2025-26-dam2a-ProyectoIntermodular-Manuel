@@ -365,7 +365,7 @@ function ProgressPage() {
         {/* Columna izquierda: encabezado, mensajes, formulario y tabla */}
         <div className="progress-left">
           <div className="progress-card">
-            <h2>[PROGRESS] Registro diario de calorías y peso</h2>
+            <h2>Registro diario de calorías y peso</h2>
             <p className="progress-subtitle">
               Registra tus calorías, peso y notas del día para poder visualizar
               la evolución a lo largo del tiempo.

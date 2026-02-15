@@ -346,8 +346,8 @@ function DietDetailPage() {
   if (!user) {
     return (
       <div style={pageStyles}>
-        <h2>[DIET] Detalle de plan de alimentación</h2>
-        <p>No hay usuario autenticado.</p>
+        <h2>Detalle de plan de alimentación</h2>
+        <p>Inicia sesión para ver tu información.</p>
       </div>
     );
   }
@@ -388,7 +388,7 @@ function DietDetailPage() {
                 color: "var(--text, #111827)",
               }}
             >
-              [DIET] Comidas del plan
+              Comidas del plan
             </h2>
             {dietName && (
               <p style={{ ...smallTextStyles, fontSize: "14px" }}>

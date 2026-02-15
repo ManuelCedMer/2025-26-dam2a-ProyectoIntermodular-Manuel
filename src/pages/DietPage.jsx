@@ -291,8 +291,8 @@ function DietPage() {
   if (!user) {
     return (
       <div style={pageStyles}>
-        <h2>[DIET] Planes de alimentación</h2>
-        <p>No hay usuario autenticado.</p>
+        <h2>Planes de alimentación</h2>
+        <p>Inicia sesión para ver tu información.</p>
       </div>
     );
   }
@@ -309,7 +309,7 @@ function DietPage() {
             color: "var(--text, #111827)",
           }}
         >
-          [DIET] Planes de alimentación
+          Planes de alimentación
         </h2>
         <p style={smallTextStyles}>
           Crea y gestiona tus planes de alimentación semanales. Más adelante,
