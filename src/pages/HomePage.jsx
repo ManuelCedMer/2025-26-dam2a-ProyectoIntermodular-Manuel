@@ -126,7 +126,7 @@ function HomePage() {
   } else if (displayRemaining <= 150) {
     feedbackText = `Casi listo: te quedan ${displayRemaining} kcal.`;
   } else {
-    feedbackText = `Te quedan ${displayRemaining} kcal hoy.`;
+    feedbackText = `Te quedan ${displayRemaining} kcal para tu objetivo.`;
   }
 
   return (

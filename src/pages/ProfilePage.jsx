@@ -54,7 +54,9 @@ function ProfilePage() {
             ? String(profile.age)
             : "",
         );
-        setGoal(profile.goal || "mantener");
+         const rawGoal = (profile.goal || "mantener").toLowerCase().trim();
+          setGoal(["adelgazar", "mantener", "ganar"].includes(rawGoal) ? rawGoal : "mantener");
+
 
         // Meta calórica diaria (si no existe, dejamos vacío para que el usuario la defina).
         setDailyCaloriesGoal(

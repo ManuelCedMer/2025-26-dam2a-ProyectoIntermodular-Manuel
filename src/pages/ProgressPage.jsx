@@ -55,7 +55,7 @@ function normalizeGoal(goal) {
     return "mantener";
   }
   if (g.includes("masa") || g.includes("muscular") || g.includes("ganar")) {
-    return "ganar_masa_muscular";
+    return "ganar";
   }
 
   return null;
@@ -164,7 +164,7 @@ function calculateFeedback(goalNormalizado, entries) {
       extraMessage =
         "Tienes un déficit calórico apreciable. Si notas que bajas de peso y no es tu objetivo, podrías aumentar un poco la ingesta.";
     }
-  } else if (goalNormalizado === "ganar_masa_muscular") {
+  } else if (goalNormalizado === "ganar") {
     if (avgRounded >= 200 && avgRounded <= 500) {
       extraMessage =
         "Este superávit calórico moderado suele ser adecuado para favorecer la ganancia de masa muscular, siempre que vaya acompañado de entrenamiento de fuerza.";
