@@ -181,6 +181,21 @@ function calculateFeedback(goalNormalizado, entries) {
 }
 
 /**
+ * Validaciones mínimas para inputs numéricos.
+ * Devuelve string vacío si está OK.
+ */
+function validateNonNegativeNumber(value, label, { max = null } = {}) {
+  const trimmed = value.trim();
+  if (trimmed === "") return "";
+
+  const num = Number(trimmed);
+  if (Number.isNaN(num)) return `${label} debe ser un número válido.`;
+  if (num < 0) return `${label} no puede ser negativo.`;
+  if (max !== null && num > max) return `${label} parece demasiado alto.`;
+  return "";
+}
+
+/**
  * Pantalla de progreso [PROGRESS].
  */
 function ProgressPage() {
@@ -202,15 +217,39 @@ function ProgressPage() {
   const [goalRaw, setGoalRaw] = useState(null);
   const [normalizedGoal, setNormalizedGoal] = useState(null);
 
+  // Meta diaria (para aviso si falta).
+  const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState(null);
+
   // Rango de fechas para los gráficos.
   const [range, setRange] = useState("30d");
 
   // Mensaje de feedback calculado.
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Errores por campo (UI).
+  const caloriesInError = validateNonNegativeNumber(
+    caloriesIn,
+    "Calorías consumidas",
+    { max: 20000 },
+  );
+  const caloriesOutError = validateNonNegativeNumber(
+    caloriesOut,
+    "Calorías gastadas",
+    { max: 20000 },
+  );
+  const weightError = validateNonNegativeNumber(weight, "Peso", { max: 500 });
+
+  const hasFieldErrors = Boolean(caloriesInError || caloriesOutError || weightError);
+  const hasAnyData =
+    caloriesIn.trim() !== "" ||
+    caloriesOut.trim() !== "" ||
+    weight.trim() !== "" ||
+    notes.trim() !== "";
 
   /**
    * Carga el historial de progreso y el perfil del usuario al entrar en la página.
@@ -220,7 +259,7 @@ function ProgressPage() {
 
     async function loadData() {
       try {
-        setLoading(true);
+        setIsLoadingData(true);
         setErrorMessage("");
 
         const [entriesFromDb, profile] = await Promise.all([
@@ -230,12 +269,27 @@ function ProgressPage() {
 
         setEntries(entriesFromDb);
 
-        if (profile && profile.goal) {
-          setGoalRaw(profile.goal);
-          setNormalizedGoal(normalizeGoal(profile.goal));
+        if (profile) {
+          if (profile.goal) {
+            setGoalRaw(profile.goal);
+            setNormalizedGoal(normalizeGoal(profile.goal));
+          } else {
+            setGoalRaw(null);
+            setNormalizedGoal(null);
+          }
+
+          if (
+            profile.dailyCaloriesGoal !== undefined &&
+            profile.dailyCaloriesGoal !== null
+          ) {
+            setDailyCaloriesGoal(profile.dailyCaloriesGoal);
+          } else {
+            setDailyCaloriesGoal(null);
+          }
         } else {
           setGoalRaw(null);
           setNormalizedGoal(null);
+          setDailyCaloriesGoal(null);
         }
       } catch (error) {
         console.error("Error al cargar progreso o perfil:", error);
@@ -243,7 +297,7 @@ function ProgressPage() {
           "No se ha podido cargar el historial de progreso o el perfil de usuario.",
         );
       } finally {
-        setLoading(false);
+        setIsLoadingData(false);
       }
     }
 
@@ -271,6 +325,12 @@ function ProgressPage() {
     return Number.isNaN(num) ? null : num;
   }
 
+  function handleSetToday() {
+    setDate(getTodayDateString());
+    setErrorMessage("");
+    setSuccessMessage("");
+  }
+
   /**
    * Maneja el envío del formulario para guardar el progreso diario.
    * [PROGRESS-01][PROGRESS-02]
@@ -280,6 +340,18 @@ function ProgressPage() {
 
     if (!user) {
       setErrorMessage("No hay usuario autenticado.");
+      return;
+    }
+
+    if (!date) {
+      setErrorMessage("Selecciona una fecha válida.");
+      setSuccessMessage("");
+      return;
+    }
+
+    if (hasFieldErrors) {
+      setErrorMessage("Revisa los campos marcados antes de guardar.");
+      setSuccessMessage("");
       return;
     }
 
@@ -301,7 +373,7 @@ function ProgressPage() {
     }
 
     try {
-      setLoading(true);
+      setIsSaving(true);
       setErrorMessage("");
       setSuccessMessage("");
 
@@ -336,7 +408,7 @@ function ProgressPage() {
       setErrorMessage("No se ha podido guardar el progreso.");
       setSuccessMessage("");
     } finally {
-      setLoading(false);
+      setIsSaving(false);
     }
   }
 
@@ -344,7 +416,7 @@ function ProgressPage() {
     return (
       <div className="progress-page">
         <div className="progress-card">
-          <h2>[PROGRESS] Registro y seguimiento de progreso</h2>
+          <h2>Registro y seguimiento de progreso</h2>
           <p>No hay usuario autenticado.</p>
         </div>
       </div>
@@ -359,6 +431,14 @@ function ProgressPage() {
     a.date > b.date ? 1 : -1,
   );
 
+  const hasWeightData = !chartData.every(
+    (entry) => entry.weight === null || entry.weight === undefined,
+  );
+
+  const showDailyGoalInfo = dailyCaloriesGoal === null;
+
+  const canSubmit = !isSaving && !hasFieldErrors && hasAnyData;
+
   return (
     <div className="progress-page">
       <section className="progress-layout">
@@ -371,6 +451,14 @@ function ProgressPage() {
               la evolución a lo largo del tiempo.
             </p>
           </div>
+
+          {showDailyGoalInfo && (
+            <div className="progress-card progress-message progress-message--info">
+              Aún no tienes configurada la meta calórica diaria en tu perfil.
+              Puedes configurarla para que la pantalla de inicio muestre un
+              resumen más completo.
+            </div>
+          )}
 
           {errorMessage && (
             <div className="progress-card progress-message progress-message--error">
@@ -388,17 +476,27 @@ function ProgressPage() {
           <div className="progress-card">
             <h3>Registrar progreso del día</h3>
 
-            <form onSubmit={handleSubmit}>
-              <div>
+            <form onSubmit={handleSubmit} className="progress-form">
+              <div className="progress-field">
                 <label>Fecha</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(event) => setDate(event.target.value)}
-                />
+                <div className="progress-inline">
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(event) => setDate(event.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="progress-secondary-button"
+                    onClick={handleSetToday}
+                    disabled={isSaving}
+                  >
+                    Hoy
+                  </button>
+                </div>
               </div>
 
-              <div>
+              <div className="progress-field">
                 <label>Calorías consumidas (kcal)</label>
                 <input
                   type="number"
@@ -407,9 +505,12 @@ function ProgressPage() {
                   min="0"
                   placeholder="Ej: 2200"
                 />
+                {caloriesInError && (
+                  <div className="progress-field-error">{caloriesInError}</div>
+                )}
               </div>
 
-              <div>
+              <div className="progress-field">
                 <label>Calorías gastadas (kcal)</label>
                 <input
                   type="number"
@@ -418,9 +519,12 @@ function ProgressPage() {
                   min="0"
                   placeholder="Ej: 500"
                 />
+                {caloriesOutError && (
+                  <div className="progress-field-error">{caloriesOutError}</div>
+                )}
               </div>
 
-              <div>
+              <div className="progress-field">
                 <label>Peso (kg)</label>
                 <input
                   type="number"
@@ -430,9 +534,12 @@ function ProgressPage() {
                   step="0.1"
                   placeholder="Ej: 72.5"
                 />
+                {weightError && (
+                  <div className="progress-field-error">{weightError}</div>
+                )}
               </div>
 
-              <div>
+              <div className="progress-field">
                 <label>Notas (opcional)</label>
                 <textarea
                   value={notes}
@@ -441,8 +548,8 @@ function ProgressPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading}>
-                {loading ? "Guardando..." : "Guardar progreso del día"}
+              <button type="submit" disabled={!canSubmit}>
+                {isSaving ? "Guardando..." : "Guardar progreso del día"}
               </button>
             </form>
           </div>
@@ -451,12 +558,22 @@ function ProgressPage() {
           <div className="progress-card">
             <h3>Historial de progreso</h3>
 
-            {loading && entries.length === 0 && (
+            {isLoadingData && entries.length === 0 && (
               <p>Cargando historial de progreso...</p>
             )}
 
-            {!loading && entries.length === 0 && (
-              <p>Todavía no has registrado ningún día.</p>
+            {!isLoadingData && entries.length === 0 && (
+              <div className="progress-empty">
+                <p>Todavía no has registrado ningún día.</p>
+                <button
+                  type="button"
+                  className="progress-secondary-button"
+                  onClick={handleSetToday}
+                  disabled={isSaving}
+                >
+                  Registrar hoy
+                </button>
+              </div>
             )}
 
             {entries.length > 0 && (
@@ -531,7 +648,9 @@ function ProgressPage() {
           <div className="progress-card progress-chart-card">
             <h3>Gráfico de calorías</h3>
 
-            {chartData.length === 0 ? (
+            {isLoadingData ? (
+              <p>Cargando datos...</p>
+            ) : chartData.length === 0 ? (
               <p>No hay datos suficientes para mostrar el gráfico.</p>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -566,10 +685,9 @@ function ProgressPage() {
           <div className="progress-card progress-chart-card">
             <h3>Gráfico de peso</h3>
 
-            {chartData.every(
-              (entry) =>
-                entry.weight === null || entry.weight === undefined,
-            ) ? (
+            {isLoadingData ? (
+              <p>Cargando datos...</p>
+            ) : !hasWeightData ? (
               <p>No hay datos de peso suficientes para mostrar el gráfico.</p>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
