@@ -112,30 +112,26 @@ function RecipeDetailPage() {
     <main className="page-container page-container--md">
       <header className="page-header">
         <Link to="/recetas">← Volver a la búsqueda</Link>
-        <h2 className="page-title">[RECIPES] Detalle de receta</h2>
+        <h2 className="page-title">Detalle de receta</h2>
       </header>
 
       {/* Información principal de la receta */}
       <section className="card">
-        <h3 style={{ margin: 0, fontSize: "20px", fontWeight: 700 }}>
-          {recipe.title}
-        </h3>
+        <h3 className="section-title">{recipe.title}</h3>
 
         {recipe.mealType && (
-          <p className="text-muted" style={{ margin: "6px 0 0" }}>
+          <p className="text-muted block-mt">
             Tipo de comida: {recipe.mealType}
           </p>
         )}
 
         {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
-          <p className="text-muted" style={{ margin: "6px 0 0" }}>
-            Etiquetas: {recipe.tags.join(", ")}
-          </p>
+          <p className="text-muted">Etiquetas: {recipe.tags.join(", ")}</p>
         )}
 
         {recipe.estimatedCalories !== null &&
           recipe.estimatedCalories !== undefined && (
-            <p className="text-muted" style={{ margin: "6px 0 0" }}>
+            <p className="text-muted">
               Calorías aproximadas: {recipe.estimatedCalories} kcal
             </p>
           )}
@@ -143,13 +139,11 @@ function RecipeDetailPage() {
 
       {/* Ingredientes */}
       <section className="card">
-        <h4 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: 600 }}>
-          Ingredientes
-        </h4>
+        <h4 className="section-title-sm">Ingredientes</h4>
         {ingredients.length === 0 ? (
           <p>No se han especificado ingredientes.</p>
         ) : (
-          <ul style={{ margin: 0 }}>
+          <ul className="list-clean">
             {ingredients.map((ingredient, index) => (
               <li key={index}>{ingredient}</li>
             ))}
@@ -159,13 +153,11 @@ function RecipeDetailPage() {
 
       {/* Pasos */}
       <section className="card">
-        <h4 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: 600 }}>
-          Pasos
-        </h4>
+        <h4 className="section-title-sm">Pasos</h4>
         {steps.length === 0 ? (
           <p>No se han especificado pasos.</p>
         ) : (
-          <ol style={{ margin: 0 }}>
+          <ol className="list-clean">
             {steps.map((step, index) => (
               <li key={index}>{step}</li>
             ))}
