@@ -4,16 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { getDailyProgressByDate } from "../services/progressService.js";
 import { getUserProfile } from "../services/userProfileService.js";
 
-/**
- * Devuelve la fecha de hoy en formato "YYYY-MM-DD".
- */
-function getTodayDateString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+import { getTodayDateString } from "../utils/dates.js";
 
 /**
  * Convierte a número válido o null (si no existe o no es número).
@@ -27,10 +18,6 @@ function toValidPositiveNumber(value) {
 
 /**
  * Pantalla de inicio [HOME].
- *
- * Opción 3:
- *  - "Te quedan X kcal" (objetivo - consumidas + gastadas)
- *  - Anillo basado en el progreso neto del día
  */
 function HomePage() {
   const { user } = useAuth();
@@ -63,8 +50,7 @@ function HomePage() {
 
         setTodayEntry(entry);
 
-        const profileGoal =
-          toValidPositiveNumber(profile?.dailyCaloriesGoal);
+        const profileGoal = toValidPositiveNumber(profile?.dailyCaloriesGoal);
 
         setGoalCalories(profileGoal || 2000);
       } catch (error) {
