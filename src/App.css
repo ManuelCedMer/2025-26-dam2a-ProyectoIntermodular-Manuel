@@ -1108,3 +1108,123 @@ button.progress-secondary-button:disabled {
     padding-inline: 1.25rem;
   }
 }
+/* =============================== */
+/* Helpers de layout y botones [UI-04] */
+/* =============================== */
+
+.page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.page-container--md {
+  max-width: 900px;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text);
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+/* Botones */
+.btn {
+  width: auto;              
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;    
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
+}
+
+.btn-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid rgba(185, 28, 28, 0.15);
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+
+.form-stack {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+.item-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-2);
+  color: var(--card-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.badge-pill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--card-text);
+  background-color: var(--primary-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 4px 8px;
+}

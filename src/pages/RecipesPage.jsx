@@ -192,7 +192,7 @@ function RecipesPage() {
             <form onSubmit={handleSearch}>
               <div>
                 <label>Ingrediente</label>
-                <input
+                <input className="input"
                   type="text"
                   value={ingredientText}
                   onChange={(event) => setIngredientText(event.target.value)}

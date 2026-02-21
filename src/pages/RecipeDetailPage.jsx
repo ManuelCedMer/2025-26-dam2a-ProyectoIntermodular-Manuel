@@ -45,76 +45,53 @@ function RecipeDetailPage() {
     loadRecipe();
   }, [user, recipeId]);
 
-  /* =========================
-     Estilos UI-02 (tarjetas)
-     ========================= */
-  const pageStyles = {
-    maxWidth: "900px",
-    margin: "0 auto",
-    padding: "24px 16px 40px",
-  };
-
-  const cardStyles = {
-    backgroundColor: "var(--card, #ffffff)",
-    color: "var(--card-text, #111827)",
-    borderRadius: "16px",
-    padding: "16px 18px",
-    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
-    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
-    marginBottom: "16px",
-  };
-
-  const sectionTitleStyles = {
-    fontSize: "18px",
-    fontWeight: "600",
-    marginBottom: "8px",
-    color: "var(--card-text, #111827)",
-  };
-
-  const smallTextStyles = {
-    fontSize: "14px",
-    color: "var(--muted, #374151)",
-  };
-
   if (!user) {
     return (
-      <div style={pageStyles}>
-        <h2>Detalle de receta</h2>
+      <main className="page-container page-container--md">
+        <header className="page-header">
+          <h2 className="page-title">Detalle de receta</h2>
+        </header>
         <p>Inicia sesión para ver tu información.</p>
-      </div>
+      </main>
     );
   }
 
   if (loading && !recipe) {
     return (
-      <div style={pageStyles}>
-        <h2>Detalle de receta</h2>
+      <main className="page-container page-container--md">
+        <header className="page-header">
+          <h2 className="page-title">Detalle de receta</h2>
+        </header>
         <p>Cargando receta...</p>
-      </div>
+      </main>
     );
   }
 
   if (errorMessage && !recipe) {
     return (
-      <div style={pageStyles}>
-        <h2>Detalle de receta</h2>
+      <main className="page-container page-container--md">
+        <header className="page-header">
+          <h2 className="page-title">Detalle de receta</h2>
+        </header>
         <p>{errorMessage}</p>
         <p>
           <Link to="/recetas">← Volver a la búsqueda</Link>
         </p>
-      </div>
+      </main>
     );
   }
 
   if (!recipe) {
     return (
-      <div style={pageStyles}>
-        <h2>Detalle de receta</h2>
+      <main className="page-container page-container--md">
+        <header className="page-header">
+          <h2 className="page-title">Detalle de receta</h2>
+        </header>
         <p>No se ha encontrado la receta.</p>
         <p>
           <Link to="/recetas">← Volver a la búsqueda</Link>
         </p>
-      </div>
+      </main>
     );
   }
 
@@ -132,41 +109,47 @@ function RecipeDetailPage() {
         .filter((line) => line.trim() !== "");
 
   return (
-    <main style={pageStyles}>
-      <header style={{ marginBottom: "20px" }}>
+    <main className="page-container page-container--md">
+      <header className="page-header">
         <Link to="/recetas">← Volver a la búsqueda</Link>
-        <h2 style={{ fontSize: "24px", fontWeight: "700" }}>
-          [RECIPES] Detalle de receta
-        </h2>
+        <h2 className="page-title">[RECIPES] Detalle de receta</h2>
       </header>
 
       {/* Información principal de la receta */}
-      <section style={cardStyles}>
-        <h3 style={{ fontSize: "20px", fontWeight: "700" }}>{recipe.title}</h3>
+      <section className="card">
+        <h3 style={{ margin: 0, fontSize: "20px", fontWeight: 700 }}>
+          {recipe.title}
+        </h3>
 
         {recipe.mealType && (
-          <p style={smallTextStyles}>Tipo de comida: {recipe.mealType}</p>
+          <p className="text-muted" style={{ margin: "6px 0 0" }}>
+            Tipo de comida: {recipe.mealType}
+          </p>
         )}
 
         {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
-          <p style={smallTextStyles}>Etiquetas: {recipe.tags.join(", ")}</p>
+          <p className="text-muted" style={{ margin: "6px 0 0" }}>
+            Etiquetas: {recipe.tags.join(", ")}
+          </p>
         )}
 
         {recipe.estimatedCalories !== null &&
           recipe.estimatedCalories !== undefined && (
-            <p style={smallTextStyles}>
+            <p className="text-muted" style={{ margin: "6px 0 0" }}>
               Calorías aproximadas: {recipe.estimatedCalories} kcal
             </p>
           )}
       </section>
 
       {/* Ingredientes */}
-      <section style={cardStyles}>
-        <h4 style={sectionTitleStyles}>Ingredientes</h4>
+      <section className="card">
+        <h4 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: 600 }}>
+          Ingredientes
+        </h4>
         {ingredients.length === 0 ? (
           <p>No se han especificado ingredientes.</p>
         ) : (
-          <ul>
+          <ul style={{ margin: 0 }}>
             {ingredients.map((ingredient, index) => (
               <li key={index}>{ingredient}</li>
             ))}
@@ -175,12 +158,14 @@ function RecipeDetailPage() {
       </section>
 
       {/* Pasos */}
-      <section style={cardStyles}>
-        <h4 style={sectionTitleStyles}>Pasos</h4>
+      <section className="card">
+        <h4 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: 600 }}>
+          Pasos
+        </h4>
         {steps.length === 0 ? (
           <p>No se han especificado pasos.</p>
         ) : (
-          <ol>
+          <ol style={{ margin: 0 }}>
             {steps.map((step, index) => (
               <li key={index}>{step}</li>
             ))}

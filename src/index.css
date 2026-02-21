@@ -28,3 +28,91 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* =============================== */
+/* Base UI para elementos sin clase */
+/* =============================== */
+
+:where(input, textarea, select) {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--input-border);
+  font-size: 0.9rem;
+  background: var(--input-bg);
+  color: var(--input-text);
+}
+
+:where(textarea) {
+  min-height: 92px;
+  resize: vertical;
+}
+
+:where(input, textarea, select)::placeholder {
+  color: var(--muted);
+}
+
+:where(input, textarea, select):focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+:where(input, textarea, select):disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Botones base (los estilos con clase en App.css prevalecen) */
+button {
+  font: inherit;
+}
+
+button:not([class]) {
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+button:not([class]):disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tablas: legibles y con scroll horizontal en móvil */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.55rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--card-border);
+}
+
+thead th {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+tbody tr:hover {
+  background-color: var(--primary-soft);
+}
+
+@media (max-width: 640px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

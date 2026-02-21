@@ -64,102 +64,6 @@ function DietDetailPage() {
   };
 
   /**
-   * Estilos inline básicos, en línea con HOME / RECIPES / DIET.
-   */
-  const pageStyles = {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "24px 16px 40px",
-  };
-
-  const columnStyle = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  };
-
-  const cardStyles = {
-    backgroundColor: "var(--card, #ffffff)",
-    color: "var(--card-text, #111827)",
-    borderRadius: "16px",
-    padding: "16px 18px",
-    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
-    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
-  };
-
-  const sectionTitleStyles = {
-    marginBottom: "8px",
-    fontSize: "18px",
-    fontWeight: "600",
-    color: "var(--card-text, #111827)",
-  };
-
-  const labelStyles = {
-    display: "block",
-    marginBottom: "4px",
-    fontSize: "14px",
-    fontWeight: "500",
-    color: "var(--muted, #374151)",
-  };
-
-  const inputStyles = {
-    width: "100%",
-    padding: "8px 10px",
-    borderRadius: "8px",
-    border: "1px solid var(--input-border, #d1d5db)",
-    fontSize: "14px",
-    backgroundColor: "var(--input-bg, #ffffff)",
-    color: "var(--input-text, #111827)",
-  };
-
-  const selectStyles = {
-    width: "100%",
-    padding: "8px 10px",
-    borderRadius: "8px",
-    border: "1px solid var(--input-border, #d1d5db)",
-    fontSize: "14px",
-    backgroundColor: "var(--input-bg, #ffffff)",
-    color: "var(--input-text, #111827)",
-  };
-
-  const primaryButtonStyles = {
-    padding: "8px 14px",
-    borderRadius: "999px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "500",
-    background:
-      "linear-gradient(135deg, rgba(56,189,248,0.95), rgba(37,99,235,0.95))",
-    color: "#ffffff",
-  };
-
-  const ghostButtonStyles = {
-    padding: "6px 10px",
-    borderRadius: "999px",
-    border: "1px solid var(--card-border, #d1d5db)",
-    cursor: "pointer",
-    fontSize: "13px",
-    backgroundColor: "var(--card-2, #f9fafb)",
-    color: "var(--card-text, #374151)",
-  };
-
-  const dangerButtonStyles = {
-    padding: "6px 10px",
-    borderRadius: "999px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "13px",
-    backgroundColor: "#fee2e2",
-    color: "#b91c1c",
-  };
-
-  const smallTextStyles = {
-    fontSize: "13px",
-    color: "var(--muted, #6b7280)",
-  };
-
-  /**
    * Carga las comidas del plan de alimentación al entrar en la página.
    */
   useEffect(() => {
@@ -345,10 +249,12 @@ function DietDetailPage() {
 
   if (!user) {
     return (
-      <div style={pageStyles}>
-        <h2>Detalle de plan de alimentación</h2>
+      <main className="page-container">
+        <header className="page-header">
+          <h2 className="page-title">Detalle de plan de alimentación</h2>
+        </header>
         <p>Inicia sesión para ver tu información.</p>
-      </div>
+      </main>
     );
   }
 
@@ -367,9 +273,9 @@ function DietDetailPage() {
   });
 
   return (
-    <main style={pageStyles}>
+    <main className="page-container">
       {/* Cabecera de la pantalla */}
-      <header style={{ marginBottom: "20px" }}>
+      <header className="page-header">
         <div
           style={{
             display: "flex",
@@ -380,33 +286,15 @@ function DietDetailPage() {
           }}
         >
           <div>
-            <h2
-              style={{
-                fontSize: "24px",
-                fontWeight: "700",
-                marginBottom: "4px",
-                color: "var(--text, #111827)",
-              }}
-            >
-              Comidas del plan
-            </h2>
+            <h2 className="page-title">Comidas del plan</h2>
             {dietName && (
-              <p style={{ ...smallTextStyles, fontSize: "14px" }}>
+              <p className="page-subtitle" style={{ fontSize: "14px" }}>
                 Plan seleccionado: <strong>{dietName}</strong>
               </p>
             )}
           </div>
 
-          <Link
-            to="/dietas"
-            style={{
-              ...ghostButtonStyles,
-              textDecoration: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <Link to="/dietas" className="btn btn-secondary btn-sm">
             ← Volver a mis planes
           </Link>
         </div>
@@ -419,31 +307,25 @@ function DietDetailPage() {
       {/* Contenedor principal en dos columnas */}
       <div className="diet-layout">
         {/* Columna izquierda: creación y edición */}
-        <div style={columnStyle}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* Formulario de creación de comida */}
-          <section style={cardStyles}>
-            <h3 style={sectionTitleStyles}>Añadir comida</h3>
-            <p style={smallTextStyles}>
+          <section className="card">
+            <h3 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: 600 }}>
+              Añadir comida
+            </h3>
+            <p className="page-subtitle">
               Elige el día, el tipo de comida y una descripción breve. Puedes
               añadir también las calorías estimadas para utilizar esta dieta
               como referencia en tu progreso.
             </p>
 
-            <form
-              onSubmit={handleCreateMeal}
-              style={{
-                marginTop: "12px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-              }}
-            >
+            <form onSubmit={handleCreateMeal} className="form-stack">
               <div>
-                <label style={labelStyles}>Día de la semana</label>
+                <label>Día de la semana</label>
                 <select
+                  className="select"
                   value={dayOfWeek}
                   onChange={(event) => setDayOfWeek(event.target.value)}
-                  style={selectStyles}
                 >
                   {availableDays.map((day) => (
                     <option key={day} value={day}>
@@ -454,11 +336,11 @@ function DietDetailPage() {
               </div>
 
               <div>
-                <label style={labelStyles}>Tipo de comida</label>
+                <label>Tipo de comida</label>
                 <select
+                  className="select"
                   value={mealType}
                   onChange={(event) => setMealType(event.target.value)}
-                  style={selectStyles}
                 >
                   {availableMealTypes.map((type) => (
                     <option key={type} value={type}>
@@ -469,33 +351,29 @@ function DietDetailPage() {
               </div>
 
               <div>
-                <label style={labelStyles}>Nombre de la comida</label>
+                <label>Nombre de la comida</label>
                 <input
+                  className="input"
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Ej: Avena con fruta, pasta con pollo..."
                   required
-                  style={inputStyles}
                 />
               </div>
 
               <div>
-                <label style={labelStyles}>Calorías estimadas (opcional)</label>
+                <label>Calorías estimadas (opcional)</label>
                 <input
+                  className="input"
                   type="number"
                   value={estimatedCalories}
                   onChange={(event) => setEstimatedCalories(event.target.value)}
                   min="0"
-                  style={inputStyles}
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                style={primaryButtonStyles}
-              >
+              <button type="submit" disabled={loading} className="btn btn-primary btn-block">
                 {loading ? "Guardando..." : "Guardar comida"}
               </button>
             </form>
@@ -503,28 +381,22 @@ function DietDetailPage() {
 
           {/* Formulario de edición de comida */}
           {editingId && (
-            <section style={cardStyles}>
-              <h3 style={sectionTitleStyles}>Editar comida</h3>
-              <p style={smallTextStyles}>
+            <section className="card">
+              <h3 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: 600 }}>
+                Editar comida
+              </h3>
+              <p className="page-subtitle">
                 Modifica el día, el tipo de comida, el nombre o las calorías
                 estimadas de la comida seleccionada.
               </p>
 
-              <form
-                onSubmit={handleUpdateMeal}
-                style={{
-                  marginTop: "12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                }}
-              >
+              <form onSubmit={handleUpdateMeal} className="form-stack">
                 <div>
-                  <label style={labelStyles}>Día de la semana</label>
+                  <label>Día de la semana</label>
                   <select
+                    className="select"
                     value={editDayOfWeek}
                     onChange={(event) => setEditDayOfWeek(event.target.value)}
-                    style={selectStyles}
                   >
                     {availableDays.map((day) => (
                       <option key={day} value={day}>
@@ -535,11 +407,11 @@ function DietDetailPage() {
                 </div>
 
                 <div>
-                  <label style={labelStyles}>Tipo de comida</label>
+                  <label>Tipo de comida</label>
                   <select
+                    className="select"
                     value={editMealType}
                     onChange={(event) => setEditMealType(event.target.value)}
-                    style={selectStyles}
                   >
                     {availableMealTypes.map((type) => (
                       <option key={type} value={type}>
@@ -550,43 +422,33 @@ function DietDetailPage() {
                 </div>
 
                 <div>
-                  <label style={labelStyles}>Nombre de la comida</label>
+                  <label>Nombre de la comida</label>
                   <input
+                    className="input"
                     type="text"
                     value={editName}
                     onChange={(event) => setEditName(event.target.value)}
                     required
-                    style={inputStyles}
                   />
                 </div>
 
                 <div>
-                  <label style={labelStyles}>Calorías estimadas (opcional)</label>
+                  <label>Calorías estimadas (opcional)</label>
                   <input
+                    className="input"
                     type="number"
                     value={editEstimatedCalories}
-                    onChange={(event) =>
-                      setEditEstimatedCalories(event.target.value)
-                    }
+                    onChange={(event) => setEditEstimatedCalories(event.target.value)}
                     min="0"
-                    style={inputStyles}
                   />
                 </div>
 
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    style={primaryButtonStyles}
-                  >
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button type="submit" disabled={loading} className="btn btn-primary">
                     {loading ? "Guardando..." : "Guardar cambios"}
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={cancelEdit}
-                    style={ghostButtonStyles}
-                  >
+                  <button type="button" onClick={cancelEdit} className="btn btn-secondary">
                     Cancelar
                   </button>
                 </div>
@@ -596,10 +458,12 @@ function DietDetailPage() {
         </div>
 
         {/* Columna derecha: listado de comidas */}
-        <div style={columnStyle}>
-          <section style={cardStyles}>
-            <h3 style={sectionTitleStyles}>Comidas de este plan</h3>
-            <p style={smallTextStyles}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <section className="card">
+            <h3 style={{ margin: "0 0 8px", fontSize: "18px", fontWeight: 600 }}>
+              Comidas de este plan
+            </h3>
+            <p className="page-subtitle">
               Las comidas se muestran ordenadas por día de la semana y tipo de
               comida para que puedas revisar rápidamente todo tu plan semanal.
             </p>
@@ -626,19 +490,7 @@ function DietDetailPage() {
                 }}
               >
                 {sortedMeals.map((meal) => (
-                  <li
-                    key={meal.id}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: "12px",
-                      border: "1px solid var(--card-border, #e5e7eb)",
-                      backgroundColor: "var(--card-2, #f9fafb)",
-                      color: "var(--card-text, #111827)",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "4px",
-                    }}
-                  >
+                  <li key={meal.id} className="item-card">
                     <div
                       style={{
                         display: "flex",
@@ -653,46 +505,27 @@ function DietDetailPage() {
                           {dayLabels[meal.dayOfWeek] || meal.dayOfWeek} ·{" "}
                           {mealTypeLabels[meal.mealType] || meal.mealType}
                         </strong>
-                        <div style={smallTextStyles}>{meal.name}</div>
+                        <div className="page-subtitle">{meal.name}</div>
                       </div>
 
                       {meal.estimatedCalories !== null &&
                         meal.estimatedCalories !== undefined && (
-                          <span
-                            style={{
-                              fontSize: "13px",
-                              fontWeight: "600",
-                              color: "var(--card-text, #111827)",
-                              backgroundColor: "var(--primary-soft, #e0f2fe)",
-                              border: "1px solid var(--card-border, #e5e7eb)",
-                              borderRadius: "999px",
-                              padding: "4px 8px",
-                            }}
-                          >
-                            {meal.estimatedCalories} kcal
-                          </span>
+                          <span className="badge-pill">{meal.estimatedCalories} kcal</span>
                         )}
                     </div>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "8px",
-                        flexWrap: "wrap",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="item-actions">
                       <button
                         type="button"
                         onClick={() => startEditMeal(meal)}
-                        style={ghostButtonStyles}
+                        className="btn btn-secondary btn-sm"
                       >
                         Editar
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteMeal(meal.id)}
-                        style={dangerButtonStyles}
+                        className="btn btn-danger btn-sm"
                       >
                         Eliminar
                       </button>

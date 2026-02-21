@@ -480,7 +480,7 @@ function ProgressPage() {
               <div className="progress-field">
                 <label>Fecha</label>
                 <div className="progress-inline">
-                  <input
+                  <input className="input"
                     type="date"
                     value={date}
                     onChange={(event) => setDate(event.target.value)}
@@ -498,7 +498,7 @@ function ProgressPage() {
 
               <div className="progress-field">
                 <label>Calorías consumidas (kcal)</label>
-                <input
+                <input className="input"
                   type="number"
                   value={caloriesIn}
                   onChange={(event) => setCaloriesIn(event.target.value)}
@@ -512,7 +512,7 @@ function ProgressPage() {
 
               <div className="progress-field">
                 <label>Calorías gastadas (kcal)</label>
-                <input
+                <input className="input"
                   type="number"
                   value={caloriesOut}
                   onChange={(event) => setCaloriesOut(event.target.value)}
@@ -526,7 +526,7 @@ function ProgressPage() {
 
               <div className="progress-field">
                 <label>Peso (kg)</label>
-                <input
+                <input className="input"
                   type="number"
                   value={weight}
                   onChange={(event) => setWeight(event.target.value)}
