@@ -14,17 +14,20 @@ import {
 
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
-import { Page, PageHeader, PageTitle, PageSubtitle } from "../components/ui/Page.jsx";
+import {
+  Page,
+  PageHeader,
+  PageTitle,
+  PageSubtitle,
+} from "../components/ui/Page.jsx";
 import { FormStack, Field, Input } from "../components/ui/Form.jsx";
 
-// Devuelve la fecha de hoy en formato YYYY-MM-DD para usar en <input type="date" />.
-function getTodayDateString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+import CardHeader from "../components/ui/CardHeader.jsx";
+import LoadingState from "../components/ui/LoadingState.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+
+import { confirmDelete } from "../utils/confirm.js";
+import { getTodayDateString } from "../utils/dates.js";
 
 /**
  * Pantalla de detalle de una rutina.
@@ -275,10 +278,8 @@ function RoutineDetailPage() {
    * Elimina un ejercicio después de confirmar.
    */
   async function handleDeleteExercise(id) {
-    const confirmDelete = window.confirm(
-      "¿Seguro que quieres eliminar este ejercicio?",
-    );
-    if (!confirmDelete) return;
+    const ok = confirmDelete("¿Seguro que quieres eliminar este ejercicio?");
+    if (!ok) return;
 
     try {
       setLoading(true);
@@ -336,7 +337,7 @@ function RoutineDetailPage() {
           </Card>
 
           <Card>
-            <h4 className="section-title-sm">Añadir ejercicio</h4>
+            <CardHeader title="Añadir ejercicio" size="sm" />
             <form onSubmit={handleCreateExercise}>
               <FormStack compact>
                 <Input
@@ -368,7 +369,7 @@ function RoutineDetailPage() {
           {/* Formulario de edición de ejercicio */}
           {editingId && (
             <Card>
-              <h4 className="section-title-sm">Editar ejercicio</h4>
+              <CardHeader title="Editar ejercicio" size="sm" />
               <form onSubmit={handleUpdateExercise}>
                 <FormStack compact>
                   <Input
@@ -411,12 +412,14 @@ function RoutineDetailPage() {
         {/* Columna derecha */}
         <div className="stack-16">
           <Card>
-            <h4 className="section-title-sm">Ejercicios de esta rutina</h4>
+            <CardHeader title="Ejercicios de esta rutina" size="sm" />
 
-            {loading && exercises.length === 0 && <p>Cargando ejercicios...</p>}
+            {loading && exercises.length === 0 && (
+              <LoadingState text="Cargando ejercicios..." />
+            )}
 
             {!loading && exercises.length === 0 && (
-              <p>Esta rutina todavía no tiene ejercicios.</p>
+              <EmptyState text="Esta rutina todavía no tiene ejercicios." />
             )}
 
             <ul className="list-clean">
