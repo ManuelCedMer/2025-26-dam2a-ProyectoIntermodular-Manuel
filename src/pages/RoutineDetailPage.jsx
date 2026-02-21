@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation, Link } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
   getExercisesByRoutine,
@@ -11,6 +11,11 @@ import {
   getCompletedExerciseIds,
   setExerciseCompleted,
 } from "../services/routineExerciseCompletionsService.js";
+
+import { LinkButton, Button } from "../components/ui/Button.jsx";
+import Card from "../components/ui/Card.jsx";
+import { Page, PageHeader, PageTitle, PageSubtitle } from "../components/ui/Page.jsx";
+import { FormStack, Field, Input } from "../components/ui/Form.jsx";
 
 // Devuelve la fecha de hoy en formato YYYY-MM-DD para usar en <input type="date" />.
 function getTodayDateString() {
@@ -296,124 +301,116 @@ function RoutineDetailPage() {
 
   if (!user) {
     return (
-      <div className="page-container">
-        <h2>Detalle de rutina</h2>
+      <Page>
+        <PageTitle>Detalle de rutina</PageTitle>
         <p>Inicia sesión para ver tu información.</p>
-      </div>
+      </Page>
     );
   }
 
   return (
-    <main className="page-container">
-      <header className="page-header">
-        <Link to="/rutinas" className="link-inline">
+    <Page>
+      <PageHeader>
+        <LinkButton to="/rutinas" variant="secondary" size="sm">
           ← Volver a mis rutinas
-        </Link>
-        <h2 className="page-title">Ejercicios de la rutina</h2>
-        {routineName && <h3 className="page-subtitle-strong">{routineName}</h3>}
+        </LinkButton>
+
+        <PageTitle>Ejercicios de la rutina</PageTitle>
+        {routineName && <PageSubtitle strong>{routineName}</PageSubtitle>}
+
         {errorMessage && <p className="text-error">{errorMessage}</p>}
-      </header>
+      </PageHeader>
 
       {/* Layout en dos columnas [UI-02] */}
       <div className="routine-detail-layout">
         {/* Columna izquierda */}
         <div className="stack-16">
-          <section className="card">
-            <label className="label">Fecha de la sesión</label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="input"
-            />
-          </section>
+          <Card>
+            <Field label="Fecha de la sesión">
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+            </Field>
+          </Card>
 
-          <section className="card">
+          <Card>
             <h4 className="section-title-sm">Añadir ejercicio</h4>
-            <form onSubmit={handleCreateExercise} className="form-stack">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ej: Sentadillas"
-                required
-                className="input"
-              />
-              <input
-                type="number"
-                value={sets}
-                onChange={(e) => setSets(e.target.value)}
-                placeholder="Series"
-                className="input"
-              />
-              <input
-                type="number"
-                value={reps}
-                onChange={(e) => setReps(e.target.value)}
-                placeholder="Repeticiones"
-                className="input"
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn btn-primary btn-block"
-              >
-                {loading ? "Guardando..." : "Guardar ejercicio"}
-              </button>
+            <form onSubmit={handleCreateExercise}>
+              <FormStack compact>
+                <Input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ej: Sentadillas"
+                  required
+                />
+                <Input
+                  type="number"
+                  value={sets}
+                  onChange={(e) => setSets(e.target.value)}
+                  placeholder="Series"
+                />
+                <Input
+                  type="number"
+                  value={reps}
+                  onChange={(e) => setReps(e.target.value)}
+                  placeholder="Repeticiones"
+                />
+                <Button type="submit" disabled={loading} block>
+                  {loading ? "Guardando..." : "Guardar ejercicio"}
+                </Button>
+              </FormStack>
             </form>
-          </section>
+          </Card>
 
           {/* Formulario de edición de ejercicio */}
           {editingId && (
-            <section className="card">
+            <Card>
               <h4 className="section-title-sm">Editar ejercicio</h4>
-              <form onSubmit={handleUpdateExercise} className="form-stack">
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  required
-                  className="input"
-                />
-                <input
-                  type="number"
-                  value={editSets}
-                  onChange={(e) => setEditSets(e.target.value)}
-                  placeholder="Series"
-                  className="input"
-                />
-                <input
-                  type="number"
-                  value={editReps}
-                  onChange={(e) => setEditReps(e.target.value)}
-                  placeholder="Repeticiones"
-                  className="input"
-                />
+              <form onSubmit={handleUpdateExercise}>
+                <FormStack compact>
+                  <Input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    required
+                  />
+                  <Input
+                    type="number"
+                    value={editSets}
+                    onChange={(e) => setEditSets(e.target.value)}
+                    placeholder="Series"
+                  />
+                  <Input
+                    type="number"
+                    value={editReps}
+                    onChange={(e) => setEditReps(e.target.value)}
+                    placeholder="Repeticiones"
+                  />
 
-                <div className="actions-row">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn btn-primary btn-block"
-                  >
-                    {loading ? "Guardando..." : "Guardar cambios"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={cancelEdit}
-                    className="btn btn-secondary"
-                  >
-                    Cancelar
-                  </button>
-                </div>
+                  <div className="actions-row-tight">
+                    <Button type="submit" disabled={loading}>
+                      {loading ? "Guardando..." : "Guardar cambios"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={cancelEdit}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </FormStack>
               </form>
-            </section>
+            </Card>
           )}
         </div>
 
         {/* Columna derecha */}
         <div className="stack-16">
-          <section className="card">
+          <Card>
             <h4 className="section-title-sm">Ejercicios de esta rutina</h4>
 
             {loading && exercises.length === 0 && <p>Cargando ejercicios...</p>}
@@ -435,7 +432,7 @@ function RoutineDetailPage() {
                         onChange={(e) =>
                           handleToggleCompleted(exercise.id, e.target.checked)
                         }
-                      />{" "}
+                      />
                       <span>
                         <strong>{exercise.name}</strong>{" "}
                         {exercise.sets ? `${exercise.sets} series` : ""}{" "}
@@ -444,29 +441,31 @@ function RoutineDetailPage() {
                     </label>
 
                     <div className="actions-row-tight">
-                      <button
+                      <Button
                         type="button"
+                        size="sm"
+                        variant="secondary"
                         onClick={() => startEditExercise(exercise)}
-                        className="btn btn-secondary btn-sm"
                       >
                         Editar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
+                        size="sm"
+                        variant="danger"
                         onClick={() => handleDeleteExercise(exercise.id)}
-                        className="btn btn-danger btn-sm"
                       >
                         Eliminar
-                      </button>
+                      </Button>
                     </div>
                   </li>
                 );
               })}
             </ul>
-          </section>
+          </Card>
         </div>
       </div>
-    </main>
+    </Page>
   );
 }
 

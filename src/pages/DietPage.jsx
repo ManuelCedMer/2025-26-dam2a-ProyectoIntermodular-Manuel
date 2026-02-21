@@ -6,7 +6,11 @@ import {
   updateDiet,
   deleteDiet,
 } from "../services/dietService.js";
-import { Link } from "react-router-dom";
+
+import { LinkButton, Button } from "../components/ui/Button.jsx";
+import Card from "../components/ui/Card.jsx";
+import { Page, PageHeader, PageTitle, PageSubtitle } from "../components/ui/Page.jsx";
+import { FormStack, Field, Input, Textarea } from "../components/ui/Form.jsx";
 
 /**
  * Pantalla de gestión de planes de alimentación [DIET].
@@ -191,127 +195,117 @@ function DietPage() {
 
   if (!user) {
     return (
-      <div className="page-container">
-        <h2>Planes de alimentación</h2>
+      <Page>
+        <PageTitle>Planes de alimentación</PageTitle>
         <p>Inicia sesión para ver tu información.</p>
-      </div>
+      </Page>
     );
   }
 
   return (
-    <main className="page-container">
+    <Page>
       {/* Cabecera de la pantalla */}
-      <header className="page-header">
-        <h2 className="page-title">Planes de alimentación</h2>
-        <p className="page-subtitle">
+      <PageHeader>
+        <PageTitle>Planes de alimentación</PageTitle>
+        <PageSubtitle>
           Crea y gestiona tus planes de alimentación semanales. Más adelante,
           desde cada plan, podrás definir las comidas por día y estimar
           calorías.
-        </p>
+        </PageSubtitle>
 
         {errorMessage && <p className="text-error">{errorMessage}</p>}
-      </header>
+      </PageHeader>
 
       {/* Contenedor principal en dos columnas */}
       <div className="diet-layout">
         {/* Columna izquierda: creación y edición */}
         <div className="stack-16">
           {/* Formulario de creación de plan */}
-          <section className="card">
+          <Card>
             <h3 className="section-title">Crear nuevo plan de alimentación</h3>
-            <p className="text-muted">
+            <p className="page-subtitle">
               Define un nombre y una breve descripción del plan (por ejemplo
               “Dieta semanal equilibrio 2000 kcal”).
             </p>
 
-            <form onSubmit={handleCreateDiet} className="form-stack form-mt">
-              <div>
-                <label className="label">Nombre del plan</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Ej: Dieta semanal definición"
-                  required
-                  className="input"
-                />
-              </div>
+            <form onSubmit={handleCreateDiet}>
+              <FormStack>
+                <Field label="Nombre del plan">
+                  <Input
+                    type="text"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Ej: Dieta semanal definición"
+                    required
+                  />
+                </Field>
 
-              <div>
-                <label className="label">Descripción (opcional)</label>
-                <textarea
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                  placeholder="Ej: Plan de 5 comidas diarias bajo en grasas..."
-                  className="textarea"
-                />
-              </div>
+                <Field label="Descripción (opcional)">
+                  <Textarea
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
+                    placeholder="Ej: Plan de 5 comidas diarias bajo en grasas..."
+                  />
+                </Field>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn btn-primary btn-block"
-              >
-                {loading ? "Guardando..." : "Guardar plan"}
-              </button>
+                <Button type="submit" disabled={loading} block>
+                  {loading ? "Guardando..." : "Guardar plan"}
+                </Button>
+              </FormStack>
             </form>
-          </section>
+          </Card>
 
           {/* Formulario de edición de plan */}
           {editingId && (
-            <section className="card">
+            <Card>
               <h3 className="section-title">Editar plan de alimentación</h3>
-              <p className="text-muted">
+              <p className="page-subtitle">
                 Modifica el nombre o la descripción del plan seleccionado.
               </p>
 
-              <form onSubmit={handleUpdateDiet} className="form-stack form-mt">
-                <div>
-                  <label className="label">Nombre del plan</label>
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(event) => setEditName(event.target.value)}
-                    required
-                    className="input"
-                  />
-                </div>
+              <form onSubmit={handleUpdateDiet}>
+                <FormStack>
+                  <Field label="Nombre del plan">
+                    <Input
+                      type="text"
+                      value={editName}
+                      onChange={(event) => setEditName(event.target.value)}
+                      required
+                    />
+                  </Field>
 
-                <div>
-                  <label className="label">Descripción (opcional)</label>
-                  <textarea
-                    value={editDescription}
-                    onChange={(event) => setEditDescription(event.target.value)}
-                    className="textarea"
-                  />
-                </div>
+                  <Field label="Descripción (opcional)">
+                    <Textarea
+                      value={editDescription}
+                      onChange={(event) =>
+                        setEditDescription(event.target.value)
+                      }
+                    />
+                  </Field>
 
-                <div className="actions-row">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn btn-primary btn-block"
-                  >
-                    {loading ? "Guardando..." : "Guardar cambios"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={cancelEdit}
-                    className="btn btn-secondary"
-                  >
-                    Cancelar
-                  </button>
-                </div>
+                  <div className="actions-row">
+                    <Button type="submit" disabled={loading}>
+                      {loading ? "Guardando..." : "Guardar cambios"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={cancelEdit}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </FormStack>
               </form>
-            </section>
+            </Card>
           )}
         </div>
 
         {/* Columna derecha: listado de planes */}
         <div className="stack-16">
-          <section className="card">
+          <Card>
             <h3 className="section-title">Mis planes de alimentación</h3>
-            <p className="text-muted">
+            <p className="page-subtitle">
               Desde aquí puedes editar o eliminar tus planes y acceder al
               detalle de comidas de cada uno.
             </p>
@@ -329,7 +323,7 @@ function DietPage() {
             {diets.length > 0 && (
               <ul className="list-stack block-mt">
                 {diets.map((diet) => (
-                  <li key={diet.id} className="list-card">
+                  <li key={diet.id} className="item-card">
                     <div>
                       <strong>{diet.name}</strong>{" "}
                       {diet.description && (
@@ -337,37 +331,42 @@ function DietPage() {
                       )}
                     </div>
 
-                    <div className="actions-row-wrap">
-                      <button
+                    <div className="item-actions">
+                      <Button
                         type="button"
+                        size="sm"
+                        variant="secondary"
                         onClick={() => startEditDiet(diet)}
-                        className="btn btn-secondary btn-sm"
                       >
                         Editar
-                      </button>
-                      <button
+                      </Button>
+
+                      <Button
                         type="button"
+                        size="sm"
+                        variant="danger"
                         onClick={() => handleDeleteDiet(diet.id)}
-                        className="btn btn-danger btn-sm"
                       >
                         Eliminar
-                      </button>
-                      <Link
+                      </Button>
+
+                      <LinkButton
+                        size="sm"
+                        variant="secondary"
                         to={`/dietas/${diet.id}`}
                         state={{ dietName: diet.name }}
-                        className="btn btn-secondary btn-sm link-btn"
                       >
                         Ver comidas
-                      </Link>
+                      </LinkButton>
                     </div>
                   </li>
                 ))}
               </ul>
             )}
-          </section>
+          </Card>
         </div>
       </div>
-    </main>
+    </Page>
   );
 }
 
