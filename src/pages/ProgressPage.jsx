@@ -244,7 +244,9 @@ function ProgressPage() {
   );
   const weightError = validateNonNegativeNumber(weight, "Peso", { max: 500 });
 
-  const hasFieldErrors = Boolean(caloriesInError || caloriesOutError || weightError);
+  const hasFieldErrors = Boolean(
+    caloriesInError || caloriesOutError || weightError,
+  );
   const hasAnyData =
     caloriesIn.trim() !== "" ||
     caloriesOut.trim() !== "" ||
@@ -480,7 +482,8 @@ function ProgressPage() {
               <div className="progress-field">
                 <label>Fecha</label>
                 <div className="progress-inline">
-                  <input className="input"
+                  <input
+                    className="input"
                     type="date"
                     value={date}
                     onChange={(event) => setDate(event.target.value)}
@@ -498,7 +501,8 @@ function ProgressPage() {
 
               <div className="progress-field">
                 <label>Calorías consumidas (kcal)</label>
-                <input className="input"
+                <input
+                  className="input"
                   type="number"
                   value={caloriesIn}
                   onChange={(event) => setCaloriesIn(event.target.value)}
@@ -512,7 +516,8 @@ function ProgressPage() {
 
               <div className="progress-field">
                 <label>Calorías gastadas (kcal)</label>
-                <input className="input"
+                <input
+                  className="input"
                   type="number"
                   value={caloriesOut}
                   onChange={(event) => setCaloriesOut(event.target.value)}
@@ -526,7 +531,8 @@ function ProgressPage() {
 
               <div className="progress-field">
                 <label>Peso (kg)</label>
-                <input className="input"
+                <input
+                  className="input"
                   type="number"
                   value={weight}
                   onChange={(event) => setWeight(event.target.value)}
@@ -542,13 +548,18 @@ function ProgressPage() {
               <div className="progress-field">
                 <label>Notas (opcional)</label>
                 <textarea
+                  className="textarea"
                   value={notes}
                   onChange={(event) => setNotes(event.target.value)}
                   placeholder="Por ejemplo: día de descanso, entrenamiento fuerte..."
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary btn-block" disabled={!canSubmit}>
+              <button
+                type="submit"
+                className="btn btn-primary btn-block"
+                disabled={!canSubmit}
+              >
                 {isSaving ? "Guardando..." : "Guardar progreso del día"}
               </button>
             </form>
@@ -632,6 +643,7 @@ function ProgressPage() {
             <div>
               <label>Rango</label>
               <select
+                className="select"
                 value={range}
                 onChange={(event) => setRange(event.target.value)}
               >
