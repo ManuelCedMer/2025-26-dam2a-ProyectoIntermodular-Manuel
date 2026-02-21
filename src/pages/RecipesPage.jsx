@@ -203,6 +203,7 @@ function RecipesPage() {
               <div>
                 <label>Tipo de comida</label>
                 <select
+                className="select"
                   value={mealType}
                   onChange={(event) => setMealType(event.target.value)}
                 >
@@ -214,7 +215,7 @@ function RecipesPage() {
                 </select>
               </div>
 
-              <button type="submit" disabled={loading}>
+              <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
                 {loading ? "Buscando..." : "Buscar"}
               </button>
             </form>
@@ -260,11 +261,12 @@ function RecipesPage() {
                     </div>
 
                     <div>
-                      <Link to={`/recetas/${recipe.id}`}>
+                      <Link className="btn btn-secondary btn-sm" to={`/recetas/${recipe.id}`}>
                         Ver detalle
                       </Link>{" "}
                       <button
                         type="button"
+                        className={`btn btn-sm ${isFavorite ? "btn-danger" : "btn-secondary"}`}
                         onClick={() => handleToggleFavorite(recipe)}
                       >
                         {isFavorite
