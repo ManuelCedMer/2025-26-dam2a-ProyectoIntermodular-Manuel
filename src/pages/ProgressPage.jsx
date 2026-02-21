@@ -6,6 +6,8 @@ import {
 } from "../services/progressService.js";
 import { getUserProfile } from "../services/userProfileService.js";
 
+import { getTodayDateString, parseDateFromString } from "../utils/dates.js";
+
 // Componentes de Recharts para los gráficos.
 import {
   LineChart,
@@ -17,29 +19,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
-/**
- * Devuelve la fecha de hoy en formato "YYYY-MM-DD"
- * para usarla en <input type="date" />.
- */
-function getTodayDateString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-/**
- * Convierte una fecha "YYYY-MM-DD" en un objeto Date.
- * Si hay algún problema con el formato, devuelve null.
- */
-function parseDateFromString(dateString) {
-  if (!dateString) return null;
-  const [year, month, day] = dateString.split("-");
-  if (!year || !month || !day) return null;
-  return new Date(Number(year), Number(month) - 1, Number(day));
-}
 
 /**
  * Normaliza el objetivo a una forma interna manejable.
@@ -621,8 +600,7 @@ function ProgressPage() {
                         </td>
                         <td>{diff !== 0 ? diff : "-"}</td>
                         <td>
-                          {entry.weight !== null &&
-                          entry.weight !== undefined
+                          {entry.weight !== null && entry.weight !== undefined
                             ? entry.weight
                             : "-"}
                         </td>
