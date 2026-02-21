@@ -9,8 +9,21 @@ import {
 
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
-import { Page, PageHeader, PageTitle, PageSubtitle } from "../components/ui/Page.jsx";
+import {
+  Page,
+  PageHeader,
+  PageTitle,
+  PageSubtitle,
+} from "../components/ui/Page.jsx";
 import { FormStack, Field, Input, Textarea } from "../components/ui/Form.jsx";
+
+import Alert from "../components/ui/Alert.jsx";
+import CardHeader from "../components/ui/CardHeader.jsx";
+import LoadingState from "../components/ui/LoadingState.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+import EntityListItem from "../components/ui/EntityListItem.jsx";
+
+import { confirmDelete } from "../utils/confirm.js";
 
 /**
  * Pantalla de gestión de planes de alimentación [DIET].
@@ -167,10 +180,10 @@ function DietPage() {
    * [DIET-02] Eliminar plan de alimentación.
    */
   async function handleDeleteDiet(id) {
-    const confirmDelete = window.confirm(
+    const ok = confirmDelete(
       "¿Seguro que quieres eliminar este plan de alimentación?",
     );
-    if (!confirmDelete) return;
+    if (!ok) return;
 
     try {
       setLoading(true);
@@ -213,7 +226,7 @@ function DietPage() {
           calorías.
         </PageSubtitle>
 
-        {errorMessage && <p className="text-error">{errorMessage}</p>}
+        <Alert variant="error">{errorMessage}</Alert>
       </PageHeader>
 
       {/* Contenedor principal en dos columnas */}
@@ -222,11 +235,10 @@ function DietPage() {
         <div className="stack-16">
           {/* Formulario de creación de plan */}
           <Card>
-            <h3 className="section-title">Crear nuevo plan de alimentación</h3>
-            <p className="page-subtitle">
-              Define un nombre y una breve descripción del plan (por ejemplo
-              “Dieta semanal equilibrio 2000 kcal”).
-            </p>
+            <CardHeader
+              title="Crear nuevo plan de alimentación"
+              subtitle="Define un nombre y una breve descripción del plan (por ejemplo “Dieta semanal equilibrio 2000 kcal”)."
+            />
 
             <form onSubmit={handleCreateDiet}>
               <FormStack>
@@ -258,10 +270,10 @@ function DietPage() {
           {/* Formulario de edición de plan */}
           {editingId && (
             <Card>
-              <h3 className="section-title">Editar plan de alimentación</h3>
-              <p className="page-subtitle">
-                Modifica el nombre o la descripción del plan seleccionado.
-              </p>
+              <CardHeader
+                title="Editar plan de alimentación"
+                subtitle="Modifica el nombre o la descripción del plan seleccionado."
+              />
 
               <form onSubmit={handleUpdateDiet}>
                 <FormStack>
@@ -304,62 +316,67 @@ function DietPage() {
         {/* Columna derecha: listado de planes */}
         <div className="stack-16">
           <Card>
-            <h3 className="section-title">Mis planes de alimentación</h3>
-            <p className="page-subtitle">
-              Desde aquí puedes editar o eliminar tus planes y acceder al
-              detalle de comidas de cada uno.
-            </p>
+            <CardHeader
+              title="Mis planes de alimentación"
+              subtitle="Desde aquí puedes editar o eliminar tus planes y acceder al detalle de comidas de cada uno."
+            />
 
             {loading && diets.length === 0 && (
-              <p className="block-mt">Cargando planes...</p>
+              <LoadingState className="block-mt" text="Cargando planes..." />
             )}
 
             {!loading && diets.length === 0 && (
-              <p className="block-mt">
-                No tienes ningún plan de alimentación creado todavía.
-              </p>
+              <EmptyState
+                className="block-mt"
+                text="No tienes ningún plan de alimentación creado todavía."
+              />
             )}
 
             {diets.length > 0 && (
               <ul className="list-stack block-mt">
                 {diets.map((diet) => (
-                  <li key={diet.id} className="item-card">
-                    <div>
-                      <strong>{diet.name}</strong>{" "}
-                      {diet.description && (
-                        <span className="text-muted"> — {diet.description}</span>
-                      )}
-                    </div>
+                  <EntityListItem
+                    key={diet.id}
+                    title={diet.name}
+                    meta={
+                      diet.description ? (
+                        <span className="text-muted">
+                          {" "}
+                          — {diet.description}
+                        </span>
+                      ) : null
+                    }
+                    actions={
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => startEditDiet(diet)}
+                        >
+                          Editar
+                        </Button>
 
-                    <div className="item-actions">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => startEditDiet(diet)}
-                      >
-                        Editar
-                      </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleDeleteDiet(diet.id)}
+                        >
+                          Eliminar
+                        </Button>
 
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="danger"
-                        onClick={() => handleDeleteDiet(diet.id)}
-                      >
-                        Eliminar
-                      </Button>
-
-                      <LinkButton
-                        size="sm"
-                        variant="secondary"
-                        to={`/dietas/${diet.id}`}
-                        state={{ dietName: diet.name }}
-                      >
-                        Ver comidas
-                      </LinkButton>
-                    </div>
-                  </li>
+                        <LinkButton
+                          size="sm"
+                          variant="secondary"
+                          to={`/dietas/${diet.id}`}
+                          state={{ dietName: diet.name }}
+                        >
+                          Ver comidas
+                        </LinkButton>
+                      </>
+                    }
+                  />
                 ))}
               </ul>
             )}
