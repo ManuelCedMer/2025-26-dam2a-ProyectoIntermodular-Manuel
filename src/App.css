@@ -931,6 +931,19 @@ button.progress-secondary-button:disabled {
 }
 
 
+.progress-page button.btn.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+
+
+.progress-page .btn.btn-primary:not(:disabled) {
+  background-color: var(--primary) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
 /* =============================== */
 /* Layouts responsive DIET / ROUTINES */
 /* =============================== */
@@ -1227,4 +1240,177 @@ button.progress-secondary-button:disabled {
   border: 1px solid var(--card-border);
   border-radius: 999px;
   padding: 4px 8px;
+}
+
+.page-subtitle-strong {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.text-error {
+  margin-top: 8px;
+  color: #b91c1c;
+}
+
+.stack-16 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+.form-stack-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-mt {
+  margin-top: 12px;
+}
+
+.block-mt {
+  margin-top: 12px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.section-title-sm {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.link-inline {
+  text-decoration: none;
+  color: var(--text);
+}
+.link-inline:hover {
+  text-decoration: underline;
+}
+
+/* Inputs (si ya tienes .input/.card en otro bloque, no dupliques) */
+.input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border, #d1d5db);
+  font-size: 14px;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--input-text, #111827);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(79, 70, 229, 0.45);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.textarea {
+  width: 100%;
+  padding: 8px 10px;
+  min-height: 80px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border, #d1d5db);
+  font-size: 14px;
+  resize: vertical;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--input-text, #111827);
+}
+.textarea:focus {
+  outline: none;
+  border-color: rgba(79, 70, 229, 0.45);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+
+.actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.actions-row-tight {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+
+.link-btn {
+  text-decoration: none;
+}
+
+
+.list-clean {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-stack {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.exercise-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.exercise-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-2);
+  color: var(--card-text);
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip--active {
+  border-color: transparent;
+  background-color: var(--primary);
+  color: #ffffff;
 }

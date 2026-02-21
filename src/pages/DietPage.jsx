@@ -36,105 +36,6 @@ function DietPage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   /**
-   * Estilos inline básicos para maquetar la página.
-   * Se sigue el mismo enfoque que en HOME, RECIPES y PROGRESS.
-   */
-  const pageStyles = {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "24px 16px 40px",
-  };
-
-  const columnStyle = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  };
-
-  const cardStyles = {
-    backgroundColor: "var(--card, #ffffff)",
-    color: "var(--card-text, #111827)",
-    borderRadius: "16px",
-    padding: "16px 18px",
-    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
-    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
-  };
-
-  const sectionTitleStyles = {
-    marginBottom: "8px",
-    fontSize: "18px",
-    fontWeight: "600",
-    color: "var(--card-text, #111827)",
-  };
-
-  const labelStyles = {
-    display: "block",
-    marginBottom: "4px",
-    fontSize: "14px",
-    fontWeight: "500",
-    color: "var(--muted, #374151)",
-  };
-
-  const inputStyles = {
-    width: "100%",
-    padding: "8px 10px",
-    borderRadius: "8px",
-    border: "1px solid var(--input-border, #d1d5db)",
-    fontSize: "14px",
-    backgroundColor: "var(--input-bg, #ffffff)",
-    color: "var(--input-text, #111827)",
-  };
-
-  const textareaStyles = {
-    width: "100%",
-    padding: "8px 10px",
-    minHeight: "80px",
-    borderRadius: "8px",
-    border: "1px solid var(--input-border, #d1d5db)",
-    fontSize: "14px",
-    resize: "vertical",
-    backgroundColor: "var(--input-bg, #ffffff)",
-    color: "var(--input-text, #111827)",
-  };
-
-  const primaryButtonStyles = {
-    padding: "8px 14px",
-    borderRadius: "999px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "500",
-    background:
-      "linear-gradient(135deg, rgba(56,189,248,0.95), rgba(37,99,235,0.95))",
-    color: "#ffffff",
-  };
-
-  const ghostButtonStyles = {
-    padding: "6px 10px",
-    borderRadius: "999px",
-    border: "1px solid var(--card-border, #d1d5db)",
-    cursor: "pointer",
-    fontSize: "13px",
-    backgroundColor: "var(--card-2, #f9fafb)",
-    color: "var(--card-text, #374151)",
-  };
-
-  const dangerButtonStyles = {
-    padding: "6px 10px",
-    borderRadius: "999px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "13px",
-    backgroundColor: "#fee2e2",
-    color: "#b91c1c",
-  };
-
-  const smallTextStyles = {
-    fontSize: "13px",
-    color: "var(--muted, #6b7280)",
-  };
-
-  /**
    * Carga los planes de alimentación del usuario al entrar en la página.
    * [DIET-01] Listar planes de alimentación.
    */
@@ -290,7 +191,7 @@ function DietPage() {
 
   if (!user) {
     return (
-      <div style={pageStyles}>
+      <div className="page-container">
         <h2>Planes de alimentación</h2>
         <p>Inicia sesión para ver tu información.</p>
       </div>
@@ -298,77 +199,58 @@ function DietPage() {
   }
 
   return (
-    <main style={pageStyles}>
+    <main className="page-container">
       {/* Cabecera de la pantalla */}
-      <header style={{ marginBottom: "20px" }}>
-        <h2
-          style={{
-            fontSize: "24px",
-            fontWeight: "700",
-            marginBottom: "4px",
-            color: "var(--text, #111827)",
-          }}
-        >
-          Planes de alimentación
-        </h2>
-        <p style={smallTextStyles}>
+      <header className="page-header">
+        <h2 className="page-title">Planes de alimentación</h2>
+        <p className="page-subtitle">
           Crea y gestiona tus planes de alimentación semanales. Más adelante,
           desde cada plan, podrás definir las comidas por día y estimar
           calorías.
         </p>
 
-        {errorMessage && (
-          <p style={{ marginTop: "8px", color: "#b91c1c" }}>{errorMessage}</p>
-        )}
+        {errorMessage && <p className="text-error">{errorMessage}</p>}
       </header>
 
       {/* Contenedor principal en dos columnas */}
       <div className="diet-layout">
         {/* Columna izquierda: creación y edición */}
-        <div style={columnStyle}>
+        <div className="stack-16">
           {/* Formulario de creación de plan */}
-          <section style={cardStyles}>
-            <h3 style={sectionTitleStyles}>Crear nuevo plan de alimentación</h3>
-            <p style={smallTextStyles}>
+          <section className="card">
+            <h3 className="section-title">Crear nuevo plan de alimentación</h3>
+            <p className="text-muted">
               Define un nombre y una breve descripción del plan (por ejemplo
               “Dieta semanal equilibrio 2000 kcal”).
             </p>
 
-            <form
-              onSubmit={handleCreateDiet}
-              style={{
-                marginTop: "12px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-              }}
-            >
+            <form onSubmit={handleCreateDiet} className="form-stack form-mt">
               <div>
-                <label style={labelStyles}>Nombre del plan</label>
+                <label className="label">Nombre del plan</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Ej: Dieta semanal definición"
                   required
-                  style={inputStyles}
+                  className="input"
                 />
               </div>
 
               <div>
-                <label style={labelStyles}>Descripción (opcional)</label>
+                <label className="label">Descripción (opcional)</label>
                 <textarea
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                   placeholder="Ej: Plan de 5 comidas diarias bajo en grasas..."
-                  style={textareaStyles}
+                  className="textarea"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                style={primaryButtonStyles}
+                className="btn btn-primary btn-block"
               >
                 {loading ? "Guardando..." : "Guardar plan"}
               </button>
@@ -377,55 +259,45 @@ function DietPage() {
 
           {/* Formulario de edición de plan */}
           {editingId && (
-            <section style={cardStyles}>
-              <h3 style={sectionTitleStyles}>Editar plan de alimentación</h3>
-              <p style={smallTextStyles}>
+            <section className="card">
+              <h3 className="section-title">Editar plan de alimentación</h3>
+              <p className="text-muted">
                 Modifica el nombre o la descripción del plan seleccionado.
               </p>
 
-              <form
-                onSubmit={handleUpdateDiet}
-                style={{
-                  marginTop: "12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                }}
-              >
+              <form onSubmit={handleUpdateDiet} className="form-stack form-mt">
                 <div>
-                  <label style={labelStyles}>Nombre del plan</label>
+                  <label className="label">Nombre del plan</label>
                   <input
                     type="text"
                     value={editName}
                     onChange={(event) => setEditName(event.target.value)}
                     required
-                    style={inputStyles}
+                    className="input"
                   />
                 </div>
 
                 <div>
-                  <label style={labelStyles}>Descripción (opcional)</label>
+                  <label className="label">Descripción (opcional)</label>
                   <textarea
                     value={editDescription}
-                    onChange={(event) =>
-                      setEditDescription(event.target.value)
-                    }
-                    style={textareaStyles}
+                    onChange={(event) => setEditDescription(event.target.value)}
+                    className="textarea"
                   />
                 </div>
 
-                <div style={{ display: "flex", gap: "8px" }}>
+                <div className="actions-row">
                   <button
                     type="submit"
                     disabled={loading}
-                    style={primaryButtonStyles}
+                    className="btn btn-primary btn-block"
                   >
                     {loading ? "Guardando..." : "Guardar cambios"}
                   </button>
                   <button
                     type="button"
                     onClick={cancelEdit}
-                    style={ghostButtonStyles}
+                    className="btn btn-secondary"
                   >
                     Cancelar
                   </button>
@@ -436,88 +308,54 @@ function DietPage() {
         </div>
 
         {/* Columna derecha: listado de planes */}
-        <div style={columnStyle}>
-          <section style={cardStyles}>
-            <h3 style={sectionTitleStyles}>Mis planes de alimentación</h3>
-            <p style={smallTextStyles}>
+        <div className="stack-16">
+          <section className="card">
+            <h3 className="section-title">Mis planes de alimentación</h3>
+            <p className="text-muted">
               Desde aquí puedes editar o eliminar tus planes y acceder al
               detalle de comidas de cada uno.
             </p>
 
             {loading && diets.length === 0 && (
-              <p style={{ marginTop: "12px" }}>Cargando planes...</p>
+              <p className="block-mt">Cargando planes...</p>
             )}
 
             {!loading && diets.length === 0 && (
-              <p style={{ marginTop: "12px" }}>
+              <p className="block-mt">
                 No tienes ningún plan de alimentación creado todavía.
               </p>
             )}
 
             {diets.length > 0 && (
-              <ul
-                style={{
-                  marginTop: "12px",
-                  listStyle: "none",
-                  padding: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                }}
-              >
+              <ul className="list-stack block-mt">
                 {diets.map((diet) => (
-                  <li
-                    key={diet.id}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: "12px",
-                      border: "1px solid var(--card-border, #e5e7eb)",
-                      backgroundColor: "var(--card-2, #f9fafb)",
-                      color: "var(--card-text, #111827)",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "4px",
-                    }}
-                  >
+                  <li key={diet.id} className="list-card">
                     <div>
                       <strong>{diet.name}</strong>{" "}
                       {diet.description && (
-                        <span style={smallTextStyles}> — {diet.description}</span>
+                        <span className="text-muted"> — {diet.description}</span>
                       )}
                     </div>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "8px",
-                        flexWrap: "wrap",
-                        marginTop: "4px",
-                      }}
-                    >
+                    <div className="actions-row-wrap">
                       <button
                         type="button"
                         onClick={() => startEditDiet(diet)}
-                        style={ghostButtonStyles}
+                        className="btn btn-secondary btn-sm"
                       >
                         Editar
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteDiet(diet.id)}
-                        style={dangerButtonStyles}
+                        className="btn btn-danger btn-sm"
                       >
                         Eliminar
                       </button>
                       <Link
                         to={`/dietas/${diet.id}`}
                         state={{ dietName: diet.name }}
-                        style={{
-                          ...ghostButtonStyles,
-                          textDecoration: "none",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
+                        className="btn btn-secondary btn-sm link-btn"
                       >
                         Ver comidas
                       </Link>

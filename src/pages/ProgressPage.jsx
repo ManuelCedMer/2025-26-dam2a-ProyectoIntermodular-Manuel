@@ -548,7 +548,7 @@ function ProgressPage() {
                 />
               </div>
 
-              <button type="submit" disabled={!canSubmit}>
+              <button type="submit" className="btn btn-primary btn-block" disabled={!canSubmit}>
                 {isSaving ? "Guardando..." : "Guardar progreso del día"}
               </button>
             </form>

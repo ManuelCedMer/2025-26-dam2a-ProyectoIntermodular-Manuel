@@ -57,80 +57,6 @@ function RoutineDetailPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  /* =========================
-     Estilos UI-02 (tarjetas)
-     ========================= */
-  const pageStyles = {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "24px 16px 40px",
-  };
-
-  const columnStyle = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-  };
-
-  const cardStyles = {
-    backgroundColor: "var(--card, #ffffff)",
-    color: "var(--card-text, #111827)",
-    borderRadius: "16px",
-    padding: "16px 18px",
-    boxShadow: "var(--shadow-md, 0 10px 30px rgba(15, 23, 42, 0.08))",
-    border: "1px solid var(--card-border, rgba(148, 163, 184, 0.3))",
-  };
-
-  const labelStyles = {
-    display: "block",
-    marginBottom: "4px",
-    fontSize: "14px",
-    fontWeight: "500",
-    color: "var(--muted, #374151)",
-  };
-
-  const inputStyles = {
-    width: "100%",
-    padding: "8px 10px",
-    borderRadius: "8px",
-    border: "1px solid var(--input-border, #d1d5db)",
-    fontSize: "14px",
-    backgroundColor: "var(--input-bg, #ffffff)",
-    color: "var(--input-text, #111827)",
-  };
-
-  const primaryButtonStyles = {
-    padding: "8px 14px",
-    borderRadius: "999px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "500",
-    background:
-      "linear-gradient(135deg, rgba(56,189,248,0.95), rgba(37,99,235,0.95))",
-    color: "#ffffff",
-  };
-
-  const ghostButtonStyles = {
-    padding: "6px 10px",
-    borderRadius: "999px",
-    border: "1px solid var(--card-border, #d1d5db)",
-    cursor: "pointer",
-    fontSize: "13px",
-    backgroundColor: "var(--card-2, #f9fafb)",
-    color: "var(--card-text, #374151)",
-  };
-
-  const dangerButtonStyles = {
-    padding: "6px 10px",
-    borderRadius: "999px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "13px",
-    backgroundColor: "#fee2e2",
-    color: "#b91c1c",
-  };
-
   /**
    * Carga los ejercicios de la rutina al entrar en la página.
    */
@@ -370,7 +296,7 @@ function RoutineDetailPage() {
 
   if (!user) {
     return (
-      <div style={pageStyles}>
+      <div className="page-container">
         <h2>Detalle de rutina</h2>
         <p>Inicia sesión para ver tu información.</p>
       </div>
@@ -378,60 +304,59 @@ function RoutineDetailPage() {
   }
 
   return (
-    <main style={pageStyles}>
-      <header style={{ marginBottom: "20px" }}>
-        <Link to="/rutinas">← Volver a mis rutinas</Link>
-        <h2>Ejercicios de la rutina</h2>
-        {routineName && <h3>{routineName}</h3>}
-        {errorMessage && <p style={{ color: "#b91c1c" }}>{errorMessage}</p>}
+    <main className="page-container">
+      <header className="page-header">
+        <Link to="/rutinas" className="link-inline">
+          ← Volver a mis rutinas
+        </Link>
+        <h2 className="page-title">Ejercicios de la rutina</h2>
+        {routineName && <h3 className="page-subtitle-strong">{routineName}</h3>}
+        {errorMessage && <p className="text-error">{errorMessage}</p>}
       </header>
 
       {/* Layout en dos columnas [UI-02] */}
       <div className="routine-detail-layout">
         {/* Columna izquierda */}
-        <div style={columnStyle}>
-          <section style={cardStyles}>
-            <label style={labelStyles}>Fecha de la sesión</label>
+        <div className="stack-16">
+          <section className="card">
+            <label className="label">Fecha de la sesión</label>
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              style={inputStyles}
+              className="input"
             />
           </section>
 
-          <section style={cardStyles}>
-            <h4>Añadir ejercicio</h4>
-            <form
-              onSubmit={handleCreateExercise}
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
+          <section className="card">
+            <h4 className="section-title-sm">Añadir ejercicio</h4>
+            <form onSubmit={handleCreateExercise} className="form-stack">
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ej: Sentadillas"
                 required
-                style={inputStyles}
+                className="input"
               />
               <input
                 type="number"
                 value={sets}
                 onChange={(e) => setSets(e.target.value)}
                 placeholder="Series"
-                style={inputStyles}
+                className="input"
               />
               <input
                 type="number"
                 value={reps}
                 onChange={(e) => setReps(e.target.value)}
                 placeholder="Repeticiones"
-                style={inputStyles}
+                className="input"
               />
               <button
                 type="submit"
                 disabled={loading}
-                style={primaryButtonStyles}
+                className="btn btn-primary btn-block"
               >
                 {loading ? "Guardando..." : "Guardar ejercicio"}
               </button>
@@ -440,50 +365,43 @@ function RoutineDetailPage() {
 
           {/* Formulario de edición de ejercicio */}
           {editingId && (
-            <section style={cardStyles}>
-              <h4>Editar ejercicio</h4>
-              <form
-                onSubmit={handleUpdateExercise}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                }}
-              >
+            <section className="card">
+              <h4 className="section-title-sm">Editar ejercicio</h4>
+              <form onSubmit={handleUpdateExercise} className="form-stack">
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   required
-                  style={inputStyles}
+                  className="input"
                 />
                 <input
                   type="number"
                   value={editSets}
                   onChange={(e) => setEditSets(e.target.value)}
                   placeholder="Series"
-                  style={inputStyles}
+                  className="input"
                 />
                 <input
                   type="number"
                   value={editReps}
                   onChange={(e) => setEditReps(e.target.value)}
                   placeholder="Repeticiones"
-                  style={inputStyles}
+                  className="input"
                 />
 
-                <div style={{ display: "flex", gap: "8px" }}>
+                <div className="actions-row">
                   <button
                     type="submit"
                     disabled={loading}
-                    style={primaryButtonStyles}
+                    className="btn btn-primary btn-block"
                   >
                     {loading ? "Guardando..." : "Guardar cambios"}
                   </button>
                   <button
                     type="button"
                     onClick={cancelEdit}
-                    style={ghostButtonStyles}
+                    className="btn btn-secondary"
                   >
                     Cancelar
                   </button>
@@ -494,9 +412,9 @@ function RoutineDetailPage() {
         </div>
 
         {/* Columna derecha */}
-        <div style={columnStyle}>
-          <section style={cardStyles}>
-            <h4>Ejercicios de esta rutina</h4>
+        <div className="stack-16">
+          <section className="card">
+            <h4 className="section-title-sm">Ejercicios de esta rutina</h4>
 
             {loading && exercises.length === 0 && <p>Cargando ejercicios...</p>}
 
@@ -504,23 +422,13 @@ function RoutineDetailPage() {
               <p>Esta rutina todavía no tiene ejercicios.</p>
             )}
 
-            <ul style={{ listStyle: "none", padding: 0 }}>
+            <ul className="list-clean">
               {exercises.map((exercise) => {
                 const isCompleted = completedIds.includes(exercise.id);
 
                 return (
-                  <li
-                    key={exercise.id}
-                    style={{
-                      padding: "8px 0",
-                      borderBottom: "1px solid var(--card-border, #e5e7eb)",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    <label>
+                  <li key={exercise.id} className="exercise-row">
+                    <label className="exercise-check">
                       <input
                         type="checkbox"
                         checked={isCompleted}
@@ -528,23 +436,25 @@ function RoutineDetailPage() {
                           handleToggleCompleted(exercise.id, e.target.checked)
                         }
                       />{" "}
-                      <strong>{exercise.name}</strong>{" "}
-                      {exercise.sets ? `${exercise.sets} series` : ""}{" "}
-                      {exercise.reps ? `x ${exercise.reps}` : ""}
+                      <span>
+                        <strong>{exercise.name}</strong>{" "}
+                        {exercise.sets ? `${exercise.sets} series` : ""}{" "}
+                        {exercise.reps ? `x ${exercise.reps}` : ""}
+                      </span>
                     </label>
 
-                    <div style={{ display: "flex", gap: "6px" }}>
+                    <div className="actions-row-tight">
                       <button
                         type="button"
                         onClick={() => startEditExercise(exercise)}
-                        style={ghostButtonStyles}
+                        className="btn btn-secondary btn-sm"
                       >
                         Editar
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteExercise(exercise.id)}
-                        style={dangerButtonStyles}
+                        className="btn btn-danger btn-sm"
                       >
                         Eliminar
                       </button>
