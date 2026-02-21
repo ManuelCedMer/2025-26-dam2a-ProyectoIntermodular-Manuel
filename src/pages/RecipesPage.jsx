@@ -9,6 +9,7 @@ import {
   getFavoriteRecipesByUser,
 } from "../services/favoriteRecipesService.js";
 
+import Alert from "../components/ui/Alert.jsx";
 
 /**
  * Pantalla de búsqueda de recetas [RECIPES].
@@ -37,13 +38,13 @@ function RecipesPage() {
     { value: "cena", label: "Cena" },
     { value: "snack", label: "Snack" },
   ];
+
   // IDs de recetas favoritas del usuario (para marcar en el listado).
   const [favoriteIds, setFavoriteIds] = useState([]);
 
   // Lista de recetas favoritas (para sección "Mis favoritos").
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
 
- 
   /**
    * Carga inicial de recetas y favoritos al entrar en la página.
    */
@@ -77,9 +78,7 @@ function RecipesPage() {
     }
 
     initialLoad();
-    
   }, [user]);
-
 
   /**
    * Lanza la búsqueda con los filtros actuales.
@@ -107,7 +106,8 @@ function RecipesPage() {
       setLoading(false);
     }
   }
-    /**
+
+  /**
    * Marca o desmarca una receta como favorita.
    * [RECIPES-03] Guardar y quitar de favoritos.
    */
@@ -128,9 +128,7 @@ function RecipesPage() {
         });
 
         // Actualizo estado local.
-        setFavoriteIds((prev) =>
-          prev.filter((id) => id !== recipe.id),
-        );
+        setFavoriteIds((prev) => prev.filter((id) => id !== recipe.id));
         setFavoriteRecipes((prev) =>
           prev.filter((fav) => fav.recipeId !== recipe.id),
         );
@@ -165,7 +163,7 @@ function RecipesPage() {
     }
   }
 
-    if (!user) {
+  if (!user) {
     return (
       <div className="recipes-page">
         <p>Inicia sesión para ver tu información.</p>
@@ -192,7 +190,8 @@ function RecipesPage() {
             <form onSubmit={handleSearch}>
               <div>
                 <label>Ingrediente</label>
-                <input className="input"
+                <input
+                  className="input"
                   type="text"
                   value={ingredientText}
                   onChange={(event) => setIngredientText(event.target.value)}
@@ -203,7 +202,7 @@ function RecipesPage() {
               <div>
                 <label>Tipo de comida</label>
                 <select
-                className="select"
+                  className="select"
                   value={mealType}
                   onChange={(event) => setMealType(event.target.value)}
                 >
@@ -215,26 +214,29 @@ function RecipesPage() {
                 </select>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+              <button
+                type="submit"
+                className="btn btn-primary btn-block"
+                disabled={loading}
+              >
                 {loading ? "Buscando..." : "Buscar"}
               </button>
             </form>
           </div>
 
           {/* Mensaje de error general */}
-          {errorMessage && (
-            <p className="recipes-message recipes-message--error">
-              {errorMessage}
-            </p>
-          )}
+          <Alert
+            variant="error"
+            className="recipes-message recipes-message--error"
+          >
+            {errorMessage}
+          </Alert>
 
           {/* Resultados de búsqueda */}
           <div className="recipes-list-card">
             <h3>Resultados</h3>
 
-            {loading && recipes.length === 0 && (
-              <p>Cargando recetas...</p>
-            )}
+            {loading && recipes.length === 0 && <p>Cargando recetas...</p>}
 
             {!loading && recipes.length === 0 && (
               <p>No se han encontrado recetas con los filtros actuales.</p>
@@ -245,28 +247,27 @@ function RecipesPage() {
                 const isFavorite = favoriteIds.includes(recipe.id);
 
                 return (
-                  <li
-                    key={recipe.id}
-                    className="recipes-list-item"
-                  >
+                  <li key={recipe.id} className="recipes-list-item">
                     <div>
                       <strong>{recipe.title}</strong>{" "}
-                      {recipe.mealType && (
-                        <span>({recipe.mealType})</span>
-                      )}{" "}
-                      {Array.isArray(recipe.tags) &&
-                        recipe.tags.length > 0 && (
-                          <span> - {recipe.tags.join(", ")}</span>
-                        )}
+                      {recipe.mealType && <span>({recipe.mealType})</span>}{" "}
+                      {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
+                        <span> - {recipe.tags.join(", ")}</span>
+                      )}
                     </div>
 
                     <div>
-                      <Link className="btn btn-secondary btn-sm" to={`/recetas/${recipe.id}`}>
+                      <Link
+                        className="btn btn-secondary btn-sm"
+                        to={`/recetas/${recipe.id}`}
+                      >
                         Ver detalle
                       </Link>{" "}
                       <button
                         type="button"
-                        className={`btn btn-sm ${isFavorite ? "btn-danger" : "btn-secondary"}`}
+                        className={`btn btn-sm ${
+                          isFavorite ? "btn-danger" : "btn-secondary"
+                        }`}
                         onClick={() => handleToggleFavorite(recipe)}
                       >
                         {isFavorite
@@ -286,23 +287,17 @@ function RecipesPage() {
           <h3>Mis recetas favoritas</h3>
 
           {favoriteRecipes.length === 0 ? (
-            <p>
-              Todavía no tienes recetas marcadas como favoritas.
-            </p>
+            <p>Todavía no tienes recetas marcadas como favoritas.</p>
           ) : (
             <ul className="recipes-list">
               {favoriteRecipes.map((fav) => (
-                <li
-                  key={fav.recipeId}
-                  className="recipes-list-item"
-                >
+                <li key={fav.recipeId} className="recipes-list-item">
                   <div>
                     <strong>{fav.title}</strong>{" "}
                     {fav.mealType && <span>({fav.mealType})</span>}{" "}
-                    {Array.isArray(fav.tags) &&
-                      fav.tags.length > 0 && (
-                        <span> - {fav.tags.join(", ")}</span>
-                      )}
+                    {Array.isArray(fav.tags) && fav.tags.length > 0 && (
+                      <span> - {fav.tags.join(", ")}</span>
+                    )}
                   </div>
                 </li>
               ))}
