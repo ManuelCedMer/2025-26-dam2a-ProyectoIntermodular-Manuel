@@ -5,6 +5,8 @@ import {
   saveUserProfile,
 } from "../services/userProfileService.js";
 
+import Alert from "../components/ui/Alert.jsx";
+
 /**
  * Pantalla de perfil de usuario [PROFILE].
  *
@@ -23,7 +25,7 @@ function ProfilePage() {
   const [age, setAge] = useState("");
   const [goal, setGoal] = useState("mantener");
 
-  // Meta calórica diaria (kcal). 
+  // Meta calórica diaria (kcal).
   const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState("");
 
   const [draftTheme, setDraftTheme] = useState(theme || "light");
@@ -54,9 +56,12 @@ function ProfilePage() {
             ? String(profile.age)
             : "",
         );
-         const rawGoal = (profile.goal || "mantener").toLowerCase().trim();
-          setGoal(["adelgazar", "mantener", "ganar"].includes(rawGoal) ? rawGoal : "mantener");
-
+        const rawGoal = (profile.goal || "mantener").toLowerCase().trim();
+        setGoal(
+          ["adelgazar", "mantener", "ganar"].includes(rawGoal)
+            ? rawGoal
+            : "mantener",
+        );
 
         // Meta calórica diaria (si no existe, dejamos vacío para que el usuario la defina).
         setDailyCaloriesGoal(
@@ -249,17 +254,19 @@ function ProfilePage() {
           </div>
 
           {/* Mensajes de estado */}
-          {errorMessage && (
-            <p className="profile-message profile-message--error">
-              {errorMessage}
-            </p>
-          )}
+          <Alert
+            variant="error"
+            className="profile-message profile-message--error"
+          >
+            {errorMessage}
+          </Alert>
 
-          {message && (
-            <p className="profile-message profile-message--success">
-              {message}
-            </p>
-          )}
+          <Alert
+            variant="success"
+            className="profile-message profile-message--success"
+          >
+            {message}
+          </Alert>
 
           <button
             type="submit"
