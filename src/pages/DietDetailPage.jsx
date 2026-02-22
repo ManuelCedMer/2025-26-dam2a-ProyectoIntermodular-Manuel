@@ -16,7 +16,7 @@ import {
   PageTitle,
   PageSubtitle,
 } from "../components/ui/Page.jsx";
-import { FormStack, Field, Input, Select } from "../components/ui/Form.jsx";
+import { FormStack, Field, Input } from "../components/ui/Form.jsx";
 
 import Alert from "../components/ui/Alert.jsx";
 import CardHeader from "../components/ui/CardHeader.jsx";
@@ -322,7 +322,8 @@ function DietDetailPage() {
               <form onSubmit={handleCreateMeal}>
                 <FormStack>
                   <Field label="Día de la semana">
-                    <Select
+                    <select
+                      className="select"
                       value={dayOfWeek}
                       onChange={(event) => setDayOfWeek(event.target.value)}
                     >
@@ -331,11 +332,12 @@ function DietDetailPage() {
                           {dayLabels[day] || day}
                         </option>
                       ))}
-                    </Select>
+                    </select>
                   </Field>
 
                   <Field label="Tipo de comida">
-                    <Select
+                    <select
+                      className="select"
                       value={mealType}
                       onChange={(event) => setMealType(event.target.value)}
                     >
@@ -344,7 +346,7 @@ function DietDetailPage() {
                           {mealTypeLabels[type] || type}
                         </option>
                       ))}
-                    </Select>
+                    </select>
                   </Field>
 
                   <Field label="Nombre de la comida">
@@ -386,7 +388,8 @@ function DietDetailPage() {
                 <form onSubmit={handleUpdateMeal}>
                   <FormStack>
                     <Field label="Día de la semana">
-                      <Select
+                      <select
+                        className="select"
                         value={editDayOfWeek}
                         onChange={(event) =>
                           setEditDayOfWeek(event.target.value)
@@ -397,11 +400,12 @@ function DietDetailPage() {
                             {dayLabels[day] || day}
                           </option>
                         ))}
-                      </Select>
+                      </select>
                     </Field>
 
                     <Field label="Tipo de comida">
-                      <Select
+                      <select
+                        className="select"
                         value={editMealType}
                         onChange={(event) =>
                           setEditMealType(event.target.value)
@@ -412,7 +416,7 @@ function DietDetailPage() {
                             {mealTypeLabels[type] || type}
                           </option>
                         ))}
-                      </Select>
+                      </select>
                     </Field>
 
                     <Field label="Nombre de la comida">
