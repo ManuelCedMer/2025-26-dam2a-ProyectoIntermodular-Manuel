@@ -1271,8 +1271,9 @@ button.progress-secondary-button:disabled {
   margin-top: 12px;
 }
 
-.block-mt {
-  margin-top: 12px;
+
+.list-stack.block-mt {
+  margin-top: 16px; 
 }
 
 .label {
