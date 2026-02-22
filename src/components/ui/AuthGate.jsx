@@ -1,9 +1,14 @@
+import { useAuth } from "../../context/AuthContext.jsx";
 import { Page, PageTitle } from "./Page.jsx";
 
 /**
  * Gate reutilizable para páginas privadas.
+ * - Si no hay usuario autenticado, muestra un mensaje de acceso.
+ * - Si hay usuario, renderiza el contenido.
  */
-function AuthGate({ user, title = "Acceso", children }) {
+function AuthGate({ title = "Acceso", children }) {
+  const { user } = useAuth();
+
   if (!user) {
     return (
       <Page>
