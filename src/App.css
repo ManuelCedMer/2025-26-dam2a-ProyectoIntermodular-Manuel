@@ -1415,3 +1415,73 @@ button.progress-secondary-button:disabled {
   background-color: var(--primary);
   color: #ffffff;
 }
+
+.rutina-card {
+  position: relative;
+  padding-top: 1.2rem; /* antes 2.5rem, ajusta según lo compacto que desees */
+}
+
+.rutina-delete-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #d32f2f;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.rutina-delete-btn:hover,
+.rutina-delete-btn:focus {
+  background: #ffeaea;
+  outline: none;
+}
+
+.rutina-actions-bottom {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dashboard-tile-title {
+  margin-top: 0; /* elimina margen superior si lo hubiera */
+}
+
+
+.dashboard-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.dashboard-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+
+@media (max-width: 800px) {
+  .dashboard-header {
+    flex-wrap: wrap !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  .dashboard-header-actions {
+    justify-content: flex-start !important;
+    margin-top: 0.5rem !important;
+  }
+}

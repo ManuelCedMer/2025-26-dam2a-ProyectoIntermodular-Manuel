@@ -48,6 +48,8 @@ function RoutinesPage() {
   const [editDaysOfWeek, setEditDaysOfWeek] = useState([]);
 
   const [loading, setLoading] = useState(false);
+  // Controla la visibilidad del panel de nueva rutina
+  const [showCreatePanel, setShowCreatePanel] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   // Días disponibles para seleccionar en el formulario.
@@ -256,81 +258,97 @@ function RoutinesPage() {
     <Page>
       {/* Cabecera */}
       <PageHeader>
-        <PageTitle>Gestión de rutinas</PageTitle>
-        <PageSubtitle>
-          Crea tus rutinas de entrenamiento, asigna los días de la semana y
-          accede al detalle para gestionar los ejercicios de cada una.
-        </PageSubtitle>
-
-        <Alert variant="error">{errorMessage}</Alert>
+        <div className="dashboard-header">
+          <div className="dashboard-header-titles">
+            <PageTitle>Mis rutinas</PageTitle>
+            <PageSubtitle>Historial {routines.length}</PageSubtitle>
+          </div>
+          <div className="dashboard-header-actions">
+            <Button
+              variant="secondary"
+              onClick={() =>
+                alert("Funcionalidad de plantillas no implementada")
+              }
+            >
+              Plantillas
+            </Button>
+            <Button onClick={() => setShowCreatePanel((v) => !v)}>
+              + Nueva
+            </Button>
+          </div>
+        </div>
       </PageHeader>
 
-      {/* Contenedor principal en dos columnas */}
-      <div className="routines-layout">
-        {/* Columna izquierda: creación y edición */}
-        <div className="stack-16">
-          {/* Creación */}
-          <Card>
-            <CardHeader
-              title="Crear nueva rutina"
-              subtitle="Define un nombre y selecciona los días en los que vas a realizar esta rutina."
-            />
-
-            <form onSubmit={handleCreateRoutine}>
-              <FormStack>
-                <Field label="Nombre de la rutina">
-                  <Input
-                    type="text"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="Ej: Fuerza torso 3 días"
-                    required
-                  />
-                </Field>
-
-                <ChipSelector
-                  label="Días de la semana"
-                  options={availableDays}
-                  value={daysOfWeek}
-                  onToggle={handleDayChange}
-                  getLabel={(day) => dayLabels[day] || day}
-                />
-
-                <Button type="submit" disabled={loading} block>
-                  {loading ? "Guardando..." : "Guardar rutina"}
-                </Button>
-              </FormStack>
-            </form>
-          </Card>
-
-          {/* Edición */}
-          {editingId && (
-            <Card>
-              <CardHeader
-                title="Editar rutina"
-                subtitle="Modifica el nombre o los días de la rutina seleccionada."
+      {showCreatePanel && (
+        <Card className="dashboard-panel">
+          <CardHeader title="Nueva rutina" />
+          <form onSubmit={handleCreateRoutine}>
+            <FormStack>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nombre de la rutina"
+                required
               />
+              <ChipSelector
+                label="Días"
+                options={Object.keys(dayLabels)}
+                value={daysOfWeek}
+                onToggle={(opt) => {
+                  setDaysOfWeek((prev) =>
+                    prev.includes(opt)
+                      ? prev.filter((d) => d !== opt)
+                      : [...prev, opt],
+                  );
+                }}
+                getLabel={(opt) => dayLabels[opt]}
+                multiple
+              />
+              {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+              <Button type="submit" disabled={loading}>
+                {loading ? "Guardando..." : "Crear rutina"}
+              </Button>
+            </FormStack>
+          </form>
+        </Card>
+      )}
 
+      <div className="dashboard-list">
+        {loading && <LoadingState text="Cargando rutinas..." />}
+        {!loading && routines.length === 0 && (
+          <EmptyState text="No tienes rutinas aún." />
+        )}
+        {routines.map((routine) =>
+          editingId === routine.id ? (
+            <Card key={routine.id} className="dashboard-tile editing">
+              <CardHeader title="Editar rutina" />
               <form onSubmit={handleUpdateRoutine}>
                 <FormStack>
-                  <Field label="Nombre de la rutina">
-                    <Input
-                      type="text"
-                      value={editName}
-                      onChange={(event) => setEditName(event.target.value)}
-                      required
-                    />
-                  </Field>
-
-                  <ChipSelector
-                    label="Días de la semana"
-                    options={availableDays}
-                    value={editDaysOfWeek}
-                    onToggle={handleEditDayChange}
-                    getLabel={(day) => dayLabels[day] || day}
+                  <Input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    required
                   />
-
-                  <div className="actions-row">
+                  <ChipSelector
+                    label="Días"
+                    options={Object.keys(dayLabels)}
+                    value={editDaysOfWeek}
+                    onToggle={(opt) => {
+                      setEditDaysOfWeek((prev) =>
+                        prev.includes(opt)
+                          ? prev.filter((d) => d !== opt)
+                          : [...prev, opt],
+                      );
+                    }}
+                    getLabel={(opt) => dayLabels[opt]}
+                    multiple
+                  />
+                  {errorMessage && (
+                    <Alert variant="error">{errorMessage}</Alert>
+                  )}
+                  <div className="dashboard-tile-actions">
                     <Button type="submit" disabled={loading}>
                       {loading ? "Guardando..." : "Guardar cambios"}
                     </Button>
@@ -345,80 +363,46 @@ function RoutinesPage() {
                 </FormStack>
               </form>
             </Card>
-          )}
-        </div>
-
-        {/* Columna derecha: listado de rutinas */}
-        <div className="stack-16">
-          <Card>
-            <CardHeader
-              title="Mis rutinas"
-              subtitle="Desde aquí puedes editar o eliminar tus rutinas y acceder a sus ejercicios."
-            />
-
-            {loading && routines.length === 0 && (
-              <LoadingState className="block-mt" text="Cargando rutinas..." />
-            )}
-
-            {!loading && routines.length === 0 && (
-              <EmptyState
-                className="block-mt"
-                text="No tienes ninguna rutina creada todavía."
-              />
-            )}
-
-            {routines.length > 0 && (
-              <ul className="list-stack block-mt">
-                {routines.map((routine) => (
-                  <EntityListItem
-                    key={routine.id}
-                    title={routine.name}
-                    meta={
-                      Array.isArray(routine.daysOfWeek) &&
-                      routine.daysOfWeek.length > 0 ? (
-                        <div className="text-muted">
-                          {routine.daysOfWeek
-                            .map((d) => dayLabels[d] || d)
-                            .join(" · ")}
-                        </div>
-                      ) : null
-                    }
-                    actions={
-                      <>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => startEditRoutine(routine)}
-                        >
-                          Editar
-                        </Button>
-
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="danger"
-                          onClick={() => handleDeleteRoutine(routine.id)}
-                        >
-                          Eliminar
-                        </Button>
-
-                        <LinkButton
-                          to={`/rutinas/${routine.id}`}
-                          state={{ routineName: routine.name }}
-                          size="sm"
-                          variant="secondary"
-                        >
-                          Ver ejercicios
-                        </LinkButton>
-                      </>
-                    }
-                  />
-                ))}
-              </ul>
-            )}
-          </Card>
-        </div>
+          ) : (
+            <Card key={routine.id} className="dashboard-tile rutina-card">
+              <button
+                type="button"
+                className="rutina-delete-btn"
+                onClick={() => handleDeleteRoutine(routine.id)}
+                aria-label="Eliminar rutina"
+              >
+                🗑
+              </button>
+              <div className="dashboard-tile-main">
+                <div>
+                  <h3 className="dashboard-tile-title">{routine.name}</h3>
+                  <div className="dashboard-tile-meta">
+                    {routine.daysOfWeek && routine.daysOfWeek.length > 0
+                      ? routine.daysOfWeek.map((d) => dayLabels[d]).join(", ")
+                      : "Sin días"}
+                  </div>
+                </div>
+              </div>
+              <div className="dashboard-tile-actions rutina-actions-bottom">
+                <LinkButton
+                  to={`/rutinas/${routine.id}`}
+                  size="sm"
+                  variant="primary"
+                >
+                  Ver ejercicios
+                </LinkButton>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => startEditRoutine(routine)}
+                >
+                  Editar
+                </Button>
+              </div>
+            </Card>
+          ),
+        )}
       </div>
     </Page>
   );
