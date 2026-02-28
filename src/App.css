@@ -1,6 +1,56 @@
+/* Diet plan row layout for DietPage */
+.dietplan-row {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 0.85rem;
+  background: var(--card, #fff);
+  transition: background 0.15s;
+  margin-bottom: 0.2rem;
+}
+.dietplan-row:last-child {
+  border-bottom: none;
+}
+.dietplan-row:hover {
+  background: var(--card-2, #f3f4f6);
+}
+.dietplan-main {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+.dietplan-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.dietplan-link-row {
+  margin-top: 0.4rem;
+}
+.dietplan-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
+  margin-top: auto;
+}
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
+}
+.dietplan-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 /* Botón X para cerrar panel de nueva rutina */
 .card-relative {
-  position: relative;
+  position: relative;}
 /* Fila flex para header + X */
 .cardheader-x-row {
   display: flex;
@@ -9,9 +59,8 @@
   gap: 0.5rem;
   margin-bottom: 0.2rem;
 }
-}
+
 .close-panel-btn {
-  position: static;
   background: none;
   border: none;
   color: var(--muted);
@@ -28,6 +77,68 @@
   color: var(--primary);
   outline: none;
 }
+
+.dietmeals-list-card {
+  padding: 0.5rem 0.5rem 1.2rem 0.5rem;
+  background: var(--card, #fff);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
+  border: 1px solid var(--border, #e5e7eb);
+}
+
+.dietmeal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 0.85rem;
+  background: var(--card, #fff);
+  transition: background 0.15s;
+}
+.dietmeal-row:last-child {
+  border-bottom: none;
+}
+.dietmeal-row:hover {
+  background: var(--card-2, #f3f4f6);
+}
+
+.dietmeal-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.dietmeal-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+  color: var(--text, #222);
+}
+.dietmeal-name {
+  color: var(--muted, #6b7280);
+  font-size: 0.97rem;
+  font-weight: 400;
+}
+
+.dietmeal-actions {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.kcal-badge {
+  background: var(--primary-soft, #eef2ff);
+  color: var(--primary, #4f46e5);
+  font-weight: 600;
+  font-size: 0.93rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-right: 0.5rem;
+}
+
 /* Modern exercise list: remove default ul padding and list-style */
 .exercise-list-modern {
   list-style: none;
@@ -1597,7 +1708,7 @@ button.progress-secondary-button:disabled {
 }
 
 .exercise-row-horizontal:hover {
-  background: var(--card-2, #23272f);
+  background: var(--card-2, #f3f4f6);
   filter: brightness(1.04);
 }
 

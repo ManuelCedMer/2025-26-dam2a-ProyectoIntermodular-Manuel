@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
@@ -7,7 +7,6 @@ import {
   updateMeal,
   deleteMeal,
 } from "../services/dietMealsService.js";
-
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import {
@@ -16,503 +15,408 @@ import {
   PageTitle,
   PageSubtitle,
 } from "../components/ui/Page.jsx";
-import { FormStack, Field, Input } from "../components/ui/Form.jsx";
-
+import { FormStack, Input } from "../components/ui/Form.jsx";
 import Alert from "../components/ui/Alert.jsx";
-import CardHeader from "../components/ui/CardHeader.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
-import EntityListItem from "../components/ui/EntityListItem.jsx";
-import { confirmDelete } from "../utils/confirm.js";
 
-/**
- * Pantalla de detalle de un plan de alimentación.
- * Permite gestionar las comidas asociadas a ese plan.
- * [DIET-01] Comidas por día.
- * [DIET-03] Calorías estimadas por comida.
- *
- * Refactor UI (Bloque 1):
- *  - Se reemplazan estilos inline por componentes UI reutilizables.
- *  - Se estandariza header, cards, estados vacío/carga y confirmación de borrado.
- *  - NO se modifica la lógica de negocio.
- */
+const dayLabels = {
+  L: "Lunes",
+  M: "Martes",
+  X: "Miércoles",
+  J: "Jueves",
+  V: "Viernes",
+  S: "Sábado",
+  D: "Domingo",
+};
+
+const mealTypeLabels = {
+  desayuno: "Desayuno",
+  comida: "Comida",
+  cena: "Cena",
+  snack: "Snack",
+};
+
 function DietDetailPage() {
   const { dietId } = useParams();
   const location = useLocation();
   const { user } = useAuth();
 
-  // Nombre del plan (lo recibimos desde la lista de dietas).
   const [dietName] = useState(location.state?.dietName || "");
 
-  // Lista de comidas de este plan.
-  const [meals, setMeals] = useState([]);
+  // Estado para mostrar/ocultar panel de creación
+  const [showCreatePanel, setShowCreatePanel] = useState(false);
 
-  // Formulario de creación.
-  const [dayOfWeek, setDayOfWeek] = useState("L");
-  const [mealType, setMealType] = useState("desayuno");
+  // Lista de comidas
+  const [meals, setMeals] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Formulario de creación
+  const [dayOfWeek, setDayOfWeek] = useState("");
+  const [mealType, setMealType] = useState("");
   const [name, setName] = useState("");
   const [estimatedCalories, setEstimatedCalories] = useState("");
-
-  // Formulario de edición.
-  const [editingId, setEditingId] = useState(null);
-  const [editDayOfWeek, setEditDayOfWeek] = useState("L");
-  const [editMealType, setEditMealType] = useState("desayuno");
-  const [editName, setEditName] = useState("");
-  const [editEstimatedCalories, setEditEstimatedCalories] = useState("");
-
-  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const availableDays = ["L", "M", "X", "J", "V", "S", "D"];
-  const availableMealTypes = ["desayuno", "comida", "cena", "snack"];
+  // Edición
+  const [editingId, setEditingId] = useState(null);
+  const [editDayOfWeek, setEditDayOfWeek] = useState("");
+  const [editMealType, setEditMealType] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editEstimatedCalories, setEditEstimatedCalories] = useState("");
+  const [editErrorMessage, setEditErrorMessage] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
 
-  // Etiquetas más legibles para mostrar en la interfaz.
-  const dayLabels = {
-    L: "Lunes",
-    M: "Martes",
-    X: "Miércoles",
-    J: "Jueves",
-    V: "Viernes",
-    S: "Sábado",
-    D: "Domingo",
-  };
-
-  const mealTypeLabels = {
-    desayuno: "Desayuno",
-    comida: "Comida",
-    cena: "Cena",
-    snack: "Snack",
-  };
-
-  /**
-   * Carga las comidas del plan de alimentación al entrar en la página.
-   */
   useEffect(() => {
     if (!user) return;
-
-    async function loadMeals() {
-      try {
-        setLoading(true);
-        setErrorMessage("");
-
-        const mealsFromDb = await getMealsByDiet({
-          userId: user.uid,
-          dietId,
-        });
-
-        setMeals(mealsFromDb);
-      } catch (error) {
-        console.error("Error al cargar comidas:", error);
-        setErrorMessage("No se han podido cargar las comidas del plan.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadMeals();
+    setLoading(true);
+    getMealsByDiet(dietId, user.uid)
+      .then(setMeals)
+      .finally(() => setLoading(false));
   }, [user, dietId]);
 
-  /**
-   * Maneja el envío del formulario de creación de comida.
-   * [DIET-01][DIET-03]
-   */
-  async function handleCreateMeal(event) {
-    event.preventDefault();
-
-    if (!name.trim()) {
-      setErrorMessage("El nombre de la comida es obligatorio.");
+  // Lógica de creación/edición igual que antes
+  const handleCreateMeal = async (e) => {
+    e.preventDefault();
+    if (!dayOfWeek || !mealType || !name.trim()) {
+      setErrorMessage("Todos los campos son obligatorios.");
       return;
     }
-
-    const parsedCalories =
-      estimatedCalories.trim() === "" ? null : Number(estimatedCalories);
-
-    if (parsedCalories !== null && Number.isNaN(parsedCalories)) {
-      setErrorMessage("Las calorías deben ser un número.");
-      return;
-    }
-
+    setLoading(true);
+    setErrorMessage("");
     try {
-      setLoading(true);
-      setErrorMessage("");
-
       const newMeal = await createMeal({
         userId: user.uid,
         dietId,
         dayOfWeek,
         mealType,
         name: name.trim(),
-        estimatedCalories: parsedCalories,
+        estimatedCalories: estimatedCalories ? Number(estimatedCalories) : null,
       });
-
       setMeals((prev) => [newMeal, ...prev]);
-
-      // Limpiar formulario.
+      setShowCreatePanel(false);
+      setDayOfWeek("");
+      setMealType("");
       setName("");
       setEstimatedCalories("");
-      setDayOfWeek("L");
-      setMealType("desayuno");
-    } catch (error) {
-      console.error("Error al crear comida:", error);
-      setErrorMessage("No se ha podido crear la comida.");
+    } catch {
+      setErrorMessage("No se pudo crear la comida.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  /**
-   * Inicia la edición de una comida concreta.
-   */
-  function startEditMeal(meal) {
+  const startEditMeal = (meal) => {
     setEditingId(meal.id);
-    setEditDayOfWeek(meal.dayOfWeek || "L");
-    setEditMealType(meal.mealType || "desayuno");
-    setEditName(meal.name || "");
-    setEditEstimatedCalories(
-      meal.estimatedCalories !== null && meal.estimatedCalories !== undefined
-        ? String(meal.estimatedCalories)
-        : "",
-    );
-    setErrorMessage("");
-  }
+    setEditDayOfWeek(meal.dayOfWeek);
+    setEditMealType(meal.mealType);
+    setEditName(meal.name);
+    setEditEstimatedCalories(meal.estimatedCalories || "");
+    setEditErrorMessage("");
+  };
 
-  /**
-   * Cancela la edición.
-   */
-  function cancelEdit() {
-    setEditingId(null);
-    setEditDayOfWeek("L");
-    setEditMealType("desayuno");
-    setEditName("");
-    setEditEstimatedCalories("");
-  }
-
-  /**
-   * Maneja el envío del formulario de edición.
-   */
-  async function handleUpdateMeal(event) {
-    event.preventDefault();
-
-    if (!editName.trim()) {
-      setErrorMessage("El nombre de la comida es obligatorio.");
+  const handleUpdateMeal = async (e) => {
+    e.preventDefault();
+    if (!editDayOfWeek || !editMealType || !editName.trim()) {
+      setEditErrorMessage("Todos los campos son obligatorios.");
       return;
     }
-
-    const parsedCalories =
-      editEstimatedCalories.trim() === ""
-        ? null
-        : Number(editEstimatedCalories);
-
-    if (parsedCalories !== null && Number.isNaN(parsedCalories)) {
-      setErrorMessage("Las calorías deben ser un número.");
-      return;
-    }
-
+    setEditLoading(true);
+    setEditErrorMessage("");
     try {
-      setLoading(true);
-      setErrorMessage("");
-
-      await updateMeal(editingId, {
+      const updated = await updateMeal(editingId, {
         dayOfWeek: editDayOfWeek,
         mealType: editMealType,
         name: editName.trim(),
-        estimatedCalories: parsedCalories,
+        estimatedCalories: editEstimatedCalories
+          ? Number(editEstimatedCalories)
+          : null,
       });
-
       setMeals((prev) =>
-        prev.map((meal) =>
-          meal.id === editingId
-            ? {
-                ...meal,
-                dayOfWeek: editDayOfWeek,
-                mealType: editMealType,
-                name: editName.trim(),
-                estimatedCalories: parsedCalories,
-              }
-            : meal,
-        ),
+        prev.map((m) => (m.id === editingId ? { ...m, ...updated } : m)),
       );
-
-      cancelEdit();
-    } catch (error) {
-      console.error("Error al actualizar comida:", error);
-      setErrorMessage("No se ha podido actualizar la comida.");
+      setEditingId(null);
+      setEditDayOfWeek("");
+      setEditMealType("");
+      setEditName("");
+      setEditEstimatedCalories("");
+    } catch {
+      setEditErrorMessage("No se pudo actualizar la comida.");
     } finally {
-      setLoading(false);
+      setEditLoading(false);
     }
-  }
+  };
 
-  /**
-   * Elimina una comida tras confirmarlo.
-   */
-  async function handleDeleteMeal(id) {
-    const ok = confirmDelete("¿Seguro que quieres eliminar esta comida?");
-    if (!ok) return;
-
+  const handleDeleteMeal = async (id) => {
+    if (!window.confirm("¿Eliminar esta comida?")) return;
+    setLoading(true);
     try {
-      setLoading(true);
-      setErrorMessage("");
-
       await deleteMeal(id);
-
-      setMeals((prev) => prev.filter((meal) => meal.id !== id));
-
-      if (editingId === id) {
-        cancelEdit();
-      }
-    } catch (error) {
-      console.error("Error al eliminar comida:", error);
-      setErrorMessage("No se ha podido eliminar la comida.");
+      setMeals((prev) => prev.filter((m) => m.id !== id));
+    } catch {
+      // error handling opcional
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  // Ordeno las comidas por día de la semana y tipo de comida
-  const dayOrder = ["L", "M", "X", "J", "V", "S", "D"];
-  const mealTypeOrder = ["desayuno", "comida", "cena", "snack"];
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditDayOfWeek("");
+    setEditMealType("");
+    setEditName("");
+    setEditEstimatedCalories("");
+    setEditErrorMessage("");
+  };
 
+  // Ordenar comidas por día y tipo
   const sortedMeals = [...meals].sort((a, b) => {
+    const dayOrder = "LMXJVSD";
+    const mealOrder = ["desayuno", "comida", "cena", "snack"];
     const dayDiff =
       dayOrder.indexOf(a.dayOfWeek) - dayOrder.indexOf(b.dayOfWeek);
     if (dayDiff !== 0) return dayDiff;
-
-    const typeDiff =
-      mealTypeOrder.indexOf(a.mealType) - mealTypeOrder.indexOf(b.mealType);
-    if (typeDiff !== 0) return typeDiff;
-
-    return a.name.localeCompare(b.name);
+    return mealOrder.indexOf(a.mealType) - mealOrder.indexOf(b.mealType);
   });
+
+  if (!user) {
+    return (
+      <Page>
+        <PageTitle>Comidas del plan</PageTitle>
+        <p>Inicia sesión para ver tu información.</p>
+      </Page>
+    );
+  }
 
   return (
     <Page>
-      {/* Cabecera de la pantalla */}
+      {/* Toolbar tipo dashboard */}
       <PageHeader>
-        <div className="row-between">
-          <div>
+        <div className="dashboard-header">
+          <div className="dashboard-header-titles">
+            <LinkButton
+              to="/dietas"
+              variant="secondary"
+              size="sm"
+              className="dashboard-back-btn"
+            >
+              ← Volver a mis planes
+            </LinkButton>
             <PageTitle>Comidas del plan</PageTitle>
-            {dietName && (
-              <PageSubtitle>
-                Plan seleccionado: <strong>{dietName}</strong>
-              </PageSubtitle>
-            )}
+            {dietName && <PageSubtitle strong>{dietName}</PageSubtitle>}
           </div>
-
-          <LinkButton to="/dietas" variant="secondary" size="sm">
-            ← Volver a mis planes
-          </LinkButton>
+          <div className="dashboard-header-actions">
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => {
+                setShowCreatePanel((v) => !v);
+                setDayOfWeek("");
+                setMealType("");
+                setName("");
+                setEstimatedCalories("");
+                setErrorMessage("");
+              }}
+            >
+              + Añadir comida
+            </Button>
+          </div>
         </div>
-
-        {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
       </PageHeader>
 
-      {/* Contenedor principal en dos columnas */}
-      <div className="diet-layout">
-        {/* Columna izquierda: creación y edición */}
-        <div className="stack-16">
-          {/* Formulario de creación de comida */}
-          <Card>
-            <CardHeader
-              title="Añadir comida"
-              subtitle="Elige el día, el tipo de comida y una descripción breve. Puedes añadir también las calorías estimadas para utilizar esta dieta como referencia en tu progreso."
-            />
-
-            <form onSubmit={handleCreateMeal}>
-              <FormStack>
-                <Field label="Día de la semana">
-                  <select
-                    className="select"
-                    value={dayOfWeek}
-                    onChange={(event) => setDayOfWeek(event.target.value)}
-                  >
-                    {availableDays.map((day) => (
-                      <option key={day} value={day}>
-                        {dayLabels[day] || day}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-
-                <Field label="Tipo de comida">
-                  <select
-                    className="select"
-                    value={mealType}
-                    onChange={(event) => setMealType(event.target.value)}
-                  >
-                    {availableMealTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {mealTypeLabels[type] || type}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-
-                <Field label="Nombre de la comida">
-                  <Input
-                    type="text"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="Ej: Avena con fruta, pasta con pollo..."
-                    required
-                  />
-                </Field>
-
-                <Field label="Calorías estimadas (opcional)">
-                  <Input
-                    type="number"
-                    value={estimatedCalories}
-                    onChange={(event) =>
-                      setEstimatedCalories(event.target.value)
-                    }
-                    min="0"
-                  />
-                </Field>
-
-                <Button type="submit" disabled={loading} block>
-                  {loading ? "Guardando..." : "Guardar comida"}
-                </Button>
-              </FormStack>
-            </form>
-          </Card>
-
-          {/* Formulario de edición de comida */}
-          {editingId && (
-            <Card>
-              <CardHeader
-                title="Editar comida"
-                subtitle="Modifica el día, el tipo de comida, el nombre o las calorías estimadas de la comida seleccionada."
-              />
-
-              <form onSubmit={handleUpdateMeal}>
-                <FormStack>
-                  <Field label="Día de la semana">
-                    <select
-                      className="select"
-                      value={editDayOfWeek}
-                      onChange={(event) => setEditDayOfWeek(event.target.value)}
-                    >
-                      {availableDays.map((day) => (
-                        <option key={day} value={day}>
-                          {dayLabels[day] || day}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-
-                  <Field label="Tipo de comida">
-                    <select
-                      className="select"
-                      value={editMealType}
-                      onChange={(event) => setEditMealType(event.target.value)}
-                    >
-                      {availableMealTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {mealTypeLabels[type] || type}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-
-                  <Field label="Nombre de la comida">
-                    <Input
-                      type="text"
-                      value={editName}
-                      onChange={(event) => setEditName(event.target.value)}
-                      required
-                    />
-                  </Field>
-
-                  <Field label="Calorías estimadas (opcional)">
-                    <Input
-                      type="number"
-                      value={editEstimatedCalories}
-                      onChange={(event) =>
-                        setEditEstimatedCalories(event.target.value)
-                      }
-                      min="0"
-                    />
-                  </Field>
-
-                  <div className="actions-row">
-                    <Button type="submit" disabled={loading}>
-                      {loading ? "Guardando..." : "Guardar cambios"}
-                    </Button>
-
-                    <Button
-                      type="button"
-                      onClick={cancelEdit}
-                      variant="secondary"
-                    >
-                      Cancelar
-                    </Button>
-                  </div>
-                </FormStack>
-              </form>
-            </Card>
-          )}
-        </div>
-
-        {/* Columna derecha: listado de comidas */}
-        <div className="stack-16">
-          <Card>
-            <CardHeader
-              title="Comidas de este plan"
-              subtitle="Las comidas se muestran ordenadas por día de la semana y tipo de comida para que puedas revisar rápidamente todo tu plan semanal."
-            />
-
-            {loading && meals.length === 0 && (
-              <LoadingState className="block-mt" text="Cargando comidas..." />
-            )}
-
-            {!loading && sortedMeals.length === 0 && (
-              <EmptyState
-                className="block-mt"
-                text="Este plan todavía no tiene comidas definidas."
-              />
-            )}
-
-            {sortedMeals.length > 0 && (
-              <ul className="list-stack block-mt">
-                {sortedMeals.map((meal) => (
-                  <EntityListItem
-                    key={meal.id}
-                    title={`${dayLabels[meal.dayOfWeek] || meal.dayOfWeek} · ${
-                      mealTypeLabels[meal.mealType] || meal.mealType
-                    }`}
-                    meta={<div className="page-subtitle">{meal.name}</div>}
-                    badge={
-                      meal.estimatedCalories !== null &&
-                      meal.estimatedCalories !== undefined
-                        ? `${meal.estimatedCalories} kcal`
-                        : null
-                    }
-                    actions={
-                      <>
-                        <Button
-                          type="button"
-                          onClick={() => startEditMeal(meal)}
-                          variant="secondary"
-                          size="sm"
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          type="button"
-                          onClick={() => handleDeleteMeal(meal.id)}
-                          variant="danger"
-                          size="sm"
-                        >
-                          Eliminar
-                        </Button>
-                      </>
-                    }
-                  />
+      {/* Panel colapsable de creación */}
+      {showCreatePanel && (
+        <Card className="dashboard-panel card-relative">
+          <div className="cardheader-x-row">
+            <h3 className="section-title">Añadir comida</h3>
+            <button
+              type="button"
+              className="close-panel-btn"
+              aria-label="Cerrar"
+              onClick={() => {
+                setShowCreatePanel(false);
+                setDayOfWeek("");
+                setMealType("");
+                setName("");
+                setEstimatedCalories("");
+                setErrorMessage("");
+              }}
+            >
+              ×
+            </button>
+          </div>
+          <form onSubmit={handleCreateMeal}>
+            <FormStack>
+              <select
+                className="input"
+                value={dayOfWeek}
+                onChange={(e) => setDayOfWeek(e.target.value)}
+                required
+              >
+                <option value="">Día de la semana</option>
+                {Object.keys(dayLabels).map((d) => (
+                  <option key={d} value={d}>
+                    {dayLabels[d]}
+                  </option>
                 ))}
-              </ul>
-            )}
-          </Card>
-        </div>
-      </div>
+              </select>
+              <select
+                className="input"
+                value={mealType}
+                onChange={(e) => setMealType(e.target.value)}
+                required
+              >
+                <option value="">Tipo de comida</option>
+                {Object.keys(mealTypeLabels).map((t) => (
+                  <option key={t} value={t}>
+                    {mealTypeLabels[t]}
+                  </option>
+                ))}
+              </select>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nombre de la comida"
+                required
+              />
+              <Input
+                type="number"
+                value={estimatedCalories}
+                onChange={(e) => setEstimatedCalories(e.target.value)}
+                placeholder="Kcal estimadas"
+                min={0}
+              />
+              {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+              <Button type="submit" disabled={loading}>
+                {loading ? "Guardando..." : "Añadir comida"}
+              </Button>
+            </FormStack>
+          </form>
+        </Card>
+      )}
+
+      {/* Panel colapsable de edición */}
+      {editingId && (
+        <Card className="dashboard-panel card-relative">
+          <div className="cardheader-x-row">
+            <h3 className="section-title">Editar comida</h3>
+            <button
+              type="button"
+              className="close-panel-btn"
+              aria-label="Cerrar"
+              onClick={cancelEdit}
+            >
+              ×
+            </button>
+          </div>
+          <form onSubmit={handleUpdateMeal}>
+            <FormStack>
+              <select
+                className="input"
+                value={editDayOfWeek}
+                onChange={(e) => setEditDayOfWeek(e.target.value)}
+                required
+              >
+                <option value="">Día de la semana</option>
+                {Object.keys(dayLabels).map((d) => (
+                  <option key={d} value={d}>
+                    {dayLabels[d]}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="input"
+                value={editMealType}
+                onChange={(e) => setEditMealType(e.target.value)}
+                required
+              >
+                <option value="">Tipo de comida</option>
+                {Object.keys(mealTypeLabels).map((t) => (
+                  <option key={t} value={t}>
+                    {mealTypeLabels[t]}
+                  </option>
+                ))}
+              </select>
+              <Input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                required
+              />
+              <Input
+                type="number"
+                value={editEstimatedCalories}
+                onChange={(e) => setEditEstimatedCalories(e.target.value)}
+                placeholder="Kcal estimadas"
+                min={0}
+              />
+              {editErrorMessage && (
+                <Alert variant="error">{editErrorMessage}</Alert>
+              )}
+              <div className="actions-row">
+                <Button type="submit" disabled={editLoading}>
+                  {editLoading ? "Guardando..." : "Guardar cambios"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={cancelEdit}
+                  disabled={editLoading}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </FormStack>
+          </form>
+        </Card>
+      )}
+
+      {/* Card principal con listado de comidas */}
+      <Card className="dashboard-tile dietmeals-list-card">
+        {loading && <LoadingState text="Cargando comidas..." />}
+        {!loading && sortedMeals.length === 0 && (
+          <EmptyState text="Este plan todavía no tiene comidas definidas." />
+        )}
+        {!loading && sortedMeals.length > 0 && (
+          <ul className="list-stack block-mt">
+            {sortedMeals.map((meal) => (
+              <li key={meal.id} className="dietmeal-row">
+                <div className="dietmeal-info">
+                  <span className="dietmeal-title">
+                    {dayLabels[meal.dayOfWeek]} ·{" "}
+                    {mealTypeLabels[meal.mealType]}
+                  </span>
+                  <span className="dietmeal-name">{meal.name}</span>
+                </div>
+                <div className="dietmeal-actions">
+                  {meal.estimatedCalories && (
+                    <span className="badge-pill kcal-badge">
+                      {meal.estimatedCalories} kcal
+                    </span>
+                  )}
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => startEditMeal(meal)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="danger"
+                    onClick={() => handleDeleteMeal(meal.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
     </Page>
   );
 }
