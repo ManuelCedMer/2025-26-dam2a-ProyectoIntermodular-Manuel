@@ -7,10 +7,7 @@ import {
   updateExercise,
   deleteExercise,
 } from "../services/routineExercisesService.js";
-import {
-  getCompletedExerciseIds,
-  setExerciseCompleted,
-} from "../services/routineExerciseCompletionsService.js";
+
 
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
@@ -27,7 +24,7 @@ import LoadingState from "../components/ui/LoadingState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
 import { confirmDelete } from "../utils/confirm.js";
-import { getTodayDateString } from "../utils/dates.js";
+
 
 /**
  * Pantalla de detalle de una rutina.
@@ -35,6 +32,9 @@ import { getTodayDateString } from "../utils/dates.js";
  * [ROUTINES-01] Lista de ejercicios de la rutina.
  */
 function RoutineDetailPage() {
+  // ...existing code...
+  // Estado para mostrar/ocultar el panel de nuevo ejercicio
+  const [showCreateExercise, setShowCreateExercise] = useState(false);
   const { routineId } = useParams();
   const location = useLocation();
   const { user } = useAuth();
@@ -45,11 +45,7 @@ function RoutineDetailPage() {
   // Lista de ejercicios de esta rutina.
   const [exercises, setExercises] = useState([]);
 
-  // Fecha seleccionada para marcar completados.
-  const [selectedDate, setSelectedDate] = useState(getTodayDateString());
 
-  // IDs de ejercicios completados para la rutina y fecha seleccionadas.
-  const [completedIds, setCompletedIds] = useState([]);
 
   // Formulario de creación.
   const [name, setName] = useState("");
@@ -93,52 +89,7 @@ function RoutineDetailPage() {
     loadExercises();
   }, [user, routineId]);
 
-  /**
-   * Carga qué ejercicios están completados para la rutina y fecha actuales.
-   * [ROUTINES-03] Consultar ejercicios completados por fecha.
-   */
-  useEffect(() => {
-    if (!user) return;
 
-    async function loadCompleted() {
-      try {
-        const ids = await getCompletedExerciseIds({
-          userId: user.uid,
-          routineId,
-          date: selectedDate,
-        });
-        setCompletedIds(ids);
-      } catch (error) {
-        console.error("Error al cargar ejercicios completados:", error);
-      }
-    }
-
-    loadCompleted();
-  }, [user, routineId, selectedDate]);
-
-  /**
-   * Marca o desmarca un ejercicio como completado para la fecha seleccionada.
-   * [ROUTINES-03]
-   */
-  async function handleToggleCompleted(exerciseId, isCompleted) {
-    try {
-      await setExerciseCompleted({
-        userId: user.uid,
-        routineId,
-        exerciseId,
-        date: selectedDate,
-        completed: isCompleted,
-      });
-
-      setCompletedIds((prev) =>
-        isCompleted
-          ? [...new Set([...prev, exerciseId])]
-          : prev.filter((id) => id !== exerciseId),
-      );
-    } catch (error) {
-      console.error("Error al actualizar completado:", error);
-    }
-  }
 
   /**
    * Maneja el envío del formulario de creación de ejercicio.
@@ -311,163 +262,152 @@ function RoutineDetailPage() {
 
   return (
     <Page>
+      {/* Header tipo dashboard */}
       <PageHeader>
-        <LinkButton to="/rutinas" variant="secondary" size="sm">
-          ← Volver a mis rutinas
-        </LinkButton>
+        <div className="dashboard-header">
+          <div className="dashboard-header-titles">
+            <LinkButton
+              to="/rutinas"
+              variant="secondary"
+              size="sm"
+              className="dashboard-back-btn"
+            >
+              ← Volver a mis rutinas
+            </LinkButton>
+            <PageTitle>Ejercicios</PageTitle>
+            {routineName && <PageSubtitle strong>{routineName}</PageSubtitle>}
+          </div>
+          <div className="dashboard-header-actions">
 
-        <PageTitle>Ejercicios de la rutina</PageTitle>
-        {routineName && <PageSubtitle strong>{routineName}</PageSubtitle>}
-
-        {errorMessage && <p className="text-error">{errorMessage}</p>}
+            <Button
+              type="button"
+              onClick={() => setShowCreateExercise((v) => !v)}
+              variant="primary"
+              size="sm"
+            >
+              + Nuevo ejercicio
+            </Button>
+          </div>
+        </div>
       </PageHeader>
 
-      {/* Layout en dos columnas [UI-02] */}
-      <div className="routine-detail-layout">
-        {/* Columna izquierda */}
-        <div className="stack-16">
-          <Card>
-            <Field label="Fecha de la sesión">
+      {/* Panel colapsable para añadir ejercicio */}
+      {showCreateExercise && (
+        <Card className="dashboard-panel compact-card">
+          <CardHeader title="Añadir ejercicio" />
+          <form onSubmit={handleCreateExercise}>
+            <FormStack compact>
               <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ej: Sentadillas"
+                required
               />
-            </Field>
-          </Card>
+              <Input
+                type="number"
+                value={sets}
+                onChange={(e) => setSets(e.target.value)}
+                placeholder="Series"
+              />
+              <Input
+                type="number"
+                value={reps}
+                onChange={(e) => setReps(e.target.value)}
+                placeholder="Repeticiones"
+              />
+              <Button type="submit" disabled={loading} block>
+                {loading ? "Guardando..." : "Guardar ejercicio"}
+              </Button>
+            </FormStack>
+          </form>
+        </Card>
+      )}
 
-          <Card>
-            <CardHeader title="Añadir ejercicio" size="sm" />
-            <form onSubmit={handleCreateExercise}>
-              <FormStack compact>
-                <Input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ej: Sentadillas"
-                  required
-                />
-                <Input
-                  type="number"
-                  value={sets}
-                  onChange={(e) => setSets(e.target.value)}
-                  placeholder="Series"
-                />
-                <Input
-                  type="number"
-                  value={reps}
-                  onChange={(e) => setReps(e.target.value)}
-                  placeholder="Repeticiones"
-                />
-                <Button type="submit" disabled={loading} block>
-                  {loading ? "Guardando..." : "Guardar ejercicio"}
+      {/* Card principal con listado de ejercicios */}
+      <Card className="dashboard-tile exercise-list-card compact-card">
+        {loading && exercises.length === 0 && (
+          <LoadingState text="Cargando ejercicios..." />
+        )}
+        {!loading && exercises.length === 0 && (
+          <EmptyState text="Esta rutina todavía no tiene ejercicios." />
+        )}
+        <ul className="exercise-list-modern">
+          {exercises.map((exercise) => (
+            <li
+              key={exercise.id}
+              className="exercise-row-horizontal"
+            >
+              <div className="exercise-info">
+                <span className="exercise-name">{exercise.name}</span>
+                <span className="exercise-meta">
+                  {exercise.sets ? `${exercise.sets} series` : ""}
+                  {exercise.sets && exercise.reps ? " x " : ""}
+                  {exercise.reps ? `${exercise.reps}` : ""}
+                </span>
+              </div>
+              <div className="exercise-actions">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="exercise-edit-btn"
+                  onClick={() => startEditExercise(exercise)}
+                >
+                  Editar
                 </Button>
-              </FormStack>
-            </form>
-          </Card>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="danger"
+                  className="exercise-delete-btn"
+                  onClick={() => handleDeleteExercise(exercise.id)}
+                  aria-label="Eliminar ejercicio"
+                >
+                  🗑
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </Card>
 
-          {/* Formulario de edición de ejercicio */}
-          {editingId && (
-            <Card>
-              <CardHeader title="Editar ejercicio" size="sm" />
-              <form onSubmit={handleUpdateExercise}>
-                <FormStack compact>
-                  <Input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    required
-                  />
-                  <Input
-                    type="number"
-                    value={editSets}
-                    onChange={(e) => setEditSets(e.target.value)}
-                    placeholder="Series"
-                  />
-                  <Input
-                    type="number"
-                    value={editReps}
-                    onChange={(e) => setEditReps(e.target.value)}
-                    placeholder="Repeticiones"
-                  />
-
-                  <div className="actions-row-tight">
-                    <Button type="submit" disabled={loading}>
-                      {loading ? "Guardando..." : "Guardar cambios"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={cancelEdit}
-                    >
-                      Cancelar
-                    </Button>
-                  </div>
-                </FormStack>
-              </form>
-            </Card>
-          )}
-        </div>
-
-        {/* Columna derecha */}
-        <div className="stack-16">
-          <Card>
-            <CardHeader title="Ejercicios de esta rutina" size="sm" />
-
-            {loading && exercises.length === 0 && (
-              <LoadingState text="Cargando ejercicios..." />
-            )}
-
-            {!loading && exercises.length === 0 && (
-              <EmptyState text="Esta rutina todavía no tiene ejercicios." />
-            )}
-
-            <ul className="list-clean">
-              {exercises.map((exercise) => {
-                const isCompleted = completedIds.includes(exercise.id);
-
-                return (
-                  <li key={exercise.id} className="exercise-row">
-                    <label className="exercise-check">
-                      <input
-                        type="checkbox"
-                        checked={isCompleted}
-                        onChange={(e) =>
-                          handleToggleCompleted(exercise.id, e.target.checked)
-                        }
-                      />
-                      <span>
-                        <strong>{exercise.name}</strong>{" "}
-                        {exercise.sets ? `${exercise.sets} series` : ""}{" "}
-                        {exercise.reps ? `x ${exercise.reps}` : ""}
-                      </span>
-                    </label>
-
-                    <div className="actions-row-tight">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => startEditExercise(exercise)}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="danger"
-                        onClick={() => handleDeleteExercise(exercise.id)}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </Card>
-        </div>
-      </div>
+      {/* Formulario de edición como bloque secundario */}
+      {editingId && (
+        <Card className="dashboard-panel compact-card">
+          <CardHeader title="Editar ejercicio" />
+          <form onSubmit={handleUpdateExercise}>
+            <FormStack compact>
+              <Input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                required
+              />
+              <Input
+                type="number"
+                value={editSets}
+                onChange={(e) => setEditSets(e.target.value)}
+                placeholder="Series"
+              />
+              <Input
+                type="number"
+                value={editReps}
+                onChange={(e) => setEditReps(e.target.value)}
+                placeholder="Repeticiones"
+              />
+              <div className="dashboard-tile-actions">
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Guardando..." : "Guardar cambios"}
+                </Button>
+                <Button type="button" variant="secondary" onClick={cancelEdit}>
+                  Cancelar
+                </Button>
+              </div>
+            </FormStack>
+          </form>
+        </Card>
+      )}
     </Page>
   );
 }
