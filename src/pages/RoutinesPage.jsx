@@ -280,8 +280,23 @@ function RoutinesPage() {
       </PageHeader>
 
       {showCreatePanel && (
-        <Card className="dashboard-panel">
-          <CardHeader title="Nueva rutina" />
+        <Card className="dashboard-panel card-relative">
+          <div className="cardheader-x-row">
+            <CardHeader title="Nueva rutina" />
+            <button
+              type="button"
+              className="close-panel-btn"
+              aria-label="Cerrar"
+              onClick={() => {
+                setShowCreatePanel(false);
+                setName("");
+                setDaysOfWeek([]);
+                setErrorMessage("");
+              }}
+            >
+              ×
+            </button>
+          </div>
           <form onSubmit={handleCreateRoutine}>
             <FormStack>
               <Input
