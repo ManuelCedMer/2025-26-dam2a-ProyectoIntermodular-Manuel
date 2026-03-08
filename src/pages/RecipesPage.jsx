@@ -298,27 +298,24 @@ function RecipesPage() {
         {favoriteRecipes.length === 0 ? (
           <EmptyState text="Todavía no tienes recetas marcadas como favoritas." />
         ) : (
-          <ul className="list-stack">
-            {favoriteRecipes.map((fav) => (
-              <li key={fav.recipeId} className="recipes-favorite-item">
-                <div className="recipes-favorite-info">
-                  <span className="recipes-favorite-title">{fav.title}</span>
-                  {fav.mealType && (
-                    <span className="text-muted"> · {fav.mealType}</span>
-                  )}
-                  {Array.isArray(fav.tags) && fav.tags.length > 0 && (
-                    <span className="text-muted"> · {fav.tags.join(", ")}</span>
-                  )}
-                </div>
-                <Link
-                  to={`/recetas/${fav.recipeId}`}
-                  className="btn btn-sm btn-secondary"
-                >
-                  Ver
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="recipes-grid">
+            {favoriteRecipes.map((fav) => {
+              // Buscar la receta completa para obtener la imagen
+              const recipe = recipes.find((r) => r.id === fav.recipeId) || {
+                id: fav.recipeId,
+                title: fav.title,
+              };
+
+              return (
+                <RecipeCard
+                  key={fav.recipeId}
+                  recipe={recipe}
+                  isFavorite={true}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              );
+            })}
+          </div>
         )}
       </Card>
     </Page>
