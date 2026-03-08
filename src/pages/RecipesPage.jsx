@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { getRecipes } from "../services/recipesService.js";
@@ -10,6 +10,18 @@ import {
 } from "../services/favoriteRecipesService.js";
 
 import Alert from "../components/ui/Alert.jsx";
+import RecipeCard from "../components/ui/RecipeCard.jsx";
+import Card from "../components/ui/Card.jsx";
+import {
+  Page,
+  PageHeader,
+  PageTitle,
+  PageSubtitle,
+} from "../components/ui/Page.jsx";
+import { Input } from "../components/ui/Form.jsx";
+import { Button } from "../components/ui/Button.jsx";
+import LoadingState from "../components/ui/LoadingState.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 
 /**
  * Pantalla de búsqueda de recetas [RECIPES].
@@ -44,6 +56,19 @@ function RecipesPage() {
 
   // Lista de recetas favoritas (para sección "Mis favoritos").
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
+
+  // Ref para scroll a favoritos
+  const favoritesRef = useRef(null);
+
+  /**
+   * Scroll a la sección de favoritos
+   */
+  const scrollToFavorites = () => {
+    favoritesRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   /**
    * Carga inicial de recetas y favoritos al entrar en la página.
@@ -165,147 +190,138 @@ function RecipesPage() {
 
   if (!user) {
     return (
-      <div className="recipes-page">
+      <Page>
+        <PageTitle>Recetas</PageTitle>
         <p>Inicia sesión para ver tu información.</p>
-      </div>
+      </Page>
     );
   }
 
   return (
-    <div className="recipes-page">
-      <section className="recipes-layout">
-        {/* Columna izquierda: filtros + resultados */}
-        <div className="recipes-left">
-          <header className="recipes-header">
-            <h2>Búsqueda de recetas</h2>
-            <p className="recipes-subtitle">
-              Busca por ingrediente o tipo de comida y guarda tus favoritas.
-            </p>
-          </header>
+    <Page>
+      {/* Header tipo dashboard */}
+      <PageHeader>
+        <div className="dashboard-header">
+          <div className="dashboard-header-titles">
+            <PageTitle>Recetas</PageTitle>
+            <PageSubtitle>
+              Busca recetas por ingrediente o tipo de comida y guarda tus
+              favoritas.
+            </PageSubtitle>
+          </div>
+          <div className="dashboard-header-actions">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={scrollToFavorites}
+            >
+              ⭐ Mis favoritos
+            </Button>
+          </div>
+        </div>
+      </PageHeader>
 
-          {/* Formulario de filtros */}
-          <div className="recipes-filters">
-            <h3>Filtros de búsqueda</h3>
+      {/* Filtros de búsqueda */}
+      <Card className="recipes-filters-card">
+        <h3 className="section-title-sm">Filtros de búsqueda</h3>
+        <form onSubmit={handleSearch} className="recipes-filters-form">
+          <div className="recipes-filter-row">
+            <div className="recipes-filter-field">
+              <label className="label">Ingrediente</label>
+              <Input
+                type="text"
+                value={ingredientText}
+                onChange={(event) => setIngredientText(event.target.value)}
+                placeholder="Ej: pollo, arroz, avena..."
+              />
+            </div>
 
-            <form onSubmit={handleSearch}>
-              <div>
-                <label>Ingrediente</label>
-                <input
-                  className="input"
-                  type="text"
-                  value={ingredientText}
-                  onChange={(event) => setIngredientText(event.target.value)}
-                  placeholder="Ej: pollo, arroz, avena..."
-                />
-              </div>
+            <div className="recipes-filter-field">
+              <label className="label">Tipo de comida</label>
+              <select
+                className="input"
+                value={mealType}
+                onChange={(event) => setMealType(event.target.value)}
+              >
+                {availableMealTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div>
-                <label>Tipo de comida</label>
-                <select
-                  className="select"
-                  value={mealType}
-                  onChange={(event) => setMealType(event.target.value)}
-                >
-                  {availableMealTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
+            <div className="recipes-filter-button">
               <button
                 type="submit"
-                className="btn btn-primary btn-block"
+                className="btn btn-primary"
                 disabled={loading}
               >
                 {loading ? "Buscando..." : "Buscar"}
               </button>
-            </form>
+            </div>
           </div>
+        </form>
+        {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+      </Card>
+      {/* Resultados de búsqueda */}
+      <Card className="dashboard-tile recipes-results-card">
+        <h3 className="section-title">Resultados</h3>
 
-          {/* Mensaje de error general */}
-          <Alert
-            variant="error"
-            className="recipes-message recipes-message--error"
-          >
-            {errorMessage}
-          </Alert>
-
-          {/* Resultados de búsqueda */}
-          <div className="recipes-list-card">
-            <h3>Resultados</h3>
-
-            {loading && recipes.length === 0 && <p>Cargando recetas...</p>}
-
-            {!loading && recipes.length === 0 && (
-              <p>No se han encontrado recetas con los filtros actuales.</p>
-            )}
-
-            <ul className="recipes-list">
-              {recipes.map((recipe) => {
-                const isFavorite = favoriteIds.includes(recipe.id);
-
-                return (
-                  <li key={recipe.id} className="recipes-list-item">
-                    <div>
-                      <strong>{recipe.title}</strong>{" "}
-                      {recipe.mealType && <span>({recipe.mealType})</span>}{" "}
-                      {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
-                        <span> - {recipe.tags.join(", ")}</span>
-                      )}
-                    </div>
-
-                    <div>
-                      <Link
-                        className="btn btn-secondary btn-sm"
-                        to={`/recetas/${recipe.id}`}
-                      >
-                        Ver detalle
-                      </Link>{" "}
-                      <button
-                        type="button"
-                        className={`btn btn-sm ${
-                          isFavorite ? "btn-danger" : "btn-secondary"
-                        }`}
-                        onClick={() => handleToggleFavorite(recipe)}
-                      >
-                        {isFavorite
-                          ? "Quitar de favoritos"
-                          : "Añadir a favoritos"}
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+        {loading && recipes.length === 0 && (
+          <LoadingState text="Cargando recetas..." />
+        )}
+        {!loading && recipes.length === 0 && (
+          <EmptyState text="No se han encontrado recetas con los filtros actuales." />
+        )}
+        {recipes.length > 0 && (
+          <div className="recipes-grid">
+            {recipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                isFavorite={favoriteIds.includes(recipe.id)}
+                onToggleFavorite={handleToggleFavorite}
+              />
+            ))}
           </div>
-        </div>
+        )}
+      </Card>
 
-        {/* Columna derecha: favoritos */}
-        <aside className="recipes-detail-card">
-          <h3>Mis recetas favoritas</h3>
+      {/* Favoritos */}
+      <Card className="dashboard-tile recipes-favorites-card">
+        <h3 ref={favoritesRef} className="section-title">
+          Mis recetas favoritas
+        </h3>
 
-          {favoriteRecipes.length === 0 ? (
-            <p>Todavía no tienes recetas marcadas como favoritas.</p>
-          ) : (
-            <ul className="recipes-list">
-              {favoriteRecipes.map((fav) => (
-                <li key={fav.recipeId} className="recipes-list-item">
-                  <div>
-                    <strong>{fav.title}</strong>{" "}
-                    {fav.mealType && <span>({fav.mealType})</span>}{" "}
-                    {Array.isArray(fav.tags) && fav.tags.length > 0 && (
-                      <span> - {fav.tags.join(", ")}</span>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </aside>
-      </section>
-    </div>
+        {favoriteRecipes.length === 0 ? (
+          <EmptyState text="Todavía no tienes recetas marcadas como favoritas." />
+        ) : (
+          <ul className="list-stack">
+            {favoriteRecipes.map((fav) => (
+              <li key={fav.recipeId} className="recipes-favorite-item">
+                <div className="recipes-favorite-info">
+                  <span className="recipes-favorite-title">{fav.title}</span>
+                  {fav.mealType && (
+                    <span className="text-muted"> · {fav.mealType}</span>
+                  )}
+                  {Array.isArray(fav.tags) && fav.tags.length > 0 && (
+                    <span className="text-muted"> · {fav.tags.join(", ")}</span>
+                  )}
+                </div>
+                <Link
+                  to={`/recetas/${fav.recipeId}`}
+                  className="btn btn-sm btn-secondary"
+                >
+                  Ver
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+    </Page>
   );
 }
 

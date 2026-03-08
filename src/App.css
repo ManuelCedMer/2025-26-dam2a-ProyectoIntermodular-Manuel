@@ -1923,10 +1923,105 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
   margin-top: 1.5rem;
 }
 
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Recipes filters card */
+.recipes-filters-card {
+  margin-bottom: 1.5rem;
+}
+
+.recipes-filters-form {
+  margin-top: 0.75rem;
+}
+
+.recipes-filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+.recipes-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.recipes-filter-field select.input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
+  padding-right: 2.5rem;
+}
+
+.recipes-filter-button {
+  display: flex;
+  align-items: flex-end;
+}
+
+.recipes-results-card {
+  margin-bottom: 1.5rem;
+}
+
+.recipes-favorites-card {
+  margin-bottom: 1.5rem;
+}
+
+.recipes-favorite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--card-border);
+  background: var(--card-2);
+  transition: background 0.15s;
+}
+
+.recipes-favorite-item:hover {
+  background: var(--primary-soft);
+}
+
+.recipes-favorite-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipes-favorite-title {
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+@media (max-width: 768px) {
+  .recipes-filter-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .recipes-filter-button {
+    align-items: stretch;
+  }
+  
+  .recipes-filter-button .btn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 640px) {
   .recipe-card-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+  
+  .recipes-grid {
+    grid-template-columns: 1fr;
   }
   
   .recipe-card-favorite-btn {
