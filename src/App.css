@@ -2046,3 +2046,134 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
     font-size: 1.1rem;
   }
 }
+
+/* RecipeDetailPage styling */
+.recipe-detail-header {
+  margin-bottom: 1.5rem;
+}
+
+.recipe-detail-image-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 2rem auto 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--card-2, #f9fafb);
+}
+
+.recipe-detail-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  max-height: 400px;
+}
+
+.recipe-detail-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text, #222);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.recipe-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--card, #fff);
+  border-radius: 0.75rem;
+  border: 1px solid var(--card-border, #e5e7eb);
+  margin-bottom: 2rem;
+}
+
+.recipe-detail-meta-item {
+  display: block;
+  color: var(--text, #222);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.recipe-detail-meta-item strong {
+  color: var(--primary, #3b82f6);
+  font-weight: 600;
+}
+
+.recipe-detail-section {
+  margin-bottom: 2rem;
+}
+
+.recipe-detail-section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text, #222);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--primary, #3b82f6);
+}
+
+.recipe-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recipe-detail-list li {
+  padding-left: 1.5rem;
+  position: relative;
+  color: var(--text, #222);
+  line-height: 1.6;
+}
+
+.recipe-detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary, #3b82f6);
+  font-weight: bold;
+}
+
+.recipe-detail-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  counter-reset: step-counter;
+}
+
+.recipe-detail-steps li {
+  position: relative;
+  padding-left: 2.5rem;
+  color: var(--text, #222);
+  line-height: 1.6;
+}
+
+.recipe-detail-steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--primary, #3b82f6);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.text-muted {
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}

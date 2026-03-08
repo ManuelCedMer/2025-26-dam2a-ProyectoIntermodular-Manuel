@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { getRecipeById } from "../services/recipesService.js";
+import { Page } from "../components/ui/Page.jsx";
+import LoadingState from "../components/ui/LoadingState.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
 
 /**
  * Pantalla de detalle de una receta [RECIPES-02].
@@ -47,51 +50,43 @@ function RecipeDetailPage() {
 
   if (!user) {
     return (
-      <main className="page-container page-container--md">
-        <header className="page-header">
-          <h2 className="page-title">Detalle de receta</h2>
-        </header>
+      <Page>
         <p>Inicia sesión para ver tu información.</p>
-      </main>
+      </Page>
     );
   }
 
   if (loading && !recipe) {
     return (
-      <main className="page-container page-container--md">
-        <header className="page-header">
-          <h2 className="page-title">Detalle de receta</h2>
-        </header>
-        <p>Cargando receta...</p>
-      </main>
+      <Page>
+        <LoadingState text="Cargando receta..." />
+      </Page>
     );
   }
 
   if (errorMessage && !recipe) {
     return (
-      <main className="page-container page-container--md">
-        <header className="page-header">
-          <h2 className="page-title">Detalle de receta</h2>
-        </header>
-        <p>{errorMessage}</p>
-        <p>
-          <Link to="/recetas">← Volver a la búsqueda</Link>
+      <Page>
+        <EmptyState text={errorMessage} />
+        <p style={{ marginTop: "1rem" }}>
+          <Link to="/recetas" className="btn btn-secondary btn-sm">
+            ← Volver a recetas
+          </Link>
         </p>
-      </main>
+      </Page>
     );
   }
 
   if (!recipe) {
     return (
-      <main className="page-container page-container--md">
-        <header className="page-header">
-          <h2 className="page-title">Detalle de receta</h2>
-        </header>
-        <p>No se ha encontrado la receta.</p>
-        <p>
-          <Link to="/recetas">← Volver a la búsqueda</Link>
+      <Page>
+        <EmptyState text="No se ha encontrado la receta." />
+        <p style={{ marginTop: "1rem" }}>
+          <Link to="/recetas" className="btn btn-secondary btn-sm">
+            ← Volver a recetas
+          </Link>
         </p>
-      </main>
+      </Page>
     );
   }
 
@@ -109,41 +104,44 @@ function RecipeDetailPage() {
         .filter((line) => line.trim() !== "");
 
   return (
-    <main className="page-container page-container--md">
-      <header className="page-header">
-        <Link to="/recetas">← Volver a la búsqueda</Link>
-        <h2 className="page-title">Detalle de receta</h2>
-      </header>
+    <Page>
+      {/* Botón volver */}
+      <div className="recipe-detail-header">
+        <Link to="/recetas" className="btn btn-secondary btn-sm">
+          ← Volver a recetas
+        </Link>
+      </div>
 
-      {/* Información principal de la receta */}
-      <section className="card">
-        <h3 className="section-title">{recipe.title}</h3>
+      {/* Título */}
+      <h1 className="recipe-detail-title">{recipe.title}</h1>
 
+      {/* Información meta */}
+      <div className="recipe-detail-meta">
         {recipe.mealType && (
-          <p className="text-muted block-mt">
-            Tipo de comida: {recipe.mealType}
-          </p>
+          <span className="recipe-detail-meta-item">
+            <strong>Tipo:</strong> {recipe.mealType}
+          </span>
         )}
-
-        {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
-          <p className="text-muted">Etiquetas: {recipe.tags.join(", ")}</p>
-        )}
-
         {recipe.estimatedCalories !== null &&
           recipe.estimatedCalories !== undefined && (
-            <p className="text-muted">
-              Calorías aproximadas: {recipe.estimatedCalories} kcal
-            </p>
+            <span className="recipe-detail-meta-item">
+              <strong>Calorías:</strong> {recipe.estimatedCalories} kcal
+            </span>
           )}
-      </section>
+        {Array.isArray(recipe.tags) && recipe.tags.length > 0 && (
+          <span className="recipe-detail-meta-item">
+            <strong>Etiquetas:</strong> {recipe.tags.join(", ")}
+          </span>
+        )}
+      </div>
 
       {/* Ingredientes */}
-      <section className="card">
-        <h4 className="section-title-sm">Ingredientes</h4>
+      <section className="recipe-detail-section">
+        <h2 className="recipe-detail-section-title">Ingredientes</h2>
         {ingredients.length === 0 ? (
-          <p>No se han especificado ingredientes.</p>
+          <p className="text-muted">No se han especificado ingredientes.</p>
         ) : (
-          <ul className="list-clean">
+          <ul className="recipe-detail-list">
             {ingredients.map((ingredient, index) => (
               <li key={index}>{ingredient}</li>
             ))}
@@ -152,19 +150,30 @@ function RecipeDetailPage() {
       </section>
 
       {/* Pasos */}
-      <section className="card">
-        <h4 className="section-title-sm">Pasos</h4>
+      <section className="recipe-detail-section">
+        <h2 className="recipe-detail-section-title">Pasos</h2>
         {steps.length === 0 ? (
-          <p>No se han especificado pasos.</p>
+          <p className="text-muted">No se han especificado pasos.</p>
         ) : (
-          <ol className="list-clean">
+          <ol className="recipe-detail-steps">
             {steps.map((step, index) => (
               <li key={index}>{step}</li>
             ))}
           </ol>
         )}
       </section>
-    </main>
+
+      {/* Imagen de receta */}
+      {recipe.image && (
+        <div className="recipe-detail-image-container">
+          <img
+            src={recipe.image}
+            alt={recipe.title}
+            className="recipe-detail-image"
+          />
+        </div>
+      )}
+    </Page>
   );
 }
 
