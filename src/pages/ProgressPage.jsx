@@ -222,6 +222,7 @@ function ProgressPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
   // Errores por campo (UI).
   const caloriesInError = validateNonNegativeNumber(
@@ -443,8 +444,132 @@ function ProgressPage() {
               panel
             </PageSubtitle>
           </div>
+          <div className="dashboard-header-actions">
+            <Button onClick={() => setShowForm((value) => !value)}>
+              Registrar hoy
+            </Button>
+          </div>
         </div>
       </PageHeader>
+
+      {showForm && (
+        <section className="progress-form-panel-zone">
+          <Card className="progress-form-card progress-form-panel card-relative">
+            <div className="cardheader-x-row">
+              <CardHeader title="Registrar progreso diario" />
+              <button
+                type="button"
+                className="close-panel-btn"
+                aria-label="Cerrar"
+                onClick={() => setShowForm(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="progress-messages progress-messages--inline">
+              {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+              {successMessage && (
+                <Alert variant="success">{successMessage}</Alert>
+              )}
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <FormStack className="progress-form">
+                <div className="progress-form-date-section">
+                  <Field label="Fecha">
+                    <div className="progress-date-group">
+                      <Input
+                        type="date"
+                        value={date}
+                        onChange={(event) => setDate(event.target.value)}
+                        className="progress-date-input"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleSetToday}
+                        disabled={isSaving}
+                      >
+                        Hoy
+                      </Button>
+                    </div>
+                  </Field>
+                </div>
+
+                <div className="progress-form-metrics">
+                  <Field label="Calorías consumidas (kcal)">
+                    <Input
+                      type="number"
+                      value={caloriesIn}
+                      onChange={(event) => setCaloriesIn(event.target.value)}
+                      min="0"
+                      placeholder="Ej: 2200"
+                    />
+                    {caloriesInError && (
+                      <div className="field-error">{caloriesInError}</div>
+                    )}
+                  </Field>
+
+                  <Field label="Calorías gastadas (kcal)">
+                    <Input
+                      type="number"
+                      value={caloriesOut}
+                      onChange={(event) => setCaloriesOut(event.target.value)}
+                      min="0"
+                      placeholder="Ej: 500"
+                    />
+                    {caloriesOutError && (
+                      <div className="field-error">{caloriesOutError}</div>
+                    )}
+                  </Field>
+
+                  <Field label="Peso (kg)">
+                    <Input
+                      type="number"
+                      value={weight}
+                      onChange={(event) => setWeight(event.target.value)}
+                      min="0"
+                      step="0.1"
+                      placeholder="Ej: 72.5"
+                    />
+                    {weightError && (
+                      <div className="field-error">{weightError}</div>
+                    )}
+                  </Field>
+                </div>
+
+                <Field label="Notas (opcional)">
+                  <Textarea
+                    value={notes}
+                    onChange={(event) => setNotes(event.target.value)}
+                    placeholder="Por ejemplo: día de descanso, entrenamiento fuerte..."
+                    rows="3"
+                  />
+                </Field>
+
+                <div className="progress-form-actions">
+                  <Button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className="btn-progress-submit"
+                  >
+                    {isSaving ? "Guardando..." : "Guardar progreso"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setShowForm(false)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </FormStack>
+            </form>
+          </Card>
+        </section>
+      )}
 
       <section className="progress-main-zone">
         <div className="progress-charts-section">
@@ -601,102 +726,6 @@ function ProgressPage() {
               </div>
             )}
           </div>
-        </Card>
-
-        <Card className="progress-form-card">
-          <CardHeader title="Registrar progreso diario" />
-
-          <div className="progress-messages progress-messages--inline">
-            {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
-            {successMessage && (
-              <Alert variant="success">{successMessage}</Alert>
-            )}
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <FormStack className="progress-form">
-              <div className="progress-form-date-section">
-                <Field label="Fecha">
-                  <div className="progress-date-group">
-                    <Input
-                      type="date"
-                      value={date}
-                      onChange={(event) => setDate(event.target.value)}
-                      className="progress-date-input"
-                    />
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={handleSetToday}
-                      disabled={isSaving}
-                    >
-                      Hoy
-                    </Button>
-                  </div>
-                </Field>
-              </div>
-
-              <div className="progress-form-metrics">
-                <Field label="Calorías consumidas (kcal)">
-                  <Input
-                    type="number"
-                    value={caloriesIn}
-                    onChange={(event) => setCaloriesIn(event.target.value)}
-                    min="0"
-                    placeholder="Ej: 2200"
-                  />
-                  {caloriesInError && (
-                    <div className="field-error">{caloriesInError}</div>
-                  )}
-                </Field>
-
-                <Field label="Calorías gastadas (kcal)">
-                  <Input
-                    type="number"
-                    value={caloriesOut}
-                    onChange={(event) => setCaloriesOut(event.target.value)}
-                    min="0"
-                    placeholder="Ej: 500"
-                  />
-                  {caloriesOutError && (
-                    <div className="field-error">{caloriesOutError}</div>
-                  )}
-                </Field>
-
-                <Field label="Peso (kg)">
-                  <Input
-                    type="number"
-                    value={weight}
-                    onChange={(event) => setWeight(event.target.value)}
-                    min="0"
-                    step="0.1"
-                    placeholder="Ej: 72.5"
-                  />
-                  {weightError && (
-                    <div className="field-error">{weightError}</div>
-                  )}
-                </Field>
-              </div>
-
-              <Field label="Notas (opcional)">
-                <Textarea
-                  value={notes}
-                  onChange={(event) => setNotes(event.target.value)}
-                  placeholder="Por ejemplo: día de descanso, entrenamiento fuerte..."
-                  rows="3"
-                />
-              </Field>
-
-              <Button
-                type="submit"
-                disabled={!canSubmit}
-                className="btn-progress-submit"
-              >
-                {isSaving ? "Guardando..." : "Guardar progreso"}
-              </Button>
-            </FormStack>
-          </form>
         </Card>
       </section>
 
