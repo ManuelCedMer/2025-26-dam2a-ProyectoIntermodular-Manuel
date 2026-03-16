@@ -439,242 +439,45 @@ function ProgressPage() {
           <div className="dashboard-header-titles">
             <PageTitle>Progreso</PageTitle>
             <PageSubtitle>
-              Registra tus calorías, peso y monitorea tu avance
+              Visualiza tu evolución y registra tus datos diarios en un solo
+              panel
             </PageSubtitle>
           </div>
         </div>
       </PageHeader>
 
-      {/* Mensajes globales */}
-      <div className="progress-messages">
-        {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
-        {successMessage && <Alert variant="success">{successMessage}</Alert>}
-        {showDailyGoalInfo && (
-          <Alert variant="info">
-            Aún no tienes configurada la meta calórica diaria en tu perfil.
-            Puedes configurarla para que la pantalla de inicio muestre un
-            resumen más completo.
-          </Alert>
-        )}
-      </div>
-
-      {/* Layout de dos columnas */}
-      <div className="progress-layout">
-        {/* Columna izquierda: formulario + historial */}
-        <div className="progress-left">
-          {/* Formulario de registro */}
-          <Card>
-            <CardHeader title="Registrar hoy" />
-            <form onSubmit={handleSubmit}>
-              <FormStack className="progress-form">
-                <div className="progress-form-date-section">
-                  <Field label="Fecha">
-                    <div className="progress-date-group">
-                      <Input
-                        type="date"
-                        value={date}
-                        onChange={(event) => setDate(event.target.value)}
-                        className="progress-date-input"
-                      />
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={handleSetToday}
-                        disabled={isSaving}
-                      >
-                        Hoy
-                      </Button>
-                    </div>
-                  </Field>
-                </div>
-
-                <div className="progress-form-metrics">
-                  <Field label="Calorías consumidas (kcal)">
-                    <Input
-                      type="number"
-                      value={caloriesIn}
-                      onChange={(event) => setCaloriesIn(event.target.value)}
-                      min="0"
-                      placeholder="Ej: 2200"
-                    />
-                    {caloriesInError && (
-                      <div className="field-error">{caloriesInError}</div>
-                    )}
-                  </Field>
-
-                  <Field label="Calorías gastadas (kcal)">
-                    <Input
-                      type="number"
-                      value={caloriesOut}
-                      onChange={(event) => setCaloriesOut(event.target.value)}
-                      min="0"
-                      placeholder="Ej: 500"
-                    />
-                    {caloriesOutError && (
-                      <div className="field-error">{caloriesOutError}</div>
-                    )}
-                  </Field>
-
-                  <Field label="Peso (kg)">
-                    <Input
-                      type="number"
-                      value={weight}
-                      onChange={(event) => setWeight(event.target.value)}
-                      min="0"
-                      step="0.1"
-                      placeholder="Ej: 72.5"
-                    />
-                    {weightError && (
-                      <div className="field-error">{weightError}</div>
-                    )}
-                  </Field>
-                </div>
-
-                <Field label="Notas (opcional)">
-                  <Textarea
-                    value={notes}
-                    onChange={(event) => setNotes(event.target.value)}
-                    placeholder="Por ejemplo: día de descanso, entrenamiento fuerte..."
-                    rows="3"
-                  />
-                </Field>
-
-                <Button
-                  type="submit"
-                  disabled={!canSubmit}
-                  className="btn-progress-submit"
-                >
-                  {isSaving ? "Guardando..." : "Guardar progreso"}
-                </Button>
-              </FormStack>
-            </form>
-          </Card>
-
-          {/* Historial de progreso */}
-          <Card>
-            <CardHeader title="Historial" />
-            {isLoadingData && entries.length === 0 && (
-              <p
-                className="text-muted"
-                style={{ padding: "1.5rem 0", textAlign: "center" }}
+      <section className="progress-main-zone">
+        <div className="progress-charts-section">
+          <div className="progress-charts-toolbar">
+            <h3 className="progress-charts-title">Gráficos de evolución</h3>
+            <div className="progress-period-selector">
+              <label
+                htmlFor="progress-range-select"
+                className="progress-period-label"
               >
-                Cargando historial de progreso...
-              </p>
-            )}
-
-            {!isLoadingData && entries.length === 0 && (
-              <div className="empty-state">
-                <p>Todavía no has registrado ningún día.</p>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleSetToday}
-                  disabled={isSaving}
-                >
-                  Registrar hoy
-                </Button>
-              </div>
-            )}
-
-            {entries.length > 0 && (
-              <div className="table-responsive">
-                <table className="progress-table">
-                  <thead>
-                    <tr>
-                      <th>Fecha</th>
-                      <th>Consumidas</th>
-                      <th>Gastadas</th>
-                      <th>Diferencia</th>
-                      <th>Peso</th>
-                      <th>Notas</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {entries.map((entry) => {
-                      const diff =
-                        (entry.caloriesIn || 0) - (entry.caloriesOut || 0);
-
-                      return (
-                        <tr key={entry.id}>
-                          <td className="font-mono">{entry.date}</td>
-                          <td className="table-calories">
-                            {entry.caloriesIn !== null &&
-                            entry.caloriesIn !== undefined
-                              ? entry.caloriesIn
-                              : "-"}
-                          </td>
-                          <td className="table-calories">
-                            {entry.caloriesOut !== null &&
-                            entry.caloriesOut !== undefined
-                              ? entry.caloriesOut
-                              : "-"}
-                          </td>
-                          <td
-                            className={
-                              "table-diff " +
-                              (diff > 0
-                                ? "positive"
-                                : diff < 0
-                                  ? "negative"
-                                  : "")
-                            }
-                          >
-                            {diff !== 0 ? (diff > 0 ? "+" : "") + diff : "-"}
-                          </td>
-                          <td>
-                            {entry.weight !== null && entry.weight !== undefined
-                              ? entry.weight
-                              : "-"}
-                          </td>
-                          <td className="truncate" title={entry.notes || ""}>
-                            {entry.notes || "-"}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
-        </div>
-
-        {/* Columna derecha: gráficos + feedback */}
-        <div className="progress-right">
-          {/* Sección de gráficos con toolbar de período */}
-          <div className="progress-charts-section">
-            <div className="progress-charts-toolbar">
-              <h3 className="progress-charts-title">Seguimiento</h3>
-              <div className="progress-period-selector">
-                <label
-                  htmlFor="progress-range-select"
-                  className="progress-period-label"
-                >
-                  Período:
-                </label>
-                <select
-                  id="progress-range-select"
-                  className="progress-period-select"
-                  value={range}
-                  onChange={(event) => setRange(event.target.value)}
-                >
-                  <option value="7d">7 días</option>
-                  <option value="30d">30 días</option>
-                  <option value="180d">6 meses</option>
-                  <option value="365d">1 año</option>
-                  <option value="all">Historial completo</option>
-                </select>
-              </div>
+                Período:
+              </label>
+              <select
+                id="progress-range-select"
+                className="progress-period-select"
+                value={range}
+                onChange={(event) => setRange(event.target.value)}
+              >
+                <option value="7d">Últimos 7 días</option>
+                <option value="30d">Últimos 30 días</option>
+                <option value="180d">Últimos 6 meses</option>
+                <option value="365d">Último año</option>
+                <option value="all">Todo el historial</option>
+              </select>
             </div>
+          </div>
 
-            {/* Gráfico de calorías */}
-            <Card className="progress-chart-card">
+          <div className="progress-charts-grid">
+            <Card className="progress-chart-card progress-chart-card--featured">
               <div className="progress-chart-header">
                 <h4 className="progress-chart-title">Calorías</h4>
               </div>
-              <div className="progress-chart-body">
+              <div className="progress-chart-body progress-chart-body--featured">
                 {isLoadingData ? (
                   <p className="text-muted">Cargando datos...</p>
                 ) : chartData.length === 0 ? (
@@ -682,7 +485,7 @@ function ProgressPage() {
                     Registra datos para ver el gráfico
                   </p>
                 ) : (
-                  <ResponsiveContainer width="100%" height={280}>
+                  <ResponsiveContainer width="100%" height={360}>
                     <LineChart data={chartData}>
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -716,12 +519,11 @@ function ProgressPage() {
               </div>
             </Card>
 
-            {/* Gráfico de peso */}
-            <Card className="progress-chart-card">
+            <Card className="progress-chart-card progress-chart-card--featured">
               <div className="progress-chart-header">
                 <h4 className="progress-chart-title">Peso</h4>
               </div>
-              <div className="progress-chart-body">
+              <div className="progress-chart-body progress-chart-body--featured">
                 {isLoadingData ? (
                   <p className="text-muted">Cargando datos...</p>
                 ) : !hasWeightData ? (
@@ -729,7 +531,7 @@ function ProgressPage() {
                     Registra tu peso para ver el gráfico
                   </p>
                 ) : (
-                  <ResponsiveContainer width="100%" height={280}>
+                  <ResponsiveContainer width="100%" height={360}>
                     <LineChart data={chartData}>
                       <CartesianGrid
                         strokeDasharray="3 3"
@@ -754,43 +556,232 @@ function ProgressPage() {
               </div>
             </Card>
           </div>
-
-          {/* Feedback sobre objetivo */}
-          <Card className="progress-feedback-card">
-            <div className="progress-feedback-header">
-              <h3 className="progress-feedback-title">Análisis</h3>
-            </div>
-            <div className="progress-feedback-body">
-              {goalRaw ? (
-                <div className="feedback-content">
-                  <div className="feedback-goal-badge">
-                    <span className="feedback-goal-label">Objetivo:</span>
-                    <span className="feedback-goal-value">{goalRaw}</span>
-                  </div>
-                  {feedbackMessage && (
-                    <div className="feedback-message-box">
-                      <p className="feedback-message">{feedbackMessage}</p>
-                    </div>
-                  )}
-                  {!feedbackMessage && (
-                    <p className="text-muted feedback-helper">
-                      Registra varios días con calorías para generar feedback
-                      personalizado.
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="feedback-empty">
-                  <p className="text-muted">
-                    Configura un objetivo en tu perfil para recibir feedback
-                    personalizado sobre tu progreso.
-                  </p>
-                </div>
-              )}
-            </div>
-          </Card>
         </div>
-      </div>
+      </section>
+
+      <section className="progress-secondary-zone">
+        <Card className="progress-feedback-card">
+          <div className="progress-feedback-header">
+            <h3 className="progress-feedback-title">Feedback y análisis</h3>
+          </div>
+          <div className="progress-feedback-body">
+            {showDailyGoalInfo && (
+              <div className="progress-messages progress-messages--inline">
+                <Alert variant="info">
+                  Aún no tienes configurada la meta calórica diaria en tu
+                  perfil. Puedes configurarla para que la pantalla de inicio
+                  muestre un resumen más completo.
+                </Alert>
+              </div>
+            )}
+
+            {goalRaw ? (
+              <div className="feedback-content">
+                <div className="feedback-goal-badge">
+                  <span className="feedback-goal-label">Objetivo actual</span>
+                  <span className="feedback-goal-value">{goalRaw}</span>
+                </div>
+                {feedbackMessage ? (
+                  <div className="feedback-message-box">
+                    <p className="feedback-message">{feedbackMessage}</p>
+                  </div>
+                ) : (
+                  <p className="text-muted feedback-helper">
+                    Registra varios días con calorías para generar feedback
+                    personalizado.
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="feedback-empty">
+                <p className="text-muted">
+                  Configura un objetivo en tu perfil para recibir feedback
+                  personalizado sobre tu progreso.
+                </p>
+              </div>
+            )}
+          </div>
+        </Card>
+
+        <Card className="progress-form-card">
+          <CardHeader title="Registrar progreso diario" />
+
+          <div className="progress-messages progress-messages--inline">
+            {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+            {successMessage && (
+              <Alert variant="success">{successMessage}</Alert>
+            )}
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <FormStack className="progress-form">
+              <div className="progress-form-date-section">
+                <Field label="Fecha">
+                  <div className="progress-date-group">
+                    <Input
+                      type="date"
+                      value={date}
+                      onChange={(event) => setDate(event.target.value)}
+                      className="progress-date-input"
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleSetToday}
+                      disabled={isSaving}
+                    >
+                      Hoy
+                    </Button>
+                  </div>
+                </Field>
+              </div>
+
+              <div className="progress-form-metrics">
+                <Field label="Calorías consumidas (kcal)">
+                  <Input
+                    type="number"
+                    value={caloriesIn}
+                    onChange={(event) => setCaloriesIn(event.target.value)}
+                    min="0"
+                    placeholder="Ej: 2200"
+                  />
+                  {caloriesInError && (
+                    <div className="field-error">{caloriesInError}</div>
+                  )}
+                </Field>
+
+                <Field label="Calorías gastadas (kcal)">
+                  <Input
+                    type="number"
+                    value={caloriesOut}
+                    onChange={(event) => setCaloriesOut(event.target.value)}
+                    min="0"
+                    placeholder="Ej: 500"
+                  />
+                  {caloriesOutError && (
+                    <div className="field-error">{caloriesOutError}</div>
+                  )}
+                </Field>
+
+                <Field label="Peso (kg)">
+                  <Input
+                    type="number"
+                    value={weight}
+                    onChange={(event) => setWeight(event.target.value)}
+                    min="0"
+                    step="0.1"
+                    placeholder="Ej: 72.5"
+                  />
+                  {weightError && (
+                    <div className="field-error">{weightError}</div>
+                  )}
+                </Field>
+              </div>
+
+              <Field label="Notas (opcional)">
+                <Textarea
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder="Por ejemplo: día de descanso, entrenamiento fuerte..."
+                  rows="3"
+                />
+              </Field>
+
+              <Button
+                type="submit"
+                disabled={!canSubmit}
+                className="btn-progress-submit"
+              >
+                {isSaving ? "Guardando..." : "Guardar progreso"}
+              </Button>
+            </FormStack>
+          </form>
+        </Card>
+      </section>
+
+      <section className="progress-history-zone">
+        <Card className="progress-history-card">
+          <CardHeader title="Historial de progreso" />
+          {isLoadingData && entries.length === 0 && (
+            <p className="text-muted progress-history-loading">
+              Cargando historial de progreso...
+            </p>
+          )}
+
+          {!isLoadingData && entries.length === 0 && (
+            <div className="empty-state">
+              <p>Todavía no has registrado ningún día.</p>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={handleSetToday}
+                disabled={isSaving}
+              >
+                Registrar hoy
+              </Button>
+            </div>
+          )}
+
+          {entries.length > 0 && (
+            <div className="table-responsive">
+              <table className="progress-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Consumidas</th>
+                    <th>Gastadas</th>
+                    <th>Diferencia</th>
+                    <th>Peso</th>
+                    <th>Notas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entries.map((entry) => {
+                    const diff =
+                      (entry.caloriesIn || 0) - (entry.caloriesOut || 0);
+
+                    return (
+                      <tr key={entry.id}>
+                        <td className="font-mono">{entry.date}</td>
+                        <td className="table-calories">
+                          {entry.caloriesIn !== null &&
+                          entry.caloriesIn !== undefined
+                            ? entry.caloriesIn
+                            : "-"}
+                        </td>
+                        <td className="table-calories">
+                          {entry.caloriesOut !== null &&
+                          entry.caloriesOut !== undefined
+                            ? entry.caloriesOut
+                            : "-"}
+                        </td>
+                        <td
+                          className={
+                            "table-diff " +
+                            (diff > 0 ? "positive" : diff < 0 ? "negative" : "")
+                          }
+                        >
+                          {diff !== 0 ? (diff > 0 ? "+" : "") + diff : "-"}
+                        </td>
+                        <td>
+                          {entry.weight !== null && entry.weight !== undefined
+                            ? entry.weight
+                            : "-"}
+                        </td>
+                        <td className="truncate" title={entry.notes || ""}>
+                          {entry.notes || "-"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
+      </section>
     </Page>
   );
 }
