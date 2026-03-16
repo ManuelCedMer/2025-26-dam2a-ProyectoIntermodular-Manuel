@@ -446,15 +446,17 @@ function ProgressPage() {
       </PageHeader>
 
       {/* Mensajes globales */}
-      {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
-      {successMessage && <Alert variant="success">{successMessage}</Alert>}
-      {showDailyGoalInfo && (
-        <Alert variant="info">
-          Aún no tienes configurada la meta calórica diaria en tu perfil. Puedes
-          configurarla para que la pantalla de inicio muestre un resumen más
-          completo.
-        </Alert>
-      )}
+      <div className="progress-messages">
+        {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
+        {showDailyGoalInfo && (
+          <Alert variant="info">
+            Aún no tienes configurada la meta calórica diaria en tu perfil.
+            Puedes configurarla para que la pantalla de inicio muestre un
+            resumen más completo.
+          </Alert>
+        )}
+      </div>
 
       {/* Layout de dos columnas */}
       <div className="progress-layout">
@@ -464,66 +466,70 @@ function ProgressPage() {
           <Card>
             <CardHeader title="Registrar hoy" />
             <form onSubmit={handleSubmit}>
-              <FormStack>
-                <Field label="Fecha">
-                  <div className="progress-date-group">
+              <FormStack className="progress-form">
+                <div className="progress-form-date-section">
+                  <Field label="Fecha">
+                    <div className="progress-date-group">
+                      <Input
+                        type="date"
+                        value={date}
+                        onChange={(event) => setDate(event.target.value)}
+                        className="progress-date-input"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleSetToday}
+                        disabled={isSaving}
+                      >
+                        Hoy
+                      </Button>
+                    </div>
+                  </Field>
+                </div>
+
+                <div className="progress-form-metrics">
+                  <Field label="Calorías consumidas (kcal)">
                     <Input
-                      type="date"
-                      value={date}
-                      onChange={(event) => setDate(event.target.value)}
-                      className="progress-date-input"
+                      type="number"
+                      value={caloriesIn}
+                      onChange={(event) => setCaloriesIn(event.target.value)}
+                      min="0"
+                      placeholder="Ej: 2200"
                     />
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={handleSetToday}
-                      disabled={isSaving}
-                    >
-                      Hoy
-                    </Button>
-                  </div>
-                </Field>
+                    {caloriesInError && (
+                      <div className="field-error">{caloriesInError}</div>
+                    )}
+                  </Field>
 
-                <Field label="Calorías consumidas (kcal)">
-                  <Input
-                    type="number"
-                    value={caloriesIn}
-                    onChange={(event) => setCaloriesIn(event.target.value)}
-                    min="0"
-                    placeholder="Ej: 2200"
-                  />
-                  {caloriesInError && (
-                    <div className="field-error">{caloriesInError}</div>
-                  )}
-                </Field>
+                  <Field label="Calorías gastadas (kcal)">
+                    <Input
+                      type="number"
+                      value={caloriesOut}
+                      onChange={(event) => setCaloriesOut(event.target.value)}
+                      min="0"
+                      placeholder="Ej: 500"
+                    />
+                    {caloriesOutError && (
+                      <div className="field-error">{caloriesOutError}</div>
+                    )}
+                  </Field>
 
-                <Field label="Calorías gastadas (kcal)">
-                  <Input
-                    type="number"
-                    value={caloriesOut}
-                    onChange={(event) => setCaloriesOut(event.target.value)}
-                    min="0"
-                    placeholder="Ej: 500"
-                  />
-                  {caloriesOutError && (
-                    <div className="field-error">{caloriesOutError}</div>
-                  )}
-                </Field>
-
-                <Field label="Peso (kg)">
-                  <Input
-                    type="number"
-                    value={weight}
-                    onChange={(event) => setWeight(event.target.value)}
-                    min="0"
-                    step="0.1"
-                    placeholder="Ej: 72.5"
-                  />
-                  {weightError && (
-                    <div className="field-error">{weightError}</div>
-                  )}
-                </Field>
+                  <Field label="Peso (kg)">
+                    <Input
+                      type="number"
+                      value={weight}
+                      onChange={(event) => setWeight(event.target.value)}
+                      min="0"
+                      step="0.1"
+                      placeholder="Ej: 72.5"
+                    />
+                    {weightError && (
+                      <div className="field-error">{weightError}</div>
+                    )}
+                  </Field>
+                </div>
 
                 <Field label="Notas (opcional)">
                   <Textarea
@@ -537,7 +543,7 @@ function ProgressPage() {
                 <Button
                   type="submit"
                   disabled={!canSubmit}
-                  className="btn-block"
+                  className="btn-progress-submit"
                 >
                   {isSaving ? "Guardando..." : "Guardar progreso"}
                 </Button>
@@ -549,7 +555,12 @@ function ProgressPage() {
           <Card>
             <CardHeader title="Historial" />
             {isLoadingData && entries.length === 0 && (
-              <p className="text-muted">Cargando historial de progreso...</p>
+              <p
+                className="text-muted"
+                style={{ padding: "1.5rem 0", textAlign: "center" }}
+              >
+                Cargando historial de progreso...
+              </p>
             )}
 
             {!isLoadingData && entries.length === 0 && (
@@ -588,13 +599,13 @@ function ProgressPage() {
                       return (
                         <tr key={entry.id}>
                           <td className="font-mono">{entry.date}</td>
-                          <td>
+                          <td className="table-calories">
                             {entry.caloriesIn !== null &&
                             entry.caloriesIn !== undefined
                               ? entry.caloriesIn
                               : "-"}
                           </td>
-                          <td>
+                          <td className="table-calories">
                             {entry.caloriesOut !== null &&
                             entry.caloriesOut !== undefined
                               ? entry.caloriesOut
@@ -602,7 +613,12 @@ function ProgressPage() {
                           </td>
                           <td
                             className={
-                              diff > 0 ? "positive" : diff < 0 ? "negative" : ""
+                              "table-diff " +
+                              (diff > 0
+                                ? "positive"
+                                : diff < 0
+                                  ? "negative"
+                                  : "")
                             }
                           >
                             {diff !== 0 ? (diff > 0 ? "+" : "") + diff : "-"}
