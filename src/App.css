@@ -948,21 +948,13 @@ body.theme-dark {
 /* Progreso [UI-02] */
 /* =============================== */
 
-.progress-page {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  margin-bottom: 2rem;
-}
+/* ======== Progress Page Layout ======== */
 
 .progress-layout {
-  width: 100%;
-  max-width: 1100px;
-
   display: grid;
-  gap: 1rem;
-
   grid-template-columns: 1.1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 @media (max-width: 900px) {
@@ -975,120 +967,140 @@ body.theme-dark {
 .progress-right {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Progress-specific form styling */
+.progress-date-group {
+  display: flex;
   gap: 0.75rem;
-}
-
-.progress-card {
-  padding: 0.9rem 1rem;
-  border-radius: 0.9rem;
-  background-color: var(--card);
-  border: 1px solid var(--card-border);
-  box-shadow: var(--shadow-sm);
-  color: var(--card-text);
-}
-
-.progress-chart-card {
-  height: 320px;
-}
-
-.progress-card h2 {
-  margin: 0 0 0.4rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--card-text);
-}
-
-.progress-subtitle {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-.progress-message {
-  font-size: 0.9rem;
-  border-left: 4px solid transparent;
-}
-
-.progress-message--error {
-  border-color: #dc2626;
-  background-color: #fef2f2;
-  color: #b91c1c;
-}
-
-.progress-message--ok {
-  border-color: #16a34a;
-  background-color: #ecfdf3;
-  color: #166534;
-}
-
-
-.progress-message--info {
-  border-color: #2563eb;
-  background-color: #eff6ff;
-  color: #1e40af;
-}
-
-
-.progress-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.progress-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.progress-inline {
-  display: flex;
-  gap: 0.5rem;
   align-items: center;
 }
 
-.progress-field-error {
-  font-size: 0.85rem;
-  color: #b91c1c;
+.progress-date-input {
+  flex: 1;
 }
 
-
-button.progress-secondary-button {
-  background: transparent;
-  border: 1px solid var(--card-border);
-  color: var(--card-text);
-  box-shadow: none;
-}
-
-button.progress-secondary-button:hover {
-  filter: brightness(0.98);
-}
-
-button.progress-secondary-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-
-.progress-empty {
+.progress-chart-card {
+  min-height: 350px;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
 }
 
-
-.progress-page button.btn.btn-primary {
-  background-color: var(--primary);
-  color: #ffffff;
-  border: 1px solid transparent;
+.progress-chart-card .card-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
+.progress-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
 
+.progress-table thead {
+  background-color: var(--surface-secondary);
+  border-bottom: 1px solid var(--card-border);
+}
 
-.progress-page .btn.btn-primary:not(:disabled) {
-  background-color: var(--primary) !important;
-  color: #ffffff !important;
-  border-color: transparent !important;
+.progress-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--card-text);
+}
+
+.progress-table tr:hover {
+  background-color: var(--surface-secondary);
+}
+
+.progress-table .font-mono {
+  font-family: "Monaco", "Courier New", monospace;
+  font-size: 0.85rem;
+}
+
+.progress-table .positive {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.progress-table .negative {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.progress-table .truncate {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.empty-state p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.field-error {
+  font-size: 0.85rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
+}
+
+.feedback-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.feedback-goal {
+  padding: 0.875rem;
+  background-color: var(--surface-secondary);
+  border-radius: 0.5rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.feedback-goal strong {
+  color: var(--primary);
+}
+
+.feedback-message {
+  line-height: 1.6;
+  color: var(--card-text);
+  margin: 0;
+  font-size: 0.95rem;
 }
 /* =============================== */
 /* Layouts responsive DIET / ROUTINES */
@@ -2053,20 +2065,27 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
 }
 
 .recipe-detail-image-container {
-  width: 100%;
-  max-width: 100%;
+  width: min(100%, 860px);
   margin: 2rem auto 0;
   border-radius: 0.75rem;
   overflow: hidden;
   background: var(--card-2, #f9fafb);
+  aspect-ratio: 16 / 9;
+  max-height: min(55vh, 480px);
 }
 
 .recipe-detail-image {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   object-fit: cover;
-  max-height: 400px;
+}
+
+@media (max-width: 768px) {
+  .recipe-detail-image-container {
+    aspect-ratio: 4 / 3;
+    max-height: 40vh;
+  }
 }
 
 .recipe-detail-title {
