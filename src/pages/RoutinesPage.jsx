@@ -380,14 +380,15 @@ function RoutinesPage() {
             </Card>
           ) : (
             <Card key={routine.id} className="dashboard-tile rutina-card">
-              <button
+              <Button
                 type="button"
+                size="sm"
+                variant="danger"
                 className="rutina-delete-btn"
                 onClick={() => handleDeleteRoutine(routine.id)}
-                aria-label="Eliminar rutina"
               >
-                🗑
-              </button>
+                Eliminar
+              </Button>
               <div className="dashboard-tile-main">
                 <div>
                   <h3 className="dashboard-tile-title">{routine.name}</h3>

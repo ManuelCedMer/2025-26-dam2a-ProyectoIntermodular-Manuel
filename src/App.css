@@ -1420,6 +1420,28 @@ body.theme-dark {
   border: 1px solid var(--card-border);
 }
 
+.progress-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.progress-history-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.progress-history-header .select {
+  width: auto;
+  flex: 0 0 auto;
+  min-width: 190px;
+  max-width: 220px;
+}
+
 .progress-history-loading {
   text-align: center;
   padding: 1.5rem 0;
@@ -1984,21 +2006,13 @@ body.theme-dark {
 
 .rutina-delete-btn {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  color: #d32f2f;
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 50%;
-  transition: background 0.2s;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 1;
 }
 .rutina-delete-btn:hover,
 .rutina-delete-btn:focus {
-  background: #ffeaea;
-  outline: none;
+  transform: translateY(-1px);
 }
 
 .rutina-actions-bottom {

@@ -277,7 +277,7 @@ function DietPage() {
                     <div className="dietplan-link-row">
                       <LinkButton
                         size="sm"
-                        variant="secondary"
+                        variant="primary"
                         to={`/dietas/${diet.id}`}
                         state={{ dietName: diet.name }}
                       >

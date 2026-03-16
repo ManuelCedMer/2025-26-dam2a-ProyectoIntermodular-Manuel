@@ -398,6 +398,7 @@ function ProgressPage() {
       });
 
       setSuccessMessage("Progreso guardado correctamente.");
+      setShowForm(false);
     } catch (error) {
       console.error("Error al guardar el progreso:", error);
       setErrorMessage("No se ha podido guardar el progreso.");
@@ -731,7 +732,20 @@ function ProgressPage() {
 
       <section className="progress-history-zone">
         <Card className="progress-history-card">
-          <CardHeader title="Historial de progreso" />
+          <div className="progress-history-header">
+            <h3 className="progress-history-title">Historial de progreso</h3>
+            <select
+              className="select"
+              value={range}
+              onChange={(event) => setRange(event.target.value)}
+            >
+              <option value="7d">Últimos 7 días</option>
+              <option value="30d">Últimos 30 días</option>
+              <option value="180d">Últimos 6 meses</option>
+              <option value="365d">Último año</option>
+              <option value="all">Todo el historial</option>
+            </select>
+          </div>
           {isLoadingData && entries.length === 0 && (
             <p className="text-muted progress-history-loading">
               Cargando historial de progreso...
@@ -753,7 +767,15 @@ function ProgressPage() {
             </div>
           )}
 
-          {entries.length > 0 && (
+          {!isLoadingData &&
+            entries.length > 0 &&
+            filteredEntries.length === 0 && (
+              <div className="empty-state">
+                <p>No hay registros en el rango seleccionado.</p>
+              </div>
+            )}
+
+          {filteredEntries.length > 0 && (
             <div className="table-responsive">
               <table className="progress-table">
                 <thead>
@@ -767,7 +789,7 @@ function ProgressPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {entries.map((entry) => {
+                  {filteredEntries.map((entry) => {
                     const diff =
                       (entry.caloriesIn || 0) - (entry.caloriesOut || 0);
 
