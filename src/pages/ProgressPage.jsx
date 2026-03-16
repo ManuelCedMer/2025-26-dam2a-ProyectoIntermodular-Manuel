@@ -643,121 +643,151 @@ function ProgressPage() {
 
         {/* Columna derecha: gráficos + feedback */}
         <div className="progress-right">
-          {/* Selector de rango */}
-          <Card>
-            <CardHeader title="Período" />
-            <Field label="Rango">
-              <select
-                className="input"
-                value={range}
-                onChange={(event) => setRange(event.target.value)}
-              >
-                <option value="7d">Últimos 7 días</option>
-                <option value="30d">Últimos 30 días</option>
-                <option value="180d">Últimos 6 meses</option>
-                <option value="365d">Último año</option>
-                <option value="all">Todo el historial</option>
-              </select>
-            </Field>
-          </Card>
+          {/* Sección de gráficos con toolbar de período */}
+          <div className="progress-charts-section">
+            <div className="progress-charts-toolbar">
+              <h3 className="progress-charts-title">Seguimiento</h3>
+              <div className="progress-period-selector">
+                <label
+                  htmlFor="progress-range-select"
+                  className="progress-period-label"
+                >
+                  Período:
+                </label>
+                <select
+                  id="progress-range-select"
+                  className="progress-period-select"
+                  value={range}
+                  onChange={(event) => setRange(event.target.value)}
+                >
+                  <option value="7d">7 días</option>
+                  <option value="30d">30 días</option>
+                  <option value="180d">6 meses</option>
+                  <option value="365d">1 año</option>
+                  <option value="all">Historial completo</option>
+                </select>
+              </div>
+            </div>
 
-          {/* Gráfico de calorías */}
-          <Card className="progress-chart-card">
-            <CardHeader title="Calorías" />
-            {isLoadingData ? (
-              <p className="text-muted">Cargando datos...</p>
-            ) : chartData.length === 0 ? (
-              <p className="text-muted">Registra datos para ver el gráfico</p>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={chartData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="var(--card-border)"
-                  />
-                  <XAxis dataKey="date" style={{ fontSize: "0.75rem" }} />
-                  <YAxis style={{ fontSize: "0.75rem" }} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: "0.875rem" }} />
-                  <Line
-                    type="monotone"
-                    dataKey="caloriesIn"
-                    name="Consumidas"
-                    stroke="#3b82f6"
-                    dot={false}
-                    connectNulls
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="caloriesOut"
-                    name="Gastadas"
-                    stroke="#10b981"
-                    dot={false}
-                    connectNulls
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </Card>
-
-          {/* Gráfico de peso */}
-          <Card className="progress-chart-card">
-            <CardHeader title="Peso" />
-            {isLoadingData ? (
-              <p className="text-muted">Cargando datos...</p>
-            ) : !hasWeightData ? (
-              <p className="text-muted">Registra tu peso para ver el gráfico</p>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={chartData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="var(--card-border)"
-                  />
-                  <XAxis dataKey="date" style={{ fontSize: "0.75rem" }} />
-                  <YAxis style={{ fontSize: "0.75rem" }} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: "0.875rem" }} />
-                  <Line
-                    type="monotone"
-                    dataKey="weight"
-                    name="Peso (kg)"
-                    stroke="#f59e0b"
-                    dot={false}
-                    connectNulls
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </Card>
-
-          {/* Feedback sobre objetivo */}
-          <Card>
-            <CardHeader title="Feedback" />
-            {goalRaw ? (
-              <div className="feedback-content">
-                <p className="feedback-goal">
-                  Objetivo: <strong>{goalRaw}</strong>
-                </p>
-                {feedbackMessage && (
-                  <p className="feedback-message">{feedbackMessage}</p>
-                )}
-                {!feedbackMessage && (
+            {/* Gráfico de calorías */}
+            <Card className="progress-chart-card">
+              <div className="progress-chart-header">
+                <h4 className="progress-chart-title">Calorías</h4>
+              </div>
+              <div className="progress-chart-body">
+                {isLoadingData ? (
+                  <p className="text-muted">Cargando datos...</p>
+                ) : chartData.length === 0 ? (
                   <p className="text-muted">
-                    Registra varios días con calorías para generar feedback
-                    personalizado.
+                    Registra datos para ver el gráfico
                   </p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={280}>
+                    <LineChart data={chartData}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="var(--card-border)"
+                      />
+                      <XAxis dataKey="date" style={{ fontSize: "0.75rem" }} />
+                      <YAxis style={{ fontSize: "0.75rem" }} />
+                      <Tooltip />
+                      <Legend wrapperStyle={{ fontSize: "0.875rem" }} />
+                      <Line
+                        type="monotone"
+                        dataKey="caloriesIn"
+                        name="Consumidas"
+                        stroke="#3b82f6"
+                        dot={false}
+                        connectNulls
+                        strokeWidth={2}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="caloriesOut"
+                        name="Gastadas"
+                        stroke="#10b981"
+                        dot={false}
+                        connectNulls
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                 )}
               </div>
-            ) : (
-              <p className="text-muted">
-                Configura un objetivo en tu perfil para recibir feedback
-                personalizado sobre tu progreso.
-              </p>
-            )}
+            </Card>
+
+            {/* Gráfico de peso */}
+            <Card className="progress-chart-card">
+              <div className="progress-chart-header">
+                <h4 className="progress-chart-title">Peso</h4>
+              </div>
+              <div className="progress-chart-body">
+                {isLoadingData ? (
+                  <p className="text-muted">Cargando datos...</p>
+                ) : !hasWeightData ? (
+                  <p className="text-muted">
+                    Registra tu peso para ver el gráfico
+                  </p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={280}>
+                    <LineChart data={chartData}>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="var(--card-border)"
+                      />
+                      <XAxis dataKey="date" style={{ fontSize: "0.75rem" }} />
+                      <YAxis style={{ fontSize: "0.75rem" }} />
+                      <Tooltip />
+                      <Legend wrapperStyle={{ fontSize: "0.875rem" }} />
+                      <Line
+                        type="monotone"
+                        dataKey="weight"
+                        name="Peso (kg)"
+                        stroke="#f59e0b"
+                        dot={false}
+                        connectNulls
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          {/* Feedback sobre objetivo */}
+          <Card className="progress-feedback-card">
+            <div className="progress-feedback-header">
+              <h3 className="progress-feedback-title">Análisis</h3>
+            </div>
+            <div className="progress-feedback-body">
+              {goalRaw ? (
+                <div className="feedback-content">
+                  <div className="feedback-goal-badge">
+                    <span className="feedback-goal-label">Objetivo:</span>
+                    <span className="feedback-goal-value">{goalRaw}</span>
+                  </div>
+                  {feedbackMessage && (
+                    <div className="feedback-message-box">
+                      <p className="feedback-message">{feedbackMessage}</p>
+                    </div>
+                  )}
+                  {!feedbackMessage && (
+                    <p className="text-muted feedback-helper">
+                      Registra varios días con calorías para generar feedback
+                      personalizado.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="feedback-empty">
+                  <p className="text-muted">
+                    Configura un objetivo en tu perfil para recibir feedback
+                    personalizado sobre tu progreso.
+                  </p>
+                </div>
+              )}
+            </div>
           </Card>
         </div>
       </div>
