@@ -18,6 +18,7 @@ export async function getUserProfile(userId) {
       goal: "mantener",
       dailyCaloriesGoal: null,
       theme: "light",
+      photoURL: "",
     };
   }
 
@@ -30,18 +31,21 @@ export async function getUserProfile(userId) {
  */
 export async function saveUserProfile(
   userId,
-  { displayName, age, goal, dailyCaloriesGoal, theme },
+  { displayName, age, goal, dailyCaloriesGoal, theme, photoURL },
 ) {
   const userRef = doc(db, "users", userId);
 
   const data = {
-    displayName,
-    age,
-    goal,
-    dailyCaloriesGoal,
-    theme,
     updatedAt: new Date(),
   };
+
+  // Sólo añadir los campos que vienen definidos en el objeto para mantener compatibilidad.
+  if (displayName !== undefined) data.displayName = displayName;
+  if (age !== undefined) data.age = age;
+  if (goal !== undefined) data.goal = goal;
+  if (dailyCaloriesGoal !== undefined) data.dailyCaloriesGoal = dailyCaloriesGoal;
+  if (theme !== undefined) data.theme = theme;
+  if (photoURL !== undefined) data.photoURL = photoURL;
 
   // setDoc con { merge: true } respeta otros campos que ya existan.
   await setDoc(userRef, data, { merge: true });

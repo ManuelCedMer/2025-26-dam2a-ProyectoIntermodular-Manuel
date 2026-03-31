@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
   getUserProfile,
   saveUserProfile,
 } from "../services/userProfileService.js";
+import { uploadProfilePhoto } from "../services/profilePhotoService.js";
 
 import Alert from "../components/ui/Alert.jsx";
 
@@ -27,6 +28,12 @@ function ProfilePage() {
 
   // Meta calórica diaria (kcal).
   const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState("");
+
+  // Foto de perfil
+  const [photoURL, setPhotoURL] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef(null);
 
   const [draftTheme, setDraftTheme] = useState(theme || "light");
 
@@ -73,6 +80,7 @@ function ProfilePage() {
 
         const loadedTheme = profile.theme || "light";
         setDraftTheme(loadedTheme);
+        setPhotoURL(profile.photoURL || "");
       } catch (error) {
         console.error("Error al cargar perfil:", error);
         setErrorMessage("No se ha podido cargar el perfil.");
@@ -156,6 +164,40 @@ function ProfilePage() {
     }
   }
 
+  async function handleFileChange(event) {
+    const file = event.target.files && event.target.files[0];
+    // reset input so same file can be selected again later
+    event.target.value = "";
+
+    if (!file) return;
+
+    if (!file.type || !file.type.startsWith("image/")) {
+      setErrorMessage("Solo se permiten archivos de imagen.");
+      return;
+    }
+
+    try {
+      setUploadingPhoto(true);
+      setUploadProgress(0);
+      setErrorMessage("");
+      setMessage("");
+
+      const url = await uploadProfilePhoto(user.uid, file, setUploadProgress);
+
+      // Guardar la URL en el perfil (merge)
+      await saveUserProfile(user.uid, { photoURL: url });
+
+      setPhotoURL(url);
+      setMessage("Foto de perfil actualizada.");
+    } catch (error) {
+      console.error("Error subiendo foto de perfil:", error);
+      setErrorMessage("No se ha podido subir la foto de perfil.");
+    } finally {
+      setUploadingPhoto(false);
+      setUploadProgress(0);
+    }
+  }
+
   if (!user) {
     return (
       <div className="profile-page">
@@ -169,13 +211,42 @@ function ProfilePage() {
       <section className="profile-card card">
         {/* Cabecera con avatar sencillo y correo */}
         <div className="profile-header">
-          <div className="profile-avatar">
-            <span>
-              {(displayName || user.email || "?")
-                .trim()
-                .charAt(0)
-                .toUpperCase()}
-            </span>
+          <div
+            className="profile-avatar"
+            onClick={() => fileInputRef.current?.click()}
+            role="button"
+            aria-label="Cambiar foto de perfil"
+            style={{ cursor: "pointer" }}
+          >
+            {photoURL ? (
+              <img
+                src={photoURL}
+                alt="Avatar"
+                className="profile-avatar-image"
+              />
+            ) : (
+              <span className="profile-avatar-initial">
+                {(displayName || user.email || "?")
+                  .trim()
+                  .charAt(0)
+                  .toUpperCase()}
+              </span>
+            )}
+
+            {uploadingPhoto && (
+              <div className="profile-avatar-progress">
+                Subiendo... {uploadProgress}%
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              disabled={loadingProfile || uploadingPhoto}
+            />
           </div>
 
           <div className="profile-header-text">
