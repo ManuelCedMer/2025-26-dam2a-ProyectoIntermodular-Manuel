@@ -114,6 +114,12 @@ function RecipeDetailPage() {
 
       {/* Título */}
       <h1 className="recipe-detail-title">{recipe.title}</h1>
+      {/* Imagen de receta (colocada justo debajo del título) */}
+      {recipe.image && (
+        <div className="recipe-detail-image-container">
+          <img src={recipe.image} alt={recipe.title} className="recipe-detail-image" />
+        </div>
+      )}
 
       {/* Información meta */}
       <div className="recipe-detail-meta">
@@ -163,16 +169,7 @@ function RecipeDetailPage() {
         )}
       </section>
 
-      {/* Imagen de receta */}
-      {recipe.image && (
-        <div className="recipe-detail-image-container">
-          <img
-            src={recipe.image}
-            alt={recipe.title}
-            className="recipe-detail-image"
-          />
-        </div>
-      )}
+      {/* (imagen ya renderizada más arriba, junto al título) */}
     </Page>
   );
 }
