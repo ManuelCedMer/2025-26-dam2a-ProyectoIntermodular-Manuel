@@ -117,7 +117,11 @@ function RecipeDetailPage() {
       {/* Imagen de receta (colocada justo debajo del título) */}
       {recipe.image && (
         <div className="recipe-detail-image-container">
-          <img src={recipe.image} alt={recipe.title} className="recipe-detail-image" />
+          <img
+            src={recipe.image}
+            alt={recipe.title}
+            className="recipe-detail-image"
+          />
         </div>
       )}
 
@@ -125,7 +129,7 @@ function RecipeDetailPage() {
       <div className="recipe-detail-meta">
         {recipe.mealType && (
           <span className="recipe-detail-meta-item">
-            <strong>Tipo:</strong> {recipe.mealType}
+            <strong>Categoría:</strong> {recipe.mealType}
           </span>
         )}
         {recipe.estimatedCalories !== null &&
