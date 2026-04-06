@@ -29,6 +29,19 @@ function DietPage() {
   // Lista de planes
   const [diets, setDiets] = useState([]);
 
+  // Ejemplo estático (solo visual): se muestra cuando no hay planes
+  const examplePlan = {
+    name: "Semana equilibrada",
+    description: "Plan ejemplo: 3 comidas + 2 tentempiés diarios, orientativo.",
+    meals: [
+      { day: "Lun", type: "Desayuno", name: "Avena con fruta" },
+      { day: "Lun", type: "Almuerzo", name: "Ensalada + pollo" },
+      { day: "Lun", type: "Cena", name: "Salmón y verduras" },
+      { day: "Mar", type: "Almuerzo", name: "Quinoa con tofu" },
+      { day: "Mié", type: "Cena", name: "Pasta integral y salsa ligera" },
+    ],
+  };
+
   // Formulario de creación
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -262,7 +275,32 @@ function DietPage() {
       <Card className="dashboard-tile diet-list-card">
         {loading && <LoadingState text="Cargando planes..." />}
         {!loading && diets.length === 0 && (
-          <EmptyState text="No tienes ningún plan de alimentación creado todavía." />
+          <>
+            <EmptyState text="No tienes ningún plan de alimentación creado todavía." />
+
+            {/* Bloque visual orientativo: ejemplo de plan (no persistente) */}
+            <Card className="example-diet-card" aria-hidden>
+              <div className="example-diet-header">
+                <strong>{examplePlan.name}</strong>
+                <div className="text-muted">{examplePlan.description}</div>
+              </div>
+
+              <ul className="example-diet-meals">
+                {examplePlan.meals.map((m, idx) => (
+                  <li key={idx} className="example-diet-meal">
+                    <span className="example-diet-day">{m.day}</span>
+                    <span className="example-diet-type">{m.type}</span>
+                    <span className="example-diet-name">{m.name}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="example-diet-note text-muted">
+                Este es solo un ejemplo visual. Crea tu propio plan con "+
+                Nuevo" y después añade comidas dentro del plan.
+              </div>
+            </Card>
+          </>
         )}
         {!loading && diets.length > 0 && (
           <ul className="list-stack block-mt">

@@ -2642,6 +2642,58 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
   line-height: 1.2;
 }
 
+/* Example card for DietPage when no plans exist */
+.example-diet-card {
+  max-width: 720px;
+  margin: 1rem auto 0;
+  padding: 1rem;
+  background: var(--card-2);
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+}
+
+.example-diet-header {
+  margin-bottom: 0.6rem;
+}
+
+.example-diet-meals {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 0.6rem 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem 0.8rem;
+}
+
+.example-diet-meal {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.45rem 0.6rem;
+  background: var(--card);
+  border-radius: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.example-diet-day {
+  font-weight: 600;
+  width: 36px;
+}
+
+.example-diet-type {
+  color: var(--muted);
+  flex: 0 0 90px;
+}
+
+.example-diet-name {
+  flex: 1;
+}
+
+.example-diet-note {
+  font-size: 0.85rem;
+  margin-top: 0.45rem;
+}
+
 .recipe-detail-meta {
   display: flex;
   flex-direction: column;
