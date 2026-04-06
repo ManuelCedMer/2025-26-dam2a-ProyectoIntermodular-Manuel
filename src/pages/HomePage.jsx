@@ -26,6 +26,8 @@ function HomePage() {
   const friendlyName =
     user?.displayName || (user?.email ? user.email.split("@")[0] : "usuario");
 
+  const [viewMode, setViewMode] = useState("consumed"); // 'consumed' or 'burned'
+
   const [loading, setLoading] = useState(false);
 
   // Progreso de hoy (Firestore: progress).
@@ -92,27 +94,57 @@ function HomePage() {
   const clamped = Math.max(0, Math.min(1, ratio));
   const percent = Math.round(clamped * 100);
 
+  const percentConsumed = Math.round(
+    Math.max(
+      0,
+      Math.min(100, goalCalories > 0 ? (caloriesIn / goalCalories) * 100 : 0),
+    ),
+  );
+  const percentBurned = Math.round(
+    Math.max(
+      0,
+      Math.min(100, goalCalories > 0 ? (caloriesOut / goalCalories) * 100 : 0),
+    ),
+  );
+
   const ringStyle = {
-    background: `conic-gradient(#fb923c 0 ${percent}%, #e5e7eb ${percent}% 100%)`,
+    background:
+      viewMode === "consumed"
+        ? `conic-gradient(#fb923c 0 ${percentConsumed}%, var(--ring-bg, #d1d5db) ${percentConsumed}% 100%)`
+        : `conic-gradient(var(--primary) 0 ${percentBurned}%, var(--ring-bg, #d1d5db) ${percentBurned}% 100%)`,
   };
 
-  // Texto debajo: funcional y claro
+  // Texto debajo: depende de la vista activa (consumed / burned)
   let feedbackText = "";
   const hasAnyData = todayEntry !== null;
 
   if (loading) {
     feedbackText = "Cargando tu progreso de hoy...";
-  } else if (!hasAnyData) {
-    feedbackText =
-      "Aún no has registrado tu progreso de hoy. Añádelo en PROGRESS para ver el cálculo.";
-  } else if (exceeded > 0) {
-    feedbackText = `Objetivo superado en ${exceeded} kcal.`;
-  } else if (displayRemaining === 0) {
-    feedbackText = "Objetivo cumplido. Te quedan 0 kcal.";
-  } else if (displayRemaining <= 150) {
-    feedbackText = `Casi listo: te quedan ${displayRemaining} kcal.`;
+  } else if (viewMode === "consumed") {
+    if (!hasAnyData) {
+      feedbackText =
+        "Aún no has registrado tu progreso de hoy. Añádelo en Progreso para ver el cálculo.";
+    } else if (exceeded > 0) {
+      feedbackText = `Has superado el objetivo en ${exceeded} kcal.`;
+    } else if (displayRemaining === 0) {
+      feedbackText = "Objetivo cumplido. Te quedan 0 kcal.";
+    } else if (displayRemaining <= 150) {
+      feedbackText = `Casi listo: te quedan ${displayRemaining} kcal para tu objetivo.`;
+    } else {
+      feedbackText = `Te quedan ${displayRemaining} kcal para alcanzar tu objetivo.`;
+    }
   } else {
-    feedbackText = `Te quedan ${displayRemaining} kcal para tu objetivo.`;
+    // viewMode === 'burned' — feedback centrado en calorías gastadas
+    if (!hasAnyData) {
+      feedbackText =
+        "Aún no has registrado actividad hoy. Añade ejercicio en Progreso para contabilizar calorías gastadas.";
+    } else if (caloriesOut <= 200) {
+      feedbackText = `Has gastado ${caloriesOut} kcal — actividad baja hoy. Un paseo breve ayuda.`;
+    } else if (caloriesOut <= 600) {
+      feedbackText = `Buen aporte: has gastado ${caloriesOut} kcal hoy.`;
+    } else {
+      feedbackText = `Excelente: has gastado ${caloriesOut} kcal hoy. Sigue así.`;
+    }
   }
 
   return (
@@ -121,13 +153,33 @@ function HomePage() {
       <section className="home-main-card">
         <h1 className="home-greeting">Hola, {friendlyName}</h1>
 
+        {/* Toggle para cambiar vista del anillo */}
+        <div className="view-toggle" role="tablist" aria-label="Ver">
+          <button
+            type="button"
+            className={`btn btn-ghost ${viewMode === "consumed" ? "active" : ""}`}
+            onClick={() => setViewMode("consumed")}
+            aria-pressed={viewMode === "consumed"}
+          >
+            Consumidas
+          </button>
+          <button
+            type="button"
+            className={`btn btn-ghost ${viewMode === "burned" ? "active" : ""}`}
+            onClick={() => setViewMode("burned")}
+            aria-pressed={viewMode === "burned"}
+          >
+            Gastadas
+          </button>
+        </div>
+
         {/* Anillo de calorías*/}
         <div className="home-calories-ring" style={ringStyle}>
           <div className="home-calories-inner">
-            <p className="home-calories-label">RESTANTES</p>
-            <p className="home-calories-percentage">{displayRemaining}</p>
-            <p className="home-calories-detail">
-              ({caloriesIn} / {goalCalories} + {caloriesOut})
+            <p className="home-calories-percentage">
+              {viewMode === "consumed"
+                ? `${caloriesIn} kcal`
+                : `${caloriesOut} kcal`}
             </p>
           </div>
         </div>
