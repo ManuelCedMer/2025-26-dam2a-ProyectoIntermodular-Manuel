@@ -43,6 +43,12 @@ function RecipeCard({ recipe, isFavorite, onToggleFavorite }) {
         </div>
         <div className="recipe-card-content">
           <h3 className="recipe-card-title">{recipe.title}</h3>
+          {recipe.estimatedCalories !== undefined &&
+            recipe.estimatedCalories !== null && (
+              <div className="recipe-card-kcal">
+                {recipe.estimatedCalories} kcal
+              </div>
+            )}
         </div>
       </Card>
     </Link>

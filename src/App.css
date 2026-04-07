@@ -9,6 +9,15 @@
   transition: background 0.15s;
   margin-bottom: 0.2rem;
 }
+
+/* Small kcal label under recipe title */
+.recipe-card-kcal {
+  text-align: center;
+  color: var(--muted, #6b7280);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
 .dietplan-row:last-child {
   border-bottom: none;
 }
@@ -2504,6 +2513,7 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
   text-align: center;
   flex-grow: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
