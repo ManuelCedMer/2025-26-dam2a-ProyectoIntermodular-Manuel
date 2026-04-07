@@ -7,6 +7,7 @@ import {
   updateMeal,
   deleteMeal,
 } from "../services/dietMealsService.js";
+import { getRecipes } from "../services/recipesService.js";
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import {
@@ -55,50 +56,125 @@ function DietDetailPage() {
   const [dayOfWeek, setDayOfWeek] = useState("");
   const [mealType, setMealType] = useState("");
   const [name, setName] = useState("");
-  const [estimatedCalories, setEstimatedCalories] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [recipes, setRecipes] = useState([]);
+  const [selectedRecipeId, setSelectedRecipeId] = useState("");
 
   // Edición
   const [editingId, setEditingId] = useState(null);
   const [editDayOfWeek, setEditDayOfWeek] = useState("");
   const [editMealType, setEditMealType] = useState("");
   const [editName, setEditName] = useState("");
-  const [editEstimatedCalories, setEditEstimatedCalories] = useState("");
   const [editErrorMessage, setEditErrorMessage] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [editRecipes, setEditRecipes] = useState([]);
+  const [editSelectedRecipeId, setEditSelectedRecipeId] = useState("");
 
   useEffect(() => {
     if (!user) return;
     setLoading(true);
-    getMealsByDiet(dietId, user.uid)
+    // getMealsByDiet expects an object with userId and dietId
+    getMealsByDiet({ userId: user.uid, dietId })
       .then(setMeals)
       .finally(() => setLoading(false));
   }, [user, dietId]);
 
+  // Fetch recipes when creating and a mealType is selected
+  useEffect(() => {
+    if (!showCreatePanel || !mealType) {
+      setRecipes([]);
+      setSelectedRecipeId("");
+      return;
+    }
+
+    let active = true;
+    getRecipes({ mealType })
+      .then((list) => {
+        if (!active) return;
+        setRecipes(list);
+      })
+      .catch(() => setRecipes([]));
+
+    return () => {
+      active = false;
+    };
+  }, [showCreatePanel, mealType]);
+
+  // Fetch recipes for edit panel when meal type changes
+  useEffect(() => {
+    if (!editingId || !editMealType) {
+      setEditRecipes([]);
+      setEditSelectedRecipeId("");
+      return;
+    }
+
+    let active = true;
+    getRecipes({ mealType: editMealType })
+      .then((list) => {
+        if (!active) return;
+        setEditRecipes(list);
+      })
+      .catch(() => setEditRecipes([]));
+
+    return () => {
+      active = false;
+    };
+  }, [editingId, editMealType]);
+
   // Lógica de creación/edición igual que antes
   const handleCreateMeal = async (e) => {
     e.preventDefault();
-    if (!dayOfWeek || !mealType || !name.trim()) {
+    // If recipes are available for the selected mealType, require a recipe selection.
+    if (!dayOfWeek || !mealType) {
       setErrorMessage("Todos los campos son obligatorios.");
       return;
     }
+
+    if (recipes.length > 0 && !selectedRecipeId) {
+      setErrorMessage("Selecciona una receta para este tipo de comida.");
+      return;
+    }
+
+    if (recipes.length === 0 && !name.trim()) {
+      setErrorMessage("Introduce un nombre para la comida.");
+      return;
+    }
+
     setLoading(true);
     setErrorMessage("");
     try {
+      // Determine values depending on whether a recipe was selected
+      let recipeId = null;
+      let recipeImage = null;
+      let kcal = null;
+      let finalName = name.trim();
+
+      if (selectedRecipeId) {
+        const r = recipes.find((it) => it.id === selectedRecipeId);
+        if (r) {
+          recipeId = r.id;
+          recipeImage = r.image || null;
+          kcal = r.estimatedCalories || null;
+          finalName = r.title || r.name || finalName;
+        }
+      }
+
       const newMeal = await createMeal({
         userId: user.uid,
         dietId,
         dayOfWeek,
         mealType,
-        name: name.trim(),
-        estimatedCalories: estimatedCalories ? Number(estimatedCalories) : null,
+        name: finalName,
+        estimatedCalories: kcal,
+        recipeId,
+        recipeImage,
       });
       setMeals((prev) => [newMeal, ...prev]);
       setShowCreatePanel(false);
       setDayOfWeek("");
       setMealType("");
       setName("");
-      setEstimatedCalories("");
+      setSelectedRecipeId("");
     } catch {
       setErrorMessage("No se pudo crear la comida.");
     } finally {
@@ -111,26 +187,51 @@ function DietDetailPage() {
     setEditDayOfWeek(meal.dayOfWeek);
     setEditMealType(meal.mealType);
     setEditName(meal.name);
-    setEditEstimatedCalories(meal.estimatedCalories || "");
+    // remove estimated calories state (now derived from recipe)
+    setEditSelectedRecipeId(meal.recipeId || "");
     setEditErrorMessage("");
   };
 
   const handleUpdateMeal = async (e) => {
     e.preventDefault();
-    if (!editDayOfWeek || !editMealType || !editName.trim()) {
+    if (!editDayOfWeek || !editMealType) {
       setEditErrorMessage("Todos los campos son obligatorios.");
+      return;
+    }
+
+    if (editRecipes.length > 0 && !editSelectedRecipeId) {
+      setEditErrorMessage("Selecciona una receta para este tipo de comida.");
+      return;
+    }
+
+    if (editRecipes.length === 0 && !editName.trim()) {
+      setEditErrorMessage("Introduce un nombre para la comida.");
       return;
     }
     setEditLoading(true);
     setEditErrorMessage("");
     try {
+      let recipeId = null;
+      let recipeImage = null;
+      let kcal = null;
+      let finalName = editName.trim();
+      if (editSelectedRecipeId) {
+        const r = editRecipes.find((it) => it.id === editSelectedRecipeId);
+        if (r) {
+          recipeId = r.id;
+          recipeImage = r.image || null;
+          kcal = r.estimatedCalories || null;
+          finalName = r.title || r.name || finalName;
+        }
+      }
+
       const updated = await updateMeal(editingId, {
         dayOfWeek: editDayOfWeek,
         mealType: editMealType,
-        name: editName.trim(),
-        estimatedCalories: editEstimatedCalories
-          ? Number(editEstimatedCalories)
-          : null,
+        name: finalName,
+        estimatedCalories: kcal,
+        recipeId,
+        recipeImage,
       });
       setMeals((prev) =>
         prev.map((m) => (m.id === editingId ? { ...m, ...updated } : m)),
@@ -139,7 +240,7 @@ function DietDetailPage() {
       setEditDayOfWeek("");
       setEditMealType("");
       setEditName("");
-      setEditEstimatedCalories("");
+      setEditSelectedRecipeId("");
     } catch {
       setEditErrorMessage("No se pudo actualizar la comida.");
     } finally {
@@ -165,7 +266,7 @@ function DietDetailPage() {
     setEditDayOfWeek("");
     setEditMealType("");
     setEditName("");
-    setEditEstimatedCalories("");
+    setEditSelectedRecipeId("");
     setEditErrorMessage("");
   };
 
@@ -214,7 +315,6 @@ function DietDetailPage() {
                 setDayOfWeek("");
                 setMealType("");
                 setName("");
-                setEstimatedCalories("");
                 setErrorMessage("");
               }}
             >
@@ -238,7 +338,6 @@ function DietDetailPage() {
                 setDayOfWeek("");
                 setMealType("");
                 setName("");
-                setEstimatedCalories("");
                 setErrorMessage("");
               }}
             >
@@ -273,20 +372,58 @@ function DietDetailPage() {
                   </option>
                 ))}
               </select>
-              <Input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nombre de la comida"
-                required
-              />
-              <Input
-                type="number"
-                value={estimatedCalories}
-                onChange={(e) => setEstimatedCalories(e.target.value)}
-                placeholder="Kcal estimadas"
-                min={0}
-              />
+              {/* Receta: siempre select, deshabilitado hasta seleccionar tipo */}
+              <select
+                className="input"
+                value={selectedRecipeId}
+                onChange={(e) => setSelectedRecipeId(e.target.value)}
+                disabled={!mealType}
+                required={recipes.length > 0}
+              >
+                {!mealType ? (
+                  <option value="">Selecciona antes el tipo de comida</option>
+                ) : recipes.length === 0 ? (
+                  <option value="">
+                    No hay recetas disponibles para este tipo
+                  </option>
+                ) : (
+                  <>
+                    <option value="">Selecciona una receta</option>
+                    {recipes.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.title}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
+
+              {/* Vista previa simple */}
+              {selectedRecipeId &&
+                (() => {
+                  const sel = recipes.find((it) => it.id === selectedRecipeId);
+                  return sel ? (
+                    <div className="recipe-preview">
+                      {sel.image ? (
+                        <img
+                          src={sel.image}
+                          alt={sel.title}
+                          className="recipe-preview-image"
+                        />
+                      ) : (
+                        <div className="recipe-preview-placeholder">🍽️</div>
+                      )}
+                      <div className="recipe-preview-meta">
+                        <strong>{sel.title}</strong>
+                        {sel.estimatedCalories && (
+                          <div className="muted">
+                            {sel.estimatedCalories} kcal
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
               {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
               <Button type="submit" disabled={loading}>
                 {loading ? "Guardando..." : "Añadir comida"}
@@ -338,19 +475,59 @@ function DietDetailPage() {
                   </option>
                 ))}
               </select>
-              <Input
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                required
-              />
-              <Input
-                type="number"
-                value={editEstimatedCalories}
-                onChange={(e) => setEditEstimatedCalories(e.target.value)}
-                placeholder="Kcal estimadas"
-                min={0}
-              />
+
+              <select
+                className="input"
+                value={editSelectedRecipeId}
+                onChange={(e) => setEditSelectedRecipeId(e.target.value)}
+                disabled={!editMealType}
+                required={editRecipes.length > 0}
+              >
+                {!editMealType ? (
+                  <option value="">Selecciona antes el tipo de comida</option>
+                ) : editRecipes.length === 0 ? (
+                  <option value="">
+                    No hay recetas disponibles para este tipo
+                  </option>
+                ) : (
+                  <>
+                    <option value="">Selecciona una receta</option>
+                    {editRecipes.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.title}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
+
+              {editSelectedRecipeId &&
+                (() => {
+                  const sel = editRecipes.find(
+                    (it) => it.id === editSelectedRecipeId,
+                  );
+                  return sel ? (
+                    <div className="recipe-preview">
+                      {sel.image ? (
+                        <img
+                          src={sel.image}
+                          alt={sel.title}
+                          className="recipe-preview-image"
+                        />
+                      ) : (
+                        <div className="recipe-preview-placeholder">🍽️</div>
+                      )}
+                      <div className="recipe-preview-meta">
+                        <strong>{sel.title}</strong>
+                        {sel.estimatedCalories && (
+                          <div className="muted">
+                            {sel.estimatedCalories} kcal
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
               {editErrorMessage && (
                 <Alert variant="error">{editErrorMessage}</Alert>
               )}
@@ -382,6 +559,13 @@ function DietDetailPage() {
           <ul className="list-stack block-mt">
             {sortedMeals.map((meal) => (
               <li key={meal.id} className="dietmeal-row">
+                {meal.recipeImage ? (
+                  <img
+                    src={meal.recipeImage}
+                    alt={meal.name}
+                    className="dietmeal-thumb"
+                  />
+                ) : null}
                 <div className="dietmeal-info">
                   <span className="dietmeal-title">
                     {dayLabels[meal.dayOfWeek]} ·{" "}

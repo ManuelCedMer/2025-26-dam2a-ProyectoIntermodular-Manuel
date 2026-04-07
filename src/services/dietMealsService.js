@@ -46,6 +46,8 @@ export async function createMeal({
   mealType,
   name,
   estimatedCalories,
+  recipeId,
+  recipeImage,
 }) {
   const mealsRef = collection(db, "dietMeals");
 
@@ -56,6 +58,8 @@ export async function createMeal({
     mealType,  // Ej: "desayuno", "comida", "cena", "snack"
     name,
     estimatedCalories, // puede ser null si no se rellena
+    recipeId: recipeId || null,
+    recipeImage: recipeImage || null,
     createdAt: new Date(),
   };
 
@@ -69,7 +73,7 @@ export async function createMeal({
  */
 export async function updateMeal(
   id,
-  { dayOfWeek, mealType, name, estimatedCalories },
+  { dayOfWeek, mealType, name, estimatedCalories, recipeId, recipeImage },
 ) {
   const mealRef = doc(db, "dietMeals", id);
 
@@ -78,6 +82,8 @@ export async function updateMeal(
     mealType,
     name,
     estimatedCalories,
+    recipeId: recipeId !== undefined ? recipeId : null,
+    recipeImage: recipeImage !== undefined ? recipeImage : null,
     updatedAt: new Date(),
   };
 
