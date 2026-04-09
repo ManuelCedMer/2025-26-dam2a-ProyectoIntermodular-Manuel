@@ -2337,6 +2337,9 @@ body.theme-dark {
   font-size: 0.93rem;
   font-weight: 400;
   margin-top: 0.05em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
 }
 
 .exercise-actions {
@@ -2932,7 +2935,7 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
 .template-exercises { border-top: 1px solid var(--card-border); padding-top: 0.6rem; margin-top: 0.4rem; }
 .exercise-row { padding: 0.55rem 0; border-bottom: 1px dashed var(--card-border); }
 .exercise-name { font-weight: 600; }
-.exercise-meta { color: var(--muted); font-size: 0.9rem; display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.25rem; }
+.exercise-meta { color: var(--muted); font-size: 0.9rem; display:flex; flex-direction:column; gap:0.25rem; margin-top:0.25rem; }
 .exercise-notes { margin-top:0.4rem; color:var(--muted); font-size:0.9rem; }
 .no-exercises { color: var(--muted); padding: 0.5rem 0; }
 
@@ -2947,9 +2950,66 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
 .template-card-meta { color: var(--muted); font-size: 0.95rem; display:flex; gap:1rem; padding-top:0.25rem; }
 .template-card-actions { display:flex; gap:0.6rem; margin-top: auto; }
 
+/* Image-first layout for template and exercise detail */
+.detail-image-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-2);
+}
+.detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.exercise-card-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-2);
+}
+.exercise-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Smaller image variant for lists if needed */
+.exercise-card-image--small {
+  max-width: 220px;
+  height: 120px;
+}
+
+@media (max-width: 640px) {
+  .detail-image-wrapper,
+  .exercise-card-media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .detail-image {
+    max-height: 320px;
+  }
+
+  .exercise-card-image {
+    max-height: 220px;
+  }
+}
+
 /* Detail page specific styles for template read-only view */
 .template-detail-title { font-size: 1.15rem; font-weight: 700; margin: 0 0 0.5rem 0; }
 .template-detail-desc { color: var(--muted); margin: 0 0 0.6rem 0; }
 .template-detail-exercises { list-style: none; padding-left: 0; margin: 0; display:flex; flex-direction:column; gap:0.6rem; }
 .template-exercise-row { padding:0.6rem 0.8rem; border-radius:0.6rem; background:var(--card-2); border:1px solid var(--card-border); display:flex; flex-direction:column; gap:0.35rem; }
-.template-exercise-row .exercise-meta { color:var(--muted); font-size:0.95rem; display:flex; gap:0.8rem; }
+.template-exercise-row .exercise-meta { color:var(--muted); font-size:0.95rem; display:flex; flex-direction:column; gap:0.4rem; }

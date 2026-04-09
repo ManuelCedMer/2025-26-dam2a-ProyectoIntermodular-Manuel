@@ -113,9 +113,22 @@ function RoutineTemplateDetailPage() {
 
         {!templateLoading && template && (
           <div className="template-detail">
-            {successMessage && <Alert variant="success">{successMessage}</Alert>}
+            {successMessage && (
+              <Alert variant="success">{successMessage}</Alert>
+            )}
 
             <h3 className="template-detail-title">{template.name}</h3>
+
+            {template.imageUrl && (
+              <div className="detail-image-wrapper">
+                <img
+                  src={template.imageUrl}
+                  alt={template.name}
+                  className="detail-image"
+                />
+              </div>
+            )}
+
             {template.description && (
               <p className="template-detail-desc">{template.description}</p>
             )}
@@ -135,7 +148,9 @@ function RoutineTemplateDetailPage() {
               </div>
               <div className="meta-item">
                 <strong>Ejercicios:</strong>{" "}
-                {Array.isArray(template.exercises) ? template.exercises.length : 0}
+                {Array.isArray(template.exercises)
+                  ? template.exercises.length
+                  : 0}
               </div>
             </div>
 
@@ -153,23 +168,41 @@ function RoutineTemplateDetailPage() {
 
             <h4>Ejercicios</h4>
             <ul className="template-detail-exercises">
-              {Array.isArray(template.exercises) && template.exercises.length > 0 ? (
+              {Array.isArray(template.exercises) &&
+              template.exercises.length > 0 ? (
                 template.exercises
                   .slice()
                   .sort((a, b) => (a.order || 0) - (b.order || 0))
                   .map((ex, idx) => (
                     <li key={idx} className="template-exercise-row">
                       <div className="exercise-name">{ex.name}</div>
+
+                      {ex.imageUrl && (
+                        <div className="exercise-card-media">
+                          <img
+                            src={ex.imageUrl}
+                            alt={ex.name}
+                            className="exercise-card-image"
+                          />
+                        </div>
+                      )}
+
                       <div className="exercise-meta">
-                        <span>{ex.sets ? `${ex.sets} series` : "—"}</span>
-                        <span>{ex.reps ? `${ex.reps} rep` : "—"}</span>
-                        {ex.restSeconds != null && <span>Descanso: {ex.restSeconds}s</span>}
+                        <div>{ex.sets ? `${ex.sets} series` : "—"}</div>
+                        <div>{ex.reps ? `${ex.reps} rep` : "—"}</div>
+                        {ex.restSeconds != null && (
+                          <div>Descanso: {ex.restSeconds}s</div>
+                        )}
                       </div>
-                      {ex.notes && <div className="exercise-notes">{ex.notes}</div>}
+                      {ex.notes && (
+                        <div className="exercise-notes">{ex.notes}</div>
+                      )}
                     </li>
                   ))
               ) : (
-                <li className="no-exercises">No hay ejercicios en esta plantilla.</li>
+                <li className="no-exercises">
+                  No hay ejercicios en esta plantilla.
+                </li>
               )}
             </ul>
           </div>

@@ -15,10 +15,6 @@ import RecipeDetailPage from "./pages/RecipeDetailPage.jsx";
 import SeedRecipesPage from "./pages/SeedRecipesPage.jsx";
 import RoutineTemplateDetailPage from "./pages/RoutineTemplateDetailPage.jsx";
 
-
-
-
-
 function App() {
   return (
     <Routes>
@@ -31,7 +27,10 @@ function App() {
           <Route path="/rutinas" element={<RoutinesPage />} />
           {/* Detalle de una rutina concreta (ejercicios) */}
           <Route path="/rutinas/:routineId" element={<RoutineDetailPage />} />
-          <Route path="/rutinas/plantillas/:templateId" element={<RoutineTemplateDetailPage />} />
+          <Route
+            path="/rutinas/plantillas/:templateId"
+            element={<RoutineTemplateDetailPage />}
+          />
           <Route path="/dietas" element={<DietPage />} />
           <Route path="/dietas/:dietId" element={<DietDetailPage />} />
           <Route path="/recetas" element={<RecipesPage />} />

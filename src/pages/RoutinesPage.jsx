@@ -253,79 +253,82 @@ function RoutinesPage() {
 
           {!templatesLoading && routineTemplates.length > 0 && (
             <div className="templates-list">
-                  {routineTemplates.map((t) => (
-                    <Card key={t.id} className="template-card template-card--summary">
-                      <div className="template-card-inner">
-                        <div className="template-card-header">
-                          <h4 className="template-title">{t.name}</h4>
-                        </div>
+              {routineTemplates.map((t) => (
+                <Card
+                  key={t.id}
+                  className="template-card template-card--summary"
+                >
+                  <div className="template-card-inner">
+                    <div className="template-card-header">
+                      <h4 className="template-title">{t.name}</h4>
+                    </div>
 
-                        <div className="template-card-meta">
-                          <div className="meta-item">
-                            <strong>Duración:</strong>{" "}
-                            {t.estimatedDurationMinutes
-                              ? `${t.estimatedDurationMinutes} min`
-                              : "—"}
-                          </div>
-                          <div className="meta-item">
-                            <strong>Ejercicios:</strong>{" "}
-                            {Array.isArray(t.exercises) ? t.exercises.length : 0}
-                          </div>
-                        </div>
-
-                        <div className="template-card-actions">
-                          <LinkButton
-                            to={`/rutinas/plantillas/${t.id}`}
-                            size="sm"
-                            variant="secondary"
-                          >
-                            Ver detalle
-                          </LinkButton>
-
-                          <Button
-                            size="sm"
-                            disabled={
-                              creatingFromTemplateId &&
-                              creatingFromTemplateId !== t.id
-                            }
-                            onClick={async () => {
-                              if (!user) {
-                                setTemplatesError(
-                                  "Inicia sesión para usar una plantilla.",
-                                );
-                                return;
-                              }
-                              try {
-                                setTemplatesError("");
-                                setTemplatesSuccess("");
-                                setCreatingFromTemplateId(t.id);
-                                const newRoutine = await createRoutineFromTemplate({
-                                  userId: user.uid,
-                                  template: t,
-                                });
-                                setRoutines((prev) => [newRoutine, ...prev]);
-                                setTemplatesSuccess("Rutina creada correctamente.");
-                              } catch (err) {
-                                console.error(
-                                  "Error creando rutina desde plantilla:",
-                                  err,
-                                );
-                                setTemplatesError(
-                                  "No se pudo crear la rutina desde la plantilla.",
-                                );
-                              } finally {
-                                setCreatingFromTemplateId(null);
-                              }
-                            }}
-                          >
-                            {creatingFromTemplateId === t.id
-                              ? "Creando..."
-                              : "Usar plantilla"}
-                          </Button>
-                        </div>
+                    <div className="template-card-meta">
+                      <div className="meta-item">
+                        <strong>Duración:</strong>{" "}
+                        {t.estimatedDurationMinutes
+                          ? `${t.estimatedDurationMinutes} min`
+                          : "—"}
                       </div>
-                    </Card>
-                  ))}
+                      <div className="meta-item">
+                        <strong>Ejercicios:</strong>{" "}
+                        {Array.isArray(t.exercises) ? t.exercises.length : 0}
+                      </div>
+                    </div>
+
+                    <div className="template-card-actions">
+                      <LinkButton
+                        to={`/rutinas/plantillas/${t.id}`}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        Ver detalle
+                      </LinkButton>
+
+                      <Button
+                        size="sm"
+                        disabled={
+                          creatingFromTemplateId &&
+                          creatingFromTemplateId !== t.id
+                        }
+                        onClick={async () => {
+                          if (!user) {
+                            setTemplatesError(
+                              "Inicia sesión para usar una plantilla.",
+                            );
+                            return;
+                          }
+                          try {
+                            setTemplatesError("");
+                            setTemplatesSuccess("");
+                            setCreatingFromTemplateId(t.id);
+                            const newRoutine = await createRoutineFromTemplate({
+                              userId: user.uid,
+                              template: t,
+                            });
+                            setRoutines((prev) => [newRoutine, ...prev]);
+                            setTemplatesSuccess("Rutina creada correctamente.");
+                          } catch (err) {
+                            console.error(
+                              "Error creando rutina desde plantilla:",
+                              err,
+                            );
+                            setTemplatesError(
+                              "No se pudo crear la rutina desde la plantilla.",
+                            );
+                          } finally {
+                            setCreatingFromTemplateId(null);
+                          }
+                        }}
+                      >
+                        {creatingFromTemplateId === t.id
+                          ? "Creando..."
+                          : "Usar plantilla"}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           )}
         </Card>

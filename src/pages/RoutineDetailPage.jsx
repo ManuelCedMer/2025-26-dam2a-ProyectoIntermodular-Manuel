@@ -8,7 +8,6 @@ import {
   deleteExercise,
 } from "../services/routineExercisesService.js";
 
-
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import {
@@ -24,7 +23,6 @@ import LoadingState from "../components/ui/LoadingState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
 import { confirmDelete } from "../utils/confirm.js";
-
 
 /**
  * Pantalla de detalle de una rutina.
@@ -44,8 +42,6 @@ function RoutineDetailPage() {
 
   // Lista de ejercicios de esta rutina.
   const [exercises, setExercises] = useState([]);
-
-
 
   // Formulario de creación.
   const [name, setName] = useState("");
@@ -88,8 +84,6 @@ function RoutineDetailPage() {
 
     loadExercises();
   }, [user, routineId]);
-
-
 
   /**
    * Maneja el envío del formulario de creación de ejercicio.
@@ -278,7 +272,6 @@ function RoutineDetailPage() {
             {routineName && <PageSubtitle strong>{routineName}</PageSubtitle>}
           </div>
           <div className="dashboard-header-actions">
-
             <Button
               type="button"
               onClick={() => setShowCreateExercise((v) => !v)}
@@ -334,17 +327,27 @@ function RoutineDetailPage() {
         )}
         <ul className="exercise-list-modern">
           {exercises.map((exercise) => (
-            <li
-              key={exercise.id}
-              className="exercise-row-horizontal"
-            >
+            <li key={exercise.id} className="exercise-row-horizontal">
               <div className="exercise-info">
                 <span className="exercise-name">{exercise.name}</span>
-                <span className="exercise-meta">
-                  {exercise.sets ? `${exercise.sets} series` : ""}
-                  {exercise.sets && exercise.reps ? " x " : ""}
-                  {exercise.reps ? `${exercise.reps}` : ""}
-                </span>
+
+                {exercise.imageUrl && (
+                  <div className="exercise-card-media">
+                    <img
+                      src={exercise.imageUrl}
+                      alt={exercise.name}
+                      className="exercise-card-image"
+                    />
+                  </div>
+                )}
+
+                <div className="exercise-meta">
+                  <div>{exercise.sets ? `${exercise.sets} series` : "—"}</div>
+                  <div>{exercise.reps ? `${exercise.reps} rep` : "—"}</div>
+                  {exercise.restSeconds != null && (
+                    <div>Descanso: {exercise.restSeconds}s</div>
+                  )}
+                </div>
               </div>
               <div className="exercise-actions">
                 <Button
