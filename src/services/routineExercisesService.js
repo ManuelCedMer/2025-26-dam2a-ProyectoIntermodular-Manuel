@@ -53,6 +53,14 @@ export async function createExercise({
     name,
     sets,
     reps,
+    // Campos opcionales adicionales que pueden venir desde una plantilla.
+    order: arguments[0].order ?? null,
+    restSeconds: arguments[0].restSeconds ?? null,
+    equipment: arguments[0].equipment ?? null,
+    primaryMuscle: arguments[0].primaryMuscle ?? null,
+    secondaryMuscles: arguments[0].secondaryMuscles ?? null,
+    notes: arguments[0].notes ?? null,
+    imageUrl: arguments[0].imageUrl ?? null,
     createdAt: new Date(),
   };
 

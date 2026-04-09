@@ -2837,3 +2837,119 @@ body.theme-dark .recipe-card-favorite-btn.is-favorite {
   color: var(--text-secondary, #666);
   font-style: italic;
 }
+
+/* Plantillas de rutinas (panel) */
+.templates-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+.template-card {
+  padding: 0.9rem;
+  border-radius: 0.8rem;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+}
+.template-card .template-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.45rem;
+  color: var(--muted, #6b7280);
+  font-size: 0.95rem;
+}
+.template-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+}
+.template-desc {
+  color: var(--muted, #6b7280);
+  margin-top: 0.35rem;
+  font-size: 0.96rem;
+}
+.template-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
+}
+
+/* Mejor diseño para tarjetas de plantillas */
+.template-card--col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+}
+.template-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.template-title {
+  font-weight: 700;
+  font-size: 1.06rem;
+  margin: 0;
+}
+.template-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.template-tag {
+  background: var(--pill-bg, #e5f2ff);
+  color: var(--pill-text, #4b5563);
+  font-size: 0.78rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+}
+.template-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.template-desc {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.template-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 0.4rem 0.8rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.meta-item strong { font-weight: 600; margin-right: 0.24rem; }
+.template-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.template-actions-left, .template-actions-right { display: flex; gap: 0.5rem; }
+.template-exercises { border-top: 1px solid var(--card-border); padding-top: 0.6rem; margin-top: 0.4rem; }
+.exercise-row { padding: 0.55rem 0; border-bottom: 1px dashed var(--card-border); }
+.exercise-name { font-weight: 600; }
+.exercise-meta { color: var(--muted); font-size: 0.9rem; display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.25rem; }
+.exercise-notes { margin-top:0.4rem; color:var(--muted); font-size:0.9rem; }
+.no-exercises { color: var(--muted); padding: 0.5rem 0; }
+
+/* Summary-style template card: compact, vertical layout with actions bottom-aligned */
+.template-card--summary {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.template-card-inner { display:flex; flex-direction:column; height:100%; }
+.template-card-header { padding: 0.6rem 0; }
+.template-card-meta { color: var(--muted); font-size: 0.95rem; display:flex; gap:1rem; padding-top:0.25rem; }
+.template-card-actions { display:flex; gap:0.6rem; margin-top: auto; }
+
+/* Detail page specific styles for template read-only view */
+.template-detail-title { font-size: 1.15rem; font-weight: 700; margin: 0 0 0.5rem 0; }
+.template-detail-desc { color: var(--muted); margin: 0 0 0.6rem 0; }
+.template-detail-exercises { list-style: none; padding-left: 0; margin: 0; display:flex; flex-direction:column; gap:0.6rem; }
+.template-exercise-row { padding:0.6rem 0.8rem; border-radius:0.6rem; background:var(--card-2); border:1px solid var(--card-border); display:flex; flex-direction:column; gap:0.35rem; }
+.template-exercise-row .exercise-meta { color:var(--muted); font-size:0.95rem; display:flex; gap:0.8rem; }

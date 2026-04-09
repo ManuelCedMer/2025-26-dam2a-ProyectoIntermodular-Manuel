@@ -5,7 +5,9 @@ import {
   createRoutine,
   updateRoutine,
   deleteRoutine,
+  createRoutineFromTemplate,
 } from "../services/routinesService";
+import { getRoutineTemplates } from "../services/routineTemplatesService";
 
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
@@ -26,36 +28,31 @@ import EntityListItem from "../components/ui/EntityListItem.jsx";
 
 import { confirmDelete } from "../utils/confirm.js";
 
-/**
- * Pantalla de gestión de rutinas [ROUTINES].
- * - Listar rutinas del usuario [ROUTINES-04].
- * - Crear rutinas nuevas con nombre y días [ROUTINES-01].
- * - Editar y eliminar rutinas [ROUTINES-02].
- */
 function RoutinesPage() {
   const { user } = useAuth();
 
-  // Lista de rutinas cargadas desde Firestore.
   const [routines, setRoutines] = useState([]);
-
-  // Campos del formulario de creación.
   const [name, setName] = useState("");
   const [daysOfWeek, setDaysOfWeek] = useState([]);
 
-  // Formulario de edición.
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [editDaysOfWeek, setEditDaysOfWeek] = useState([]);
 
   const [loading, setLoading] = useState(false);
-  // Controla la visibilidad del panel de nueva rutina
   const [showCreatePanel, setShowCreatePanel] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Días disponibles para seleccionar en el formulario.
+  // Templates panel
+  const [showTemplatesPanel, setShowTemplatesPanel] = useState(false);
+  const [routineTemplates, setRoutineTemplates] = useState([]);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [templatesError, setTemplatesError] = useState("");
+  const [templatesSuccess, setTemplatesSuccess] = useState("");
+  const [creatingFromTemplateId, setCreatingFromTemplateId] = useState(null);
+
   const availableDays = ["L", "M", "X", "J", "V", "S", "D"];
 
-  // Etiquetas legibles para mostrar en pantalla.
   const dayLabels = {
     L: "Lunes",
     M: "Martes",
@@ -66,10 +63,6 @@ function RoutinesPage() {
     D: "Domingo",
   };
 
-  /**
-   * Carga las rutinas del usuario actual al entrar en la página
-   * o cuando cambie el usuario.
-   */
   useEffect(() => {
     if (!user) return;
 
@@ -90,41 +83,53 @@ function RoutinesPage() {
     loadRoutines();
   }, [user]);
 
-  /**
-   * Actualiza el array de días seleccionados cuando el usuario marca
-   * o desmarca un checkbox (en este caso, chips).
-   */
+  async function loadTemplates() {
+    try {
+      setTemplatesLoading(true);
+      setTemplatesError("");
+      const templatesFromDb = await getRoutineTemplates();
+      setRoutineTemplates(templatesFromDb);
+    } catch (error) {
+      console.error("Error al cargar plantillas:", error);
+      setTemplatesError("No se han podido cargar las plantillas.");
+    } finally {
+      setTemplatesLoading(false);
+    }
+  }
+
+  function handleToggleTemplates() {
+    const opening = !showTemplatesPanel;
+    setShowTemplatesPanel(opening);
+    if (opening && routineTemplates.length === 0 && !templatesLoading) {
+      loadTemplates();
+    }
+  }
+
   function handleDayChange(day) {
-    if (daysOfWeek.includes(day)) {
+    if (daysOfWeek.includes(day))
       setDaysOfWeek(daysOfWeek.filter((d) => d !== day));
-    } else {
-      setDaysOfWeek([...daysOfWeek, day]);
-    }
+    else setDaysOfWeek([...daysOfWeek, day]);
   }
 
-  /**
-   * Actualiza los días seleccionados en el formulario de edición.
-   */
-  function handleEditDayChange(day) {
-    if (editDaysOfWeek.includes(day)) {
-      setEditDaysOfWeek(editDaysOfWeek.filter((d) => d !== day));
-    } else {
-      setEditDaysOfWeek([...editDaysOfWeek, day]);
-    }
+  function startEditRoutine(routine) {
+    setEditingId(routine.id);
+    setEditName(routine.name || "");
+    setEditDaysOfWeek(routine.daysOfWeek || []);
+    setErrorMessage("");
   }
 
-  /**
-   * Maneja el envío del formulario de creación de rutina.
-   * [ROUTINES-01]
-   */
+  function cancelEdit() {
+    setEditingId(null);
+    setEditName("");
+    setEditDaysOfWeek([]);
+  }
+
   async function handleCreateRoutine(event) {
     event.preventDefault();
-
     if (!name.trim()) {
       setErrorMessage("El nombre de la rutina es obligatorio.");
       return;
     }
-
     if (daysOfWeek.length === 0) {
       setErrorMessage("Selecciona al menos un día de la semana.");
       return;
@@ -133,15 +138,12 @@ function RoutinesPage() {
     try {
       setLoading(true);
       setErrorMessage("");
-
       const newRoutine = await createRoutine({
         userId: user.uid,
         name: name.trim(),
         daysOfWeek,
       });
-
       setRoutines((prev) => [newRoutine, ...prev]);
-
       setName("");
       setDaysOfWeek([]);
     } catch (error) {
@@ -152,37 +154,12 @@ function RoutinesPage() {
     }
   }
 
-  /**
-   * Inicia la edición de una rutina.
-   */
-  function startEditRoutine(routine) {
-    setEditingId(routine.id);
-    setEditName(routine.name || "");
-    setEditDaysOfWeek(routine.daysOfWeek || []);
-    setErrorMessage("");
-  }
-
-  /**
-   * Cancela la edición.
-   */
-  function cancelEdit() {
-    setEditingId(null);
-    setEditName("");
-    setEditDaysOfWeek([]);
-  }
-
-  /**
-   * Maneja el envío del formulario de edición de rutina.
-   * [ROUTINES-02]
-   */
   async function handleUpdateRoutine(event) {
     event.preventDefault();
-
     if (!editName.trim()) {
       setErrorMessage("El nombre de la rutina es obligatorio.");
       return;
     }
-
     if (editDaysOfWeek.length === 0) {
       setErrorMessage("Selecciona al menos un día de la semana.");
       return;
@@ -191,24 +168,17 @@ function RoutinesPage() {
     try {
       setLoading(true);
       setErrorMessage("");
-
       await updateRoutine(editingId, {
         name: editName.trim(),
         daysOfWeek: editDaysOfWeek,
       });
-
       setRoutines((prev) =>
         prev.map((routine) =>
           routine.id === editingId
-            ? {
-                ...routine,
-                name: editName.trim(),
-                daysOfWeek: editDaysOfWeek,
-              }
+            ? { ...routine, name: editName.trim(), daysOfWeek: editDaysOfWeek }
             : routine,
         ),
       );
-
       cancelEdit();
     } catch (error) {
       console.error("Error al actualizar rutina:", error);
@@ -218,25 +188,15 @@ function RoutinesPage() {
     }
   }
 
-  /**
-   * Elimina una rutina después de confirmarlo.
-   * [ROUTINES-02]
-   */
   async function handleDeleteRoutine(id) {
     const ok = confirmDelete("¿Seguro que quieres eliminar esta rutina?");
     if (!ok) return;
-
     try {
       setLoading(true);
       setErrorMessage("");
-
       await deleteRoutine(id);
-
       setRoutines((prev) => prev.filter((routine) => routine.id !== id));
-
-      if (editingId === id) {
-        cancelEdit();
-      }
+      if (editingId === id) cancelEdit();
     } catch (error) {
       console.error("Error al eliminar rutina:", error);
       setErrorMessage("No se ha podido eliminar la rutina.");
@@ -245,18 +205,8 @@ function RoutinesPage() {
     }
   }
 
-  if (!user) {
-    return (
-      <Page>
-        <PageTitle>Gestión de rutinas</PageTitle>
-        <p>Inicia sesión para ver tu información.</p>
-      </Page>
-    );
-  }
-
   return (
     <Page>
-      {/* Cabecera */}
       <PageHeader>
         <div className="dashboard-header">
           <div className="dashboard-header-titles">
@@ -264,12 +214,7 @@ function RoutinesPage() {
             <PageSubtitle>Historial {routines.length}</PageSubtitle>
           </div>
           <div className="dashboard-header-actions">
-            <Button
-              variant="secondary"
-              onClick={() =>
-                alert("Funcionalidad de plantillas no implementada")
-              }
-            >
+            <Button variant="secondary" onClick={handleToggleTemplates}>
               Plantillas
             </Button>
             <Button onClick={() => setShowCreatePanel((v) => !v)}>
@@ -278,6 +223,113 @@ function RoutinesPage() {
           </div>
         </div>
       </PageHeader>
+
+      {showTemplatesPanel && (
+        <Card className="dashboard-panel card-relative">
+          <div className="cardheader-x-row">
+            <CardHeader title="Plantillas de rutinas" />
+            <button
+              type="button"
+              className="close-panel-btn"
+              aria-label="Cerrar"
+              onClick={() => setShowTemplatesPanel(false)}
+            >
+              ×
+            </button>
+          </div>
+
+          {templatesLoading && <LoadingState text="Cargando plantillas..." />}
+          {!templatesLoading && templatesError && (
+            <Alert variant="error">{templatesError}</Alert>
+          )}
+          {!templatesLoading && templatesSuccess && (
+            <Alert variant="success">{templatesSuccess}</Alert>
+          )}
+          {!templatesLoading &&
+            !templatesError &&
+            routineTemplates.length === 0 && (
+              <EmptyState text="No hay plantillas disponibles." />
+            )}
+
+          {!templatesLoading && routineTemplates.length > 0 && (
+            <div className="templates-list">
+                  {routineTemplates.map((t) => (
+                    <Card key={t.id} className="template-card template-card--summary">
+                      <div className="template-card-inner">
+                        <div className="template-card-header">
+                          <h4 className="template-title">{t.name}</h4>
+                        </div>
+
+                        <div className="template-card-meta">
+                          <div className="meta-item">
+                            <strong>Duración:</strong>{" "}
+                            {t.estimatedDurationMinutes
+                              ? `${t.estimatedDurationMinutes} min`
+                              : "—"}
+                          </div>
+                          <div className="meta-item">
+                            <strong>Ejercicios:</strong>{" "}
+                            {Array.isArray(t.exercises) ? t.exercises.length : 0}
+                          </div>
+                        </div>
+
+                        <div className="template-card-actions">
+                          <LinkButton
+                            to={`/rutinas/plantillas/${t.id}`}
+                            size="sm"
+                            variant="secondary"
+                          >
+                            Ver detalle
+                          </LinkButton>
+
+                          <Button
+                            size="sm"
+                            disabled={
+                              creatingFromTemplateId &&
+                              creatingFromTemplateId !== t.id
+                            }
+                            onClick={async () => {
+                              if (!user) {
+                                setTemplatesError(
+                                  "Inicia sesión para usar una plantilla.",
+                                );
+                                return;
+                              }
+                              try {
+                                setTemplatesError("");
+                                setTemplatesSuccess("");
+                                setCreatingFromTemplateId(t.id);
+                                const newRoutine = await createRoutineFromTemplate({
+                                  userId: user.uid,
+                                  template: t,
+                                });
+                                setRoutines((prev) => [newRoutine, ...prev]);
+                                setTemplatesSuccess("Rutina creada correctamente.");
+                              } catch (err) {
+                                console.error(
+                                  "Error creando rutina desde plantilla:",
+                                  err,
+                                );
+                                setTemplatesError(
+                                  "No se pudo crear la rutina desde la plantilla.",
+                                );
+                              } finally {
+                                setCreatingFromTemplateId(null);
+                              }
+                            }}
+                          >
+                            {creatingFromTemplateId === t.id
+                              ? "Creando..."
+                              : "Usar plantilla"}
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+            </div>
+          )}
+        </Card>
+      )}
 
       {showCreatePanel && (
         <Card className="dashboard-panel card-relative">
@@ -310,13 +362,13 @@ function RoutinesPage() {
                 label="Días"
                 options={Object.keys(dayLabels)}
                 value={daysOfWeek}
-                onToggle={(opt) => {
+                onToggle={(opt) =>
                   setDaysOfWeek((prev) =>
                     prev.includes(opt)
                       ? prev.filter((d) => d !== opt)
                       : [...prev, opt],
-                  );
-                }}
+                  )
+                }
                 getLabel={(opt) => dayLabels[opt]}
                 multiple
               />
@@ -334,6 +386,7 @@ function RoutinesPage() {
         {!loading && routines.length === 0 && (
           <EmptyState text="No tienes rutinas aún." />
         )}
+
         {routines.map((routine) =>
           editingId === routine.id ? (
             <Card key={routine.id} className="dashboard-tile editing">
@@ -350,13 +403,13 @@ function RoutinesPage() {
                     label="Días"
                     options={Object.keys(dayLabels)}
                     value={editDaysOfWeek}
-                    onToggle={(opt) => {
+                    onToggle={(opt) =>
                       setEditDaysOfWeek((prev) =>
                         prev.includes(opt)
                           ? prev.filter((d) => d !== opt)
                           : [...prev, opt],
-                      );
-                    }}
+                      )
+                    }
                     getLabel={(opt) => dayLabels[opt]}
                     multiple
                   />
