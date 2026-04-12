@@ -33,8 +33,13 @@ function HomePage() {
   // Progreso de hoy (Firestore: progress).
   const [todayEntry, setTodayEntry] = useState(null);
 
-  // Objetivo diario de calorías (si no existe en perfil, usamos 2000).
-  const [goalCalories, setGoalCalories] = useState(2000);
+  // Objetivo diario de calorías (puede ser null si no definido en perfil).
+  const [goalCalories, setGoalCalories] = useState(null);
+  // Objetivo diario de gasto calórico (kcal) — usado para la vista 'burned'
+  const [burnGoalCalories, setBurnGoalCalories] = useState(null);
+  // Flags para saber si el usuario definió metas en su perfil
+  const [hasProfileConsumedGoal, setHasProfileConsumedGoal] = useState(false);
+  const [hasProfileBurnGoal, setHasProfileBurnGoal] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -52,9 +57,19 @@ function HomePage() {
 
         setTodayEntry(entry);
 
-        const profileGoal = toValidPositiveNumber(profile?.dailyCaloriesGoal);
+        const profileConsumedGoal = toValidPositiveNumber(
+          profile?.dailyCaloriesGoal,
+        );
+        const profileBurnGoal = toValidPositiveNumber(
+          profile?.dailyCaloriesBurnGoal,
+        );
 
-        setGoalCalories(profileGoal || 2000);
+        setHasProfileConsumedGoal(profileConsumedGoal !== null);
+        setHasProfileBurnGoal(profileBurnGoal !== null);
+
+        // Guardamos las metas tal cual (null si no definidas). No usar fallback silencioso.
+        setGoalCalories(profileConsumedGoal);
+        setBurnGoalCalories(profileBurnGoal);
       } catch (error) {
         console.error("Error al cargar datos de Home:", error);
         setTodayEntry(null);
@@ -67,7 +82,8 @@ function HomePage() {
     loadHomeData();
   }, [user]);
 
-  // Datos del día (si no hay registro, asumimos 0).
+  // Datos del día (si no hay registro, asumimos 0 para cálculos numéricos pero
+  // usamos flags específicas para decidir si hay datos reales de calorías).
   const caloriesIn =
     todayEntry?.caloriesIn !== null && todayEntry?.caloriesIn !== undefined
       ? Number(todayEntry.caloriesIn) || 0
@@ -78,32 +94,37 @@ function HomePage() {
       ? Number(todayEntry.caloriesOut) || 0
       : 0;
 
+  const hasCaloriesInData =
+    todayEntry?.caloriesIn !== null && todayEntry?.caloriesIn !== undefined;
+  const hasCaloriesOutData =
+    todayEntry?.caloriesOut !== null && todayEntry?.caloriesOut !== undefined;
+  const hasAnyData = hasCaloriesInData || hasCaloriesOutData;
+
   // Opción 3: restantes = objetivo - consumidas + gastadas
-  const remainingRaw = goalCalories - caloriesIn + caloriesOut;
+  const numericGoal = goalCalories || 0;
+  const numericBurnGoal = burnGoalCalories || 0;
 
-  const remainingRounded = Math.round(remainingRaw);
-  const exceeded = remainingRounded < 0 ? Math.abs(remainingRounded) : 0;
-  const displayRemaining = remainingRounded > 0 ? remainingRounded : 0;
-
-  // Para el anillo: progreso "usado" respecto al objetivo (basado en netas).
-  // used = objetivo - restantes
-  const used = goalCalories - remainingRaw;
-  const ratio = goalCalories > 0 ? used / goalCalories : 0;
-
-  // Clamp a [0..1] para el anillo.
-  const clamped = Math.max(0, Math.min(1, ratio));
-  const percent = Math.round(clamped * 100);
+  // Consumidas: métricas directas entre ingesta y meta (no netas)
+  const consumedRemainingRaw = numericGoal - caloriesIn;
+  const consumedRemainingRounded = Math.round(consumedRemainingRaw);
+  const consumedExceeded =
+    consumedRemainingRounded < 0 ? Math.abs(consumedRemainingRounded) : 0;
+  const consumedDisplayRemaining =
+    consumedRemainingRounded > 0 ? consumedRemainingRounded : 0;
 
   const percentConsumed = Math.round(
     Math.max(
       0,
-      Math.min(100, goalCalories > 0 ? (caloriesIn / goalCalories) * 100 : 0),
+      Math.min(100, numericGoal > 0 ? (caloriesIn / numericGoal) * 100 : 0),
     ),
   );
   const percentBurned = Math.round(
     Math.max(
       0,
-      Math.min(100, goalCalories > 0 ? (caloriesOut / goalCalories) * 100 : 0),
+      Math.min(
+        100,
+        numericBurnGoal > 0 ? (caloriesOut / numericBurnGoal) * 100 : 0,
+      ),
     ),
   );
 
@@ -116,34 +137,51 @@ function HomePage() {
 
   // Texto debajo: depende de la vista activa (consumed / burned)
   let feedbackText = "";
-  const hasAnyData = todayEntry !== null;
+  // removed: hasAnyData defined above based on calories fields
 
   if (loading) {
     feedbackText = "Cargando tu progreso de hoy...";
   } else if (viewMode === "consumed") {
-    if (!hasAnyData) {
+    // Feedback de consumidas alineado con la estructura de 'gastadas'
+    if (!hasProfileConsumedGoal) {
       feedbackText =
-        "Aún no has registrado tu progreso de hoy. Añádelo en Progreso para ver el cálculo.";
-    } else if (exceeded > 0) {
-      feedbackText = `Has superado el objetivo en ${exceeded} kcal.`;
-    } else if (displayRemaining === 0) {
-      feedbackText = "Objetivo cumplido. Te quedan 0 kcal.";
-    } else if (displayRemaining <= 150) {
-      feedbackText = `Casi listo: te quedan ${displayRemaining} kcal para tu objetivo.`;
+        "No has definido tu meta diaria de ingesta. Ve a Perfil para establecerla y recibir feedback personalizado.";
+    } else if (!hasCaloriesInData) {
+      feedbackText =
+        "Aún no has registrado tu ingesta de hoy. Añádelo en Progreso para ver el cálculo.";
     } else {
-      feedbackText = `Te quedan ${displayRemaining} kcal para alcanzar tu objetivo.`;
+      const diff = Math.round(goalCalories - caloriesIn);
+      if (diff > 0) {
+        feedbackText = `Te faltan ${diff} kcal por consumir para alcanzar tu objetivo diario.`;
+      } else if (diff === 0) {
+        feedbackText = `Has alcanzado tu objetivo diario de ingesta.`;
+      } else {
+        feedbackText = `Has superado tu objetivo en ${Math.abs(diff)} kcal.`;
+      }
     }
   } else {
     // viewMode === 'burned' — feedback centrado en calorías gastadas
-    if (!hasAnyData) {
+    if (!hasProfileBurnGoal) {
+      feedbackText =
+        "No has definido tu meta diaria de gasto calórico. Ve a Perfil para establecerla y recibir feedback sobre tu actividad.";
+    } else if (!hasCaloriesOutData) {
       feedbackText =
         "Aún no has registrado actividad hoy. Añade ejercicio en Progreso para contabilizar calorías gastadas.";
-    } else if (caloriesOut <= 200) {
-      feedbackText = `Has gastado ${caloriesOut} kcal — actividad baja hoy. Un paseo breve ayuda.`;
-    } else if (caloriesOut <= 600) {
-      feedbackText = `Buen aporte: has gastado ${caloriesOut} kcal hoy.`;
     } else {
-      feedbackText = `Excelente: has gastado ${caloriesOut} kcal hoy. Sigue así.`;
+      // Feedback de gastadas basado únicamente en la meta personalizada y caloriesOut
+      if (hasProfileBurnGoal && burnGoalCalories !== null) {
+        const diff = Math.round(burnGoalCalories - caloriesOut);
+        if (diff > 0) {
+          feedbackText = `Te faltan ${diff} kcal por gastar para alcanzar tu objetivo diario.`;
+        } else if (diff === 0) {
+          feedbackText = `Has alcanzado tu objetivo de gasto calórico diario.`;
+        } else {
+          feedbackText = `Has superado tu objetivo en ${Math.abs(diff)} kcal.`;
+        }
+      } else {
+        feedbackText =
+          "Aún no has registrado actividad hoy. Añade ejercicio en Progreso para contabilizar calorías gastadas.";
+      }
     }
   }
 

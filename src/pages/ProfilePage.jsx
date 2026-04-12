@@ -28,6 +28,8 @@ function ProfilePage() {
 
   // Meta calórica diaria (kcal).
   const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState("");
+  // Meta de gasto calórico diario (kcal).
+  const [dailyCaloriesBurnGoal, setDailyCaloriesBurnGoal] = useState("");
 
   // Foto de perfil
   const [photoURL, setPhotoURL] = useState("");
@@ -75,6 +77,13 @@ function ProfilePage() {
           profile.dailyCaloriesGoal !== null &&
             profile.dailyCaloriesGoal !== undefined
             ? String(profile.dailyCaloriesGoal)
+            : "",
+        );
+        // Meta de gasto calórico diario (si no existe, dejamos vacío).
+        setDailyCaloriesBurnGoal(
+          profile.dailyCaloriesBurnGoal !== null &&
+            profile.dailyCaloriesBurnGoal !== undefined
+            ? String(profile.dailyCaloriesBurnGoal)
             : "",
         );
 
@@ -129,6 +138,20 @@ function ProfilePage() {
       parsedDailyCaloriesGoal = Math.round(n);
     }
 
+    // Valido la meta de gasto calórico diario (permitimos vacío -> null)
+    let parsedDailyCaloriesBurnGoal = null;
+    if (dailyCaloriesBurnGoal.trim() !== "") {
+      const n2 = Number(dailyCaloriesBurnGoal);
+      if (Number.isNaN(n2) || n2 < 1 || n2 > 20000) {
+        setErrorMessage(
+          "La meta de gasto calórico debe ser un número válido entre 1 y 20000 kcal.",
+        );
+        setMessage("");
+        return;
+      }
+      parsedDailyCaloriesBurnGoal = Math.round(n2);
+    }
+
     try {
       setSavingProfile(true);
       setErrorMessage("");
@@ -139,6 +162,7 @@ function ProfilePage() {
         age: parsedAge,
         goal,
         dailyCaloriesGoal: parsedDailyCaloriesGoal,
+        dailyCaloriesBurnGoal: parsedDailyCaloriesBurnGoal,
         theme: draftTheme,
       });
 
@@ -298,7 +322,7 @@ function ProfilePage() {
           </div>
 
           <div className="profile-form-row">
-            <label>Meta calórica diaria (kcal)</label>
+            <label>Meta diaria de ingesta calórica (kcal)</label>
             <input
               className="input"
               type="number"
@@ -307,6 +331,20 @@ function ProfilePage() {
               min="800"
               max="6000"
               placeholder="Ej: 2600"
+              disabled={loadingProfile}
+            />
+          </div>
+
+          <div className="profile-form-row">
+            <label>Meta diaria de gasto calórico (kcal)</label>
+            <input
+              className="input"
+              type="number"
+              value={dailyCaloriesBurnGoal}
+              onChange={(event) => setDailyCaloriesBurnGoal(event.target.value)}
+              min="1"
+              max="20000"
+              placeholder="Ej: 500"
               disabled={loadingProfile}
             />
           </div>

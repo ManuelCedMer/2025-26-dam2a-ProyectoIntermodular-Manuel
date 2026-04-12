@@ -17,6 +17,7 @@ export async function getUserProfile(userId) {
       age: null,
       goal: "mantener",
       dailyCaloriesGoal: null,
+      dailyCaloriesBurnGoal: null,
       theme: "light",
       photoURL: "",
     };
@@ -31,7 +32,7 @@ export async function getUserProfile(userId) {
  */
 export async function saveUserProfile(
   userId,
-  { displayName, age, goal, dailyCaloriesGoal, theme, photoURL },
+  { displayName, age, goal, dailyCaloriesGoal, dailyCaloriesBurnGoal, theme, photoURL },
 ) {
   const userRef = doc(db, "users", userId);
 
@@ -44,6 +45,7 @@ export async function saveUserProfile(
   if (age !== undefined) data.age = age;
   if (goal !== undefined) data.goal = goal;
   if (dailyCaloriesGoal !== undefined) data.dailyCaloriesGoal = dailyCaloriesGoal;
+  if (dailyCaloriesBurnGoal !== undefined) data.dailyCaloriesBurnGoal = dailyCaloriesBurnGoal;
   if (theme !== undefined) data.theme = theme;
   if (photoURL !== undefined) data.photoURL = photoURL;
 
