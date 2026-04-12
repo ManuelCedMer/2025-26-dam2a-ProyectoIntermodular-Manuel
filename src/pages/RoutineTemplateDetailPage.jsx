@@ -86,9 +86,6 @@ function RoutineTemplateDetailPage() {
             <PageTitle>
               {template ? template.name : "Detalle de plantilla"}
             </PageTitle>
-            {template && (
-              <PageSubtitle strong>{template.level || "—"}</PageSubtitle>
-            )}
           </div>
           <div className="dashboard-header-actions">
             <Button
@@ -134,9 +131,7 @@ function RoutineTemplateDetailPage() {
             )}
 
             <div className="template-meta-grid">
-              <div className="meta-item">
-                <strong>Nivel:</strong> {template.level || "—"}
-              </div>
+              {/* Nivel eliminado del detalle de plantilla */}
               <div className="meta-item">
                 <strong>Foco:</strong> {template.focus || "—"}
               </div>

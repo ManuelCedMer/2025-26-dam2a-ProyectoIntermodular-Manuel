@@ -10,6 +10,11 @@
   margin-bottom: 0.2rem;
 }
 
+/* Global base font for body to improve legibility */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 /* Small kcal label under recipe title */
 .recipe-card-kcal {
   text-align: center;
@@ -1218,7 +1223,7 @@ body.theme-dark {
 }
 
 .progress-table .font-mono {
-  font-family: "Monaco", "Courier New", monospace;
+  
   font-size: 0.85rem;
 }
 
