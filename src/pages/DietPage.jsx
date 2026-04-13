@@ -5,7 +5,10 @@ import {
   createDiet,
   updateDiet,
   deleteDiet,
+  createDefaultDietIfNotSeeded,
 } from "../services/dietService.js";
+import { getRecipes } from "../services/recipesService.js";
+import { createMeal, getMealsByDiet } from "../services/dietMealsService.js";
 import { LinkButton, Button } from "../components/ui/Button.jsx";
 import Card from "../components/ui/Card.jsx";
 import {
@@ -59,9 +62,68 @@ function DietPage() {
     if (!user) return;
     setLoading(true);
     getDietsByUser(user.uid)
-      .then(setDiets)
+      .then((list) => {
+        setDiets(list);
+        // Ensure default diet exists once per user
+        ensureDefaultDiet().catch(() => {
+          // fail silently; do not block UI
+        });
+      })
       .finally(() => setLoading(false));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  // Crea un plan por defecto de forma segura y atómica.
+  // Usa createDefaultDietIfNotSeeded para evitar duplicados y marca el perfil.
+  const ensureDefaultDiet = async () => {
+    try {
+      const defaultKey = "initial_monday_v1";
+      const createdOrExisting = await createDefaultDietIfNotSeeded({
+        userId: user.uid,
+        name: "Día lunes",
+        description: "Ejemplo de un plan de alimentación para el lunes",
+        defaultKey,
+      });
+
+      // Si la transacción devolvió null, significa que el perfil ya estaba seedado
+      if (!createdOrExisting) return;
+
+      // Añadir a estado local para que aparezca inmediatamente
+      setDiets((prev) => [createdOrExisting, ...prev]);
+
+      // Solo crear comidas si el plan no tiene comidas todavía
+      const existingMeals = await getMealsByDiet({
+        userId: user.uid,
+        dietId: createdOrExisting.id,
+      });
+      if (existingMeals && existingMeals.length > 0) return;
+
+      const mealTypes = ["desayuno", "comida", "cena"];
+      for (const mt of mealTypes) {
+        try {
+          const recipes = await getRecipes({ mealType: mt });
+          if (!recipes || recipes.length === 0) continue;
+          const r = recipes[0];
+
+          await createMeal({
+            userId: user.uid,
+            dietId: createdOrExisting.id,
+            dayOfWeek: "L",
+            mealType: mt,
+            name: r.title || r.name || mt,
+            estimatedCalories: r.estimatedCalories || null,
+            recipeId: r.id,
+            recipeImage: r.image || null,
+          });
+        } catch (err) {
+          continue;
+        }
+      }
+    } catch (err) {
+      return;
+    }
+  };
 
   // Handlers de creación y edición (idénticos a los actuales)
   const handleCreateDiet = async (e) => {
