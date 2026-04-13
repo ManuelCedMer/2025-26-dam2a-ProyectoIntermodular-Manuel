@@ -363,11 +363,10 @@ function RoutineDetailPage() {
                   type="button"
                   size="sm"
                   variant="danger"
-                  className="exercise-delete-btn"
                   onClick={() => handleDeleteExercise(exercise.id)}
                   aria-label="Eliminar ejercicio"
                 >
-                  🗑
+                  Eliminar
                 </Button>
               </div>
             </li>

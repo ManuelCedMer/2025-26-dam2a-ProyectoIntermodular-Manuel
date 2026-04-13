@@ -2187,7 +2187,7 @@ body.theme-dark {
 }
 .rutina-delete-btn:hover,
 .rutina-delete-btn:focus {
-  transform: translateY(-1px);
+  transform: none;
 }
 
 .rutina-actions-bottom {
