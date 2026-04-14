@@ -192,6 +192,24 @@ body {
   padding-left: 0;
   margin: 0;
 }
+/* Header within each exercise card: name + actions aligned */
+.exercise-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.exercise-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Small top spacing for inline edit card rendered under an exercise */
+.inline-edit-card {
+  margin-top: 0.6rem;
+}
 /* =============================== */
 /* Variables globales de tema [UI-03] */
 /* =============================== */

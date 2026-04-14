@@ -48,6 +48,14 @@ function RoutineDetailPage() {
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
 
+  function closeCreatePanel() {
+    setShowCreateExercise(false);
+    setName("");
+    setSets("");
+    setReps("");
+    setErrorMessage("");
+  }
+
   // Formulario de edición.
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
@@ -286,8 +294,19 @@ function RoutineDetailPage() {
 
       {/* Panel colapsable para añadir ejercicio */}
       {showCreateExercise && (
-        <Card className="dashboard-panel compact-card">
-          <CardHeader title="Añadir ejercicio" />
+        <Card className="dashboard-panel compact-card card-relative">
+          <div className="cardheader-x-row">
+            <div style={{ fontWeight: 600 }}>Añadir ejercicio</div>
+            <button
+              type="button"
+              className="close-panel-btn"
+              aria-label="Cerrar panel añadir ejercicio"
+              onClick={closeCreatePanel}
+            >
+              ×
+            </button>
+          </div>
+
           <form onSubmit={handleCreateExercise}>
             <FormStack compact>
               <Input
@@ -317,99 +336,123 @@ function RoutineDetailPage() {
         </Card>
       )}
 
-      {/* Card principal con listado de ejercicios */}
-      <Card className="dashboard-tile exercise-list-card compact-card">
+      {/* Card principal con listado de ejercicios (estructura visual tipo plantilla) */}
+      <Card className="dashboard-tile">
         {loading && exercises.length === 0 && (
           <LoadingState text="Cargando ejercicios..." />
         )}
+
         {!loading && exercises.length === 0 && (
           <EmptyState text="Esta rutina todavía no tiene ejercicios." />
         )}
-        <ul className="exercise-list-modern">
-          {exercises.map((exercise) => (
-            <li key={exercise.id} className="exercise-row-horizontal">
-              <div className="exercise-info">
-                <span className="exercise-name">{exercise.name}</span>
 
-                {exercise.imageUrl && (
-                  <div className="exercise-card-media">
-                    <img
-                      src={exercise.imageUrl}
-                      alt={exercise.name}
-                      className="exercise-card-image"
-                    />
+        {!loading && exercises.length > 0 && (
+          <div className="template-detail">
+            <h3 className="template-detail-title">{routineName || "Rutina"}</h3>
+
+            <div className="template-meta-grid">
+              <div className="meta-item">
+                <strong>Ejercicios:</strong> {exercises.length}
+              </div>
+            </div>
+
+            <hr />
+
+            <h4>Ejercicios</h4>
+
+            <ul className="template-detail-exercises">
+              {exercises.map((exercise) => (
+                <li key={exercise.id} className="template-exercise-row">
+                  <div className="exercise-row-header">
+                    <div className="exercise-name">{exercise.name}</div>
+
+                    <div className="exercise-actions">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        className="exercise-edit-btn"
+                        onClick={() => startEditExercise(exercise)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleDeleteExercise(exercise.id)}
+                        aria-label="Eliminar ejercicio"
+                      >
+                        Eliminar
+                      </Button>
+                    </div>
                   </div>
-                )}
 
-                <div className="exercise-meta">
-                  <div>{exercise.sets ? `${exercise.sets} series` : "—"}</div>
-                  <div>{exercise.reps ? `${exercise.reps} rep` : "—"}</div>
-                  {exercise.restSeconds != null && (
-                    <div>Descanso: {exercise.restSeconds}s</div>
+                  {exercise.imageUrl && (
+                    <div className="exercise-card-media">
+                      <img
+                        src={exercise.imageUrl}
+                        alt={exercise.name}
+                        className="exercise-card-image"
+                      />
+                    </div>
                   )}
-                </div>
-              </div>
-              <div className="exercise-actions">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  className="exercise-edit-btn"
-                  onClick={() => startEditExercise(exercise)}
-                >
-                  Editar
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="danger"
-                  onClick={() => handleDeleteExercise(exercise.id)}
-                  aria-label="Eliminar ejercicio"
-                >
-                  Eliminar
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+
+                  <div className="exercise-meta">
+                    <div>{exercise.sets ? `${exercise.sets} series` : "—"}</div>
+                    <div>{exercise.reps ? `${exercise.reps} rep` : "—"}</div>
+                    {exercise.restSeconds != null && (
+                      <div>Descanso: {exercise.restSeconds}s</div>
+                    )}
+                  </div>
+
+                  {exercise.notes && (
+                    <div className="exercise-notes">{exercise.notes}</div>
+                  )}
+
+                  {editingId === exercise.id && (
+                    <Card className="dashboard-panel compact-card inline-edit-card">
+                      <CardHeader title="Editar ejercicio" />
+                      <form onSubmit={handleUpdateExercise}>
+                        <FormStack compact>
+                          <Input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            required
+                          />
+                          <Input
+                            type="number"
+                            value={editSets}
+                            onChange={(e) => setEditSets(e.target.value)}
+                            placeholder="Series"
+                          />
+                          <Input
+                            type="number"
+                            value={editReps}
+                            onChange={(e) => setEditReps(e.target.value)}
+                            placeholder="Repeticiones"
+                          />
+                          <div className="dashboard-tile-actions">
+                            <Button type="submit" disabled={loading}>
+                              {loading ? "Guardando..." : "Guardar cambios"}
+                            </Button>
+                            <Button type="button" variant="secondary" onClick={cancelEdit}>
+                              Cancelar
+                            </Button>
+                          </div>
+                        </FormStack>
+                      </form>
+                    </Card>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Card>
 
-      {/* Formulario de edición como bloque secundario */}
-      {editingId && (
-        <Card className="dashboard-panel compact-card">
-          <CardHeader title="Editar ejercicio" />
-          <form onSubmit={handleUpdateExercise}>
-            <FormStack compact>
-              <Input
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                required
-              />
-              <Input
-                type="number"
-                value={editSets}
-                onChange={(e) => setEditSets(e.target.value)}
-                placeholder="Series"
-              />
-              <Input
-                type="number"
-                value={editReps}
-                onChange={(e) => setEditReps(e.target.value)}
-                placeholder="Repeticiones"
-              />
-              <div className="dashboard-tile-actions">
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Guardando..." : "Guardar cambios"}
-                </Button>
-                <Button type="button" variant="secondary" onClick={cancelEdit}>
-                  Cancelar
-                </Button>
-              </div>
-            </FormStack>
-          </form>
-        </Card>
-      )}
+      
     </Page>
   );
 }
