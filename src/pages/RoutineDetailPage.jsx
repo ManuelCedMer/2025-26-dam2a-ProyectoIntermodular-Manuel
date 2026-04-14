@@ -437,7 +437,11 @@ function RoutineDetailPage() {
                             <Button type="submit" disabled={loading}>
                               {loading ? "Guardando..." : "Guardar cambios"}
                             </Button>
-                            <Button type="button" variant="secondary" onClick={cancelEdit}>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onClick={cancelEdit}
+                            >
                               Cancelar
                             </Button>
                           </div>
@@ -451,8 +455,6 @@ function RoutineDetailPage() {
           </div>
         )}
       </Card>
-
-      
     </Page>
   );
 }
