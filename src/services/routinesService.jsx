@@ -10,44 +10,61 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
+const MUSCLE_IMAGES = {
+  pierna: "/muscles/pierna.jpg",
+  pecho: "/muscles/pecho.jpg",
+  espalda: "/muscles/espalda.jpg",
+  hombro: "/muscles/hombro.jpg",
+  brazo: "/muscles/brazo.jpg",
+  core: "/muscles/core.jpeg",
+  fullbody: "/muscles/fullbody.jpg",
+};
+
+function getMuscleImageUrl(muscleGroup) {
+  if (!muscleGroup) return null;
+  return MUSCLE_IMAGES[muscleGroup] || null;
+}
+
 /**
  * Devuelve las rutinas de un usuario ordenadas por fecha de creación.
  * [ROUTINES-04] Listar rutinas del usuario.
  */
 export async function getRoutinesByUser(userId) {
   const routinesRef = collection(db, "routines");
-
-  // Solo rutinas del usuario actual.
   const q = query(routinesRef, where("userId", "==", userId));
-
   const snapshot = await getDocs(q);
 
-  // Transformo los documentos de Firestore a objetos JS con id.
-  const routines = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
+  return snapshot.docs.map((docSnap) => ({
+    id: docSnap.id,
+    ...docSnap.data(),
   }));
-
-  return routines;
 }
 
 /**
  * Crea una rutina nueva para un usuario.
  * [ROUTINES-01] Crear rutina con nombre y días de la semana.
  */
-export async function createRoutine({ userId, name, daysOfWeek }) {
+export async function createRoutine({
+  userId,
+  name,
+  daysOfWeek,
+  muscleGroup = null,
+  imageUrl = null,
+}) {
   const routinesRef = collection(db, "routines");
+
+  const resolvedImageUrl = imageUrl || getMuscleImageUrl(muscleGroup);
 
   const newRoutine = {
     userId,
     name,
     daysOfWeek,
+    muscleGroup: muscleGroup || null,
+    imageUrl: resolvedImageUrl || null,
     createdAt: new Date(),
   };
 
   const docRef = await addDoc(routinesRef, newRoutine);
-
-  // Devuelvo el objeto con el id asignado por Firestore.
   return { id: docRef.id, ...newRoutine };
 }
 
@@ -60,6 +77,9 @@ export async function createRoutine({ userId, name, daysOfWeek }) {
 export async function createRoutineFromTemplate({ userId, template }) {
   const routinesRef = collection(db, "routines");
 
+  const resolvedImageUrl =
+    template.imageUrl || getMuscleImageUrl(template.muscleGroup);
+
   const routineData = {
     userId,
     name: template.name || "Nueva rutina",
@@ -68,6 +88,8 @@ export async function createRoutineFromTemplate({ userId, template }) {
     focus: template.focus || null,
     estimatedDurationMinutes: template.estimatedDurationMinutes || null,
     tags: Array.isArray(template.tags) ? template.tags : [],
+    muscleGroup: template.muscleGroup || null,
+    imageUrl: resolvedImageUrl || null,
     createdAt: new Date(),
     templateId: template.id || null,
   };
@@ -75,19 +97,15 @@ export async function createRoutineFromTemplate({ userId, template }) {
   const docRef = await addDoc(routinesRef, routineData);
   const createdRoutine = { id: docRef.id, ...routineData };
 
-  // Crear ejercicios asociados si vienen en la plantilla.
   if (Array.isArray(template.exercises) && template.exercises.length > 0) {
-    // Importar dinámicamente para evitar ciclos de importación en tiempo de carga.
     const { createExercise } = await import("./routineExercisesService.js");
 
-    // Mantener orden si existe.
     const exercises = template.exercises.slice().sort((a, b) => {
       const oa = typeof a.order === "number" ? a.order : 0;
       const ob = typeof b.order === "number" ? b.order : 0;
       return oa - ob;
     });
 
-    // Crear ejercicios en paralelo.
     await Promise.all(
       exercises.map((ex) =>
         createExercise({

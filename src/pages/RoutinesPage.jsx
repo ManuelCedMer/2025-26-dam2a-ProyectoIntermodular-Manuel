@@ -17,16 +17,25 @@ import {
   PageTitle,
   PageSubtitle,
 } from "../components/ui/Page.jsx";
-import { FormStack, Field, Input } from "../components/ui/Form.jsx";
+import { FormStack, Input } from "../components/ui/Form.jsx";
 
 import Alert from "../components/ui/Alert.jsx";
 import CardHeader from "../components/ui/CardHeader.jsx";
 import ChipSelector from "../components/ui/ChipSelector.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
-import EntityListItem from "../components/ui/EntityListItem.jsx";
 
 import { confirmDelete } from "../utils/confirm.js";
+
+const MUSCLE_IMAGES = {
+  pierna: "/muscles/pierna.jpg",
+  pecho: "/muscles/pecho.jpg",
+  espalda: "/muscles/espalda.jpg",
+  hombro: "/muscles/hombro.jpg",
+  brazo: "/muscles/brazo.jpg",
+  core: "/muscles/core.jpeg",
+  fullbody: "/muscles/fullbody.jpg",
+};
 
 function RoutinesPage() {
   const { user } = useAuth();
@@ -34,6 +43,7 @@ function RoutinesPage() {
   const [routines, setRoutines] = useState([]);
   const [name, setName] = useState("");
   const [daysOfWeek, setDaysOfWeek] = useState([]);
+  const [muscleGroup, setMuscleGroup] = useState("");
 
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
@@ -50,8 +60,6 @@ function RoutinesPage() {
   const [templatesError, setTemplatesError] = useState("");
   const [templatesSuccess, setTemplatesSuccess] = useState("");
   const [creatingFromTemplateId, setCreatingFromTemplateId] = useState(null);
-
-  const availableDays = ["L", "M", "X", "J", "V", "S", "D"];
 
   const dayLabels = {
     L: "Lunes",
@@ -105,12 +113,6 @@ function RoutinesPage() {
     }
   }
 
-  function handleDayChange(day) {
-    if (daysOfWeek.includes(day))
-      setDaysOfWeek(daysOfWeek.filter((d) => d !== day));
-    else setDaysOfWeek([...daysOfWeek, day]);
-  }
-
   function startEditRoutine(routine) {
     setEditingId(routine.id);
     setEditName(routine.name || "");
@@ -124,12 +126,21 @@ function RoutinesPage() {
     setEditDaysOfWeek([]);
   }
 
+  function resetCreatePanel() {
+    setName("");
+    setDaysOfWeek([]);
+    setMuscleGroup("");
+    setErrorMessage("");
+  }
+
   async function handleCreateRoutine(event) {
     event.preventDefault();
+
     if (!name.trim()) {
       setErrorMessage("El nombre de la rutina es obligatorio.");
       return;
     }
+
     if (daysOfWeek.length === 0) {
       setErrorMessage("Selecciona al menos un día de la semana.");
       return;
@@ -138,14 +149,20 @@ function RoutinesPage() {
     try {
       setLoading(true);
       setErrorMessage("");
+
+      const imageUrl = muscleGroup ? MUSCLE_IMAGES[muscleGroup] || null : null;
+
       const newRoutine = await createRoutine({
         userId: user.uid,
         name: name.trim(),
         daysOfWeek,
+        muscleGroup: muscleGroup || null,
+        imageUrl,
       });
+
       setRoutines((prev) => [newRoutine, ...prev]);
-      setName("");
-      setDaysOfWeek([]);
+      resetCreatePanel();
+      setShowCreatePanel(false);
     } catch (error) {
       console.error("Error al crear rutina:", error);
       setErrorMessage("No se ha podido crear la rutina.");
@@ -156,10 +173,12 @@ function RoutinesPage() {
 
   async function handleUpdateRoutine(event) {
     event.preventDefault();
+
     if (!editName.trim()) {
       setErrorMessage("El nombre de la rutina es obligatorio.");
       return;
     }
+
     if (editDaysOfWeek.length === 0) {
       setErrorMessage("Selecciona al menos un día de la semana.");
       return;
@@ -168,10 +187,12 @@ function RoutinesPage() {
     try {
       setLoading(true);
       setErrorMessage("");
+
       await updateRoutine(editingId, {
         name: editName.trim(),
         daysOfWeek: editDaysOfWeek,
       });
+
       setRoutines((prev) =>
         prev.map((routine) =>
           routine.id === editingId
@@ -179,6 +200,7 @@ function RoutinesPage() {
             : routine,
         ),
       );
+
       cancelEdit();
     } catch (error) {
       console.error("Error al actualizar rutina:", error);
@@ -191,6 +213,7 @@ function RoutinesPage() {
   async function handleDeleteRoutine(id) {
     const ok = confirmDelete("¿Seguro que quieres eliminar esta rutina?");
     if (!ok) return;
+
     try {
       setLoading(true);
       setErrorMessage("");
@@ -217,7 +240,14 @@ function RoutinesPage() {
             <Button variant="secondary" onClick={handleToggleTemplates}>
               Plantillas
             </Button>
-            <Button onClick={() => setShowCreatePanel((v) => !v)}>
+            <Button
+              onClick={() => {
+                setShowCreatePanel((v) => !v);
+                if (showCreatePanel) {
+                  resetCreatePanel();
+                }
+              }}
+            >
               + Nueva
             </Button>
           </div>
@@ -298,14 +328,17 @@ function RoutinesPage() {
                             );
                             return;
                           }
+
                           try {
                             setTemplatesError("");
                             setTemplatesSuccess("");
                             setCreatingFromTemplateId(t.id);
+
                             const newRoutine = await createRoutineFromTemplate({
                               userId: user.uid,
                               template: t,
                             });
+
                             setRoutines((prev) => [newRoutine, ...prev]);
                             setTemplatesSuccess("Rutina creada correctamente.");
                           } catch (err) {
@@ -344,14 +377,13 @@ function RoutinesPage() {
               aria-label="Cerrar"
               onClick={() => {
                 setShowCreatePanel(false);
-                setName("");
-                setDaysOfWeek([]);
-                setErrorMessage("");
+                resetCreatePanel();
               }}
             >
               ×
             </button>
           </div>
+
           <form onSubmit={handleCreateRoutine}>
             <FormStack>
               <Input
@@ -361,6 +393,24 @@ function RoutinesPage() {
                 placeholder="Nombre de la rutina"
                 required
               />
+
+              <div className="recipes-filter-field routine-muscle-field">
+                <label className="label">Grupo muscular</label>
+                <select
+                  className="input"
+                  value={muscleGroup}
+                  onChange={(e) => setMuscleGroup(e.target.value)}
+                >
+                  <option value="">Selecciona un grupo muscular</option>
+                  <option value="pierna">Pierna</option>
+                  <option value="pecho">Pecho</option>
+                  <option value="espalda">Espalda</option>
+                  <option value="hombro">Hombro</option>
+                  <option value="brazo">Brazo</option>
+                  <option value="core">Core</option>
+                </select>
+              </div>
+
               <ChipSelector
                 label="Días"
                 options={Object.keys(dayLabels)}
@@ -375,7 +425,9 @@ function RoutinesPage() {
                 getLabel={(opt) => dayLabels[opt]}
                 multiple
               />
+
               {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+
               <Button type="submit" disabled={loading}>
                 {loading ? "Guardando..." : "Crear rutina"}
               </Button>
@@ -402,6 +454,7 @@ function RoutinesPage() {
                     onChange={(e) => setEditName(e.target.value)}
                     required
                   />
+
                   <ChipSelector
                     label="Días"
                     options={Object.keys(dayLabels)}
@@ -416,9 +469,11 @@ function RoutinesPage() {
                     getLabel={(opt) => dayLabels[opt]}
                     multiple
                   />
+
                   {errorMessage && (
                     <Alert variant="error">{errorMessage}</Alert>
                   )}
+
                   <div className="dashboard-tile-actions">
                     <Button type="submit" disabled={loading}>
                       {loading ? "Guardando..." : "Guardar cambios"}
@@ -445,24 +500,38 @@ function RoutinesPage() {
               >
                 Eliminar
               </Button>
+
               <div className="dashboard-tile-main">
-                <div>
-                  <h3 className="dashboard-tile-title">{routine.name}</h3>
-                  <div className="dashboard-tile-meta">
-                    {routine.daysOfWeek && routine.daysOfWeek.length > 0
-                      ? routine.daysOfWeek.map((d) => dayLabels[d]).join(", ")
-                      : "Sin días"}
+                <div className="rutina-media-row">
+                  {routine.imageUrl && (
+                    <img
+                      src={routine.imageUrl}
+                      alt={routine.name}
+                      className="rutina-thumb"
+                    />
+                  )}
+
+                  <div>
+                    <h3 className="dashboard-tile-title">{routine.name}</h3>
+                    <div className="dashboard-tile-meta">
+                      {routine.daysOfWeek && routine.daysOfWeek.length > 0
+                        ? routine.daysOfWeek.map((d) => dayLabels[d]).join(", ")
+                        : "Sin días"}
+                    </div>
                   </div>
                 </div>
               </div>
+
               <div className="dashboard-tile-actions rutina-actions-bottom">
                 <LinkButton
                   to={`/rutinas/${routine.id}`}
+                  state={{ routineName: routine.name }}
                   size="sm"
                   variant="primary"
                 >
                   Ver ejercicios
                 </LinkButton>
+
                 <Button
                   type="button"
                   size="sm"

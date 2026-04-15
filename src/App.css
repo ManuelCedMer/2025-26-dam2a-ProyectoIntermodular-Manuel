@@ -162,6 +162,24 @@ body {
   flex-shrink: 0;
 }
 
+/* Thumbnail for routine cards (muscle group) */
+.rutina-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 0.9rem;
+  flex-shrink: 0;
+}
+.rutina-media-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.routine-muscle-field {
+  width: 100%;
+}
 /* Simple recipe preview shown under the select */
 .recipe-preview {
   display: flex;
@@ -820,6 +838,8 @@ body.theme-dark {
   font-size: 0.9rem;
   background: var(--input-bg);
   color: var(--input-text);
+  line-height: 1.25rem;
+  vertical-align: middle;
 }
 
 .input:focus,
@@ -2232,6 +2252,12 @@ body.theme-dark {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+}
+
+/* Espaciado extra para el botón "volver" en cabeceras tipo dashboard.
+   Usado por páginas como RoutineDetailPage y DietDetailPage. */
+.dashboard-back-btn {
+  margin-bottom: 0.5rem;
 }
 
 .dashboard-header-actions {
