@@ -7,7 +7,8 @@ import { getUserProfile } from "../services/userProfileService.js";
 import { getTodayDateString } from "../utils/dates.js";
 
 /**
- * Convierte a número válido o null (si no existe o no es número).
+ * Convierte un valor a número positivo válido.
+ * Si el valor no existe, no es numérico o es menor o igual que cero, devuelve null.
  */
 function toValidPositiveNumber(value) {
   if (value === null || value === undefined) return null;
@@ -17,30 +18,39 @@ function toValidPositiveNumber(value) {
 }
 
 /**
- * Pantalla de inicio [HOME].
+ * Pantalla de inicio de la aplicación.
+ * Muestra un resumen del progreso diario, el anillo de calorías,
+ * feedback personalizado y accesos rápidos a las secciones principales.
+ * [HOME-01] [HOME-02] [HOME-03] [HOME-04]
  */
 function HomePage() {
   const { user } = useAuth();
 
-  // Intento sacar un nombre "amigable" para el saludo.
+  // Nombre mostrado en el saludo principal.
   const friendlyName =
     user?.displayName || (user?.email ? user.email.split("@")[0] : "usuario");
 
-  const [viewMode, setViewMode] = useState("consumed"); // 'consumed' or 'burned'
+  // Modo activo del anillo: calorías consumidas o gastadas.
+  const [viewMode, setViewMode] = useState("consumed");
 
   const [loading, setLoading] = useState(false);
 
-  // Progreso de hoy (Firestore: progress).
+  // Registro de progreso del día actual.
   const [todayEntry, setTodayEntry] = useState(null);
 
-  // Objetivo diario de calorías (puede ser null si no definido en perfil).
+  // Meta diaria de ingesta calórica definida en el perfil.
   const [goalCalories, setGoalCalories] = useState(null);
-  // Objetivo diario de gasto calórico (kcal) — usado para la vista 'burned'
+
+  // Meta diaria de gasto calórico definida en el perfil.
   const [burnGoalCalories, setBurnGoalCalories] = useState(null);
-  // Flags para saber si el usuario definió metas en su perfil
+
+  // Indican si el usuario ha definido metas personalizadas en su perfil.
   const [hasProfileConsumedGoal, setHasProfileConsumedGoal] = useState(false);
   const [hasProfileBurnGoal, setHasProfileBurnGoal] = useState(false);
 
+  /**
+   * Carga el progreso del día actual y las metas guardadas en el perfil.
+   */
   useEffect(() => {
     if (!user) return;
 
@@ -67,7 +77,7 @@ function HomePage() {
         setHasProfileConsumedGoal(profileConsumedGoal !== null);
         setHasProfileBurnGoal(profileBurnGoal !== null);
 
-        // Guardamos las metas tal cual (null si no definidas). No usar fallback silencioso.
+        // Se guardan las metas como null si no están definidas, evitando valores por defecto silenciosos.
         setGoalCalories(profileConsumedGoal);
         setBurnGoalCalories(profileBurnGoal);
       } catch (error) {
@@ -82,36 +92,29 @@ function HomePage() {
     loadHomeData();
   }, [user]);
 
-  // Datos del día (si no hay registro, asumimos 0 para cálculos numéricos pero
-  // usamos flags específicas para decidir si hay datos reales de calorías).
+  // Calorías consumidas registradas hoy.
   const caloriesIn =
     todayEntry?.caloriesIn !== null && todayEntry?.caloriesIn !== undefined
       ? Number(todayEntry.caloriesIn) || 0
       : 0;
 
+  // Calorías gastadas registradas hoy.
   const caloriesOut =
     todayEntry?.caloriesOut !== null && todayEntry?.caloriesOut !== undefined
       ? Number(todayEntry.caloriesOut) || 0
       : 0;
 
+  // Indican si existen datos reales de ingesta o gasto en el registro diario.
   const hasCaloriesInData =
     todayEntry?.caloriesIn !== null && todayEntry?.caloriesIn !== undefined;
   const hasCaloriesOutData =
     todayEntry?.caloriesOut !== null && todayEntry?.caloriesOut !== undefined;
-  const hasAnyData = hasCaloriesInData || hasCaloriesOutData;
 
-  // Opción 3: restantes = objetivo - consumidas + gastadas
+  // Valores numéricos usados para los cálculos del anillo.
   const numericGoal = goalCalories || 0;
   const numericBurnGoal = burnGoalCalories || 0;
 
-  // Consumidas: métricas directas entre ingesta y meta (no netas)
-  const consumedRemainingRaw = numericGoal - caloriesIn;
-  const consumedRemainingRounded = Math.round(consumedRemainingRaw);
-  const consumedExceeded =
-    consumedRemainingRounded < 0 ? Math.abs(consumedRemainingRounded) : 0;
-  const consumedDisplayRemaining =
-    consumedRemainingRounded > 0 ? consumedRemainingRounded : 0;
-
+  // Porcentajes usados para representar visualmente el progreso del anillo.
   const percentConsumed = Math.round(
     Math.max(
       0,
@@ -128,6 +131,7 @@ function HomePage() {
     ),
   );
 
+  // Estilo dinámico del anillo según la vista seleccionada.
   const ringStyle = {
     background:
       viewMode === "consumed"
@@ -135,14 +139,13 @@ function HomePage() {
         : `conic-gradient(var(--primary) 0 ${percentBurned}%, var(--ring-bg, #d1d5db) ${percentBurned}% 100%)`,
   };
 
-  // Texto debajo: depende de la vista activa (consumed / burned)
+  // Texto de feedback mostrado debajo del anillo.
   let feedbackText = "";
-  // removed: hasAnyData defined above based on calories fields
 
   if (loading) {
     feedbackText = "Cargando tu progreso de hoy...";
   } else if (viewMode === "consumed") {
-    // Feedback de consumidas alineado con la estructura de 'gastadas'
+    // Feedback de calorías consumidas según la meta de ingesta.
     if (!hasProfileConsumedGoal) {
       feedbackText =
         "No has definido tu meta diaria de ingesta. Ve a Perfil para establecerla y recibir feedback personalizado.";
@@ -160,7 +163,7 @@ function HomePage() {
       }
     }
   } else {
-    // viewMode === 'burned' — feedback centrado en calorías gastadas
+    // Feedback de calorías gastadas según la meta de gasto.
     if (!hasProfileBurnGoal) {
       feedbackText =
         "No has definido tu meta diaria de gasto calórico. Ve a Perfil para establecerla y recibir feedback sobre tu actividad.";
@@ -168,7 +171,6 @@ function HomePage() {
       feedbackText =
         "Aún no has registrado actividad hoy. Añade ejercicio en Progreso para contabilizar calorías gastadas.";
     } else {
-      // Feedback de gastadas basado únicamente en la meta personalizada y caloriesOut
       if (hasProfileBurnGoal && burnGoalCalories !== null) {
         const diff = Math.round(burnGoalCalories - caloriesOut);
         if (diff > 0) {
@@ -187,11 +189,11 @@ function HomePage() {
 
   return (
     <div className="home-page">
-      {/* Tarjeta principal de resumen */}
+      {/* Tarjeta principal de resumen diario */}
       <section className="home-main-card">
         <h1 className="home-greeting">Hola, {friendlyName}</h1>
 
-        {/* Toggle para cambiar vista del anillo */}
+        {/* Selector para alternar entre calorías consumidas y gastadas */}
         <div className="view-toggle" role="tablist" aria-label="Ver">
           <button
             type="button"
@@ -211,7 +213,7 @@ function HomePage() {
           </button>
         </div>
 
-        {/* Anillo de calorías*/}
+        {/* Anillo visual de calorías */}
         <div className="home-calories-ring" style={ringStyle}>
           <div className="home-calories-inner">
             <p className="home-calories-percentage">
@@ -224,7 +226,7 @@ function HomePage() {
 
         <p className="home-feedback">{feedbackText}</p>
 
-        {/* Accesos rápidos */}
+        {/* Accesos rápidos a las secciones principales */}
         <div className="home-actions">
           <Link to="/rutinas" className="home-action-card">
             <span className="home-action-icon">🏃</span>

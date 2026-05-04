@@ -21,18 +21,22 @@ import { FormStack, Input } from "../components/ui/Form.jsx";
 import Alert from "../components/ui/Alert.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
-import EntityListItem from "../components/ui/EntityListItem.jsx";
 
+/**
+ * Pantalla de planes de alimentación.
+ * Permite crear, editar y eliminar planes, además de acceder a sus comidas.
+ * También genera un plan inicial de ejemplo para el usuario si todavía no existe.
+ */
 function DietPage() {
   const { user } = useAuth();
 
-  // Estado para mostrar/ocultar panel de creación
+  // Estado para mostrar/ocultar el panel de creación.
   const [showCreatePanel, setShowCreatePanel] = useState(false);
 
-  // Lista de planes
+  // Lista de planes de alimentación del usuario.
   const [diets, setDiets] = useState([]);
 
-  // Ejemplo estático (solo visual): se muestra cuando no hay planes
+  // Ejemplo visual que se muestra cuando el usuario todavía no tiene planes.
   const examplePlan = {
     name: "Semana equilibrada",
     description: "Plan ejemplo: 3 comidas + 2 tentempiés diarios, orientativo.",
@@ -45,28 +49,31 @@ function DietPage() {
     ],
   };
 
-  // Formulario de creación
+  // Formulario de creación.
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Edición
+  // Formulario de edición.
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editLoading, setEditLoading] = useState(false);
   const [editErrorMessage, setEditErrorMessage] = useState("");
 
+  /**
+   * Carga los planes del usuario al entrar en la página.
+   * Después comprueba si debe crear el plan inicial por defecto.
+   */
   useEffect(() => {
     if (!user) return;
     setLoading(true);
     getDietsByUser(user.uid)
       .then((list) => {
         setDiets(list);
-        // Ensure default diet exists once per user
         ensureDefaultDiet().catch(() => {
-          // fail silently; do not block UI
+          // Si falla la creación del plan inicial, no se bloquea la interfaz.
         });
       })
       .finally(() => setLoading(false));
@@ -74,8 +81,10 @@ function DietPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // Crea un plan por defecto de forma segura y atómica.
-  // Usa createDefaultDietIfNotSeeded para evitar duplicados y marca el perfil.
+  /**
+   * Crea un plan inicial de forma segura.
+   * Utiliza una clave de control para evitar duplicados por usuario.
+   */
   const ensureDefaultDiet = async () => {
     try {
       const defaultKey = "initial_monday_v1";
@@ -86,19 +95,20 @@ function DietPage() {
         defaultKey,
       });
 
-      // Si la transacción devolvió null, significa que el perfil ya estaba seedado
+      // Si no se devuelve ningún plan, significa que el usuario ya tenía el contenido inicial creado.
       if (!createdOrExisting) return;
 
-      // Añadir a estado local para que aparezca inmediatamente
+      // Añade el plan al estado local para mostrarlo inmediatamente.
       setDiets((prev) => [createdOrExisting, ...prev]);
 
-      // Solo crear comidas si el plan no tiene comidas todavía
+      // Evita crear comidas duplicadas si el plan ya tiene contenido.
       const existingMeals = await getMealsByDiet({
         userId: user.uid,
         dietId: createdOrExisting.id,
       });
       if (existingMeals && existingMeals.length > 0) return;
 
+      // Crea comidas iniciales usando recetas existentes por tipo de comida.
       const mealTypes = ["desayuno", "comida", "cena"];
       for (const mt of mealTypes) {
         try {
@@ -125,7 +135,9 @@ function DietPage() {
     }
   };
 
-  // Handlers de creación y edición (idénticos a los actuales)
+  /**
+   * Maneja el envío del formulario de creación de un plan.
+   */
   const handleCreateDiet = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
@@ -151,6 +163,9 @@ function DietPage() {
     }
   };
 
+  /**
+   * Inicia la edición de un plan concreto.
+   */
   const startEditDiet = (diet) => {
     setEditingId(diet.id);
     setEditName(diet.name);
@@ -158,6 +173,9 @@ function DietPage() {
     setEditErrorMessage("");
   };
 
+  /**
+   * Maneja el envío del formulario de edición de un plan.
+   */
   const handleUpdateDiet = async (e) => {
     e.preventDefault();
     if (!editName.trim()) {
@@ -184,6 +202,9 @@ function DietPage() {
     }
   };
 
+  /**
+   * Elimina un plan después de confirmar la acción.
+   */
   const handleDeleteDiet = async (id) => {
     if (!window.confirm("¿Eliminar este plan?")) return;
     setLoading(true);
@@ -191,12 +212,15 @@ function DietPage() {
       await deleteDiet(id);
       setDiets((prev) => prev.filter((d) => d.id !== id));
     } catch {
-      // error handling opcional
+      // Gestión de errores opcional.
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Cancela la edición y limpia el formulario.
+   */
   const cancelEdit = () => {
     setEditingId(null);
     setEditName("");
@@ -215,7 +239,7 @@ function DietPage() {
 
   return (
     <Page>
-      {/* Toolbar tipo dashboard */}
+      {/* Header tipo dashboard */}
       <PageHeader>
         <div className="dashboard-header">
           <div className="dashboard-header-titles">
@@ -241,7 +265,7 @@ function DietPage() {
         </div>
       </PageHeader>
 
-      {/* Panel colapsable de creación */}
+      {/* Panel colapsable para crear un nuevo plan */}
       {showCreatePanel && (
         <Card className="dashboard-panel card-relative">
           <div className="cardheader-x-row">
@@ -284,7 +308,7 @@ function DietPage() {
         </Card>
       )}
 
-      {/* Panel colapsable de edición */}
+      {/* Panel colapsable para editar un plan */}
       {editingId && (
         <Card className="dashboard-panel card-relative">
           <div className="cardheader-x-row">
@@ -333,14 +357,14 @@ function DietPage() {
         </Card>
       )}
 
-      {/* Listado principal */}
+      {/* Card principal con listado de planes */}
       <Card className="dashboard-tile diet-list-card">
         {loading && <LoadingState text="Cargando planes..." />}
         {!loading && diets.length === 0 && (
           <>
             <EmptyState text="No tienes ningún plan de alimentación creado todavía." />
 
-            {/* Bloque visual orientativo: ejemplo de plan (no persistente) */}
+            {/* Bloque orientativo no persistente para mostrar un ejemplo de plan */}
             <Card className="example-diet-card" aria-hidden>
               <div className="example-diet-header">
                 <strong>{examplePlan.name}</strong>

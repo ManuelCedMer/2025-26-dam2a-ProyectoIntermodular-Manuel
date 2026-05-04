@@ -8,7 +8,7 @@ import { getUserProfile } from "../services/userProfileService.js";
 
 import { getTodayDateString, parseDateFromString } from "../utils/dates.js";
 
-// Componentes de Recharts para los gráficos.
+// Componentes de Recharts utilizados para los gráficos.
 import {
   LineChart,
   Line,
@@ -20,7 +20,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Componentes de UI reutilizables
+// Componentes de UI reutilizables.
 import {
   Page,
   PageHeader,
@@ -34,7 +34,7 @@ import Alert from "../components/ui/Alert.jsx";
 import CardHeader from "../components/ui/CardHeader.jsx";
 
 /**
- * Normaliza el objetivo a una forma interna manejable.
+ * Normaliza el objetivo del usuario a un valor interno manejable.
  */
 function normalizeGoal(goal) {
   if (!goal) return null;
@@ -54,7 +54,7 @@ function normalizeGoal(goal) {
 }
 
 /**
- * Filtra las entradas según el rango seleccionado.
+ * Filtra las entradas de progreso según el rango seleccionado.
  */
 function filterEntriesByRange(entries, range) {
   if (range === "all") {
@@ -99,8 +99,8 @@ function filterEntriesByRange(entries, range) {
 }
 
 /**
- * Calcula un mensaje de feedback en base al objetivo y
- * al balance calórico medio de los últimos días.
+ * Calcula un mensaje de feedback según el objetivo del usuario
+ * y el balance calórico medio de los últimos registros.
  */
 function calculateFeedback(goalNormalizado, entries) {
   if (!goalNormalizado || entries.length === 0) {
@@ -173,8 +173,8 @@ function calculateFeedback(goalNormalizado, entries) {
 }
 
 /**
- * Validaciones mínimas para inputs numéricos.
- * Devuelve string vacío si está OK.
+ * Valida inputs numéricos que no pueden ser negativos.
+ * Devuelve un string vacío si el valor es correcto.
  */
 function validateNonNegativeNumber(value, label, { max = null } = {}) {
   const trimmed = value.trim();
@@ -189,42 +189,45 @@ function validateNonNegativeNumber(value, label, { max = null } = {}) {
 
 /**
  * Pantalla de progreso [PROGRESS].
+ * Permite registrar datos diarios, consultar el historial,
+ * visualizar gráficos y recibir feedback según el objetivo del usuario.
  */
 function ProgressPage() {
   const { user } = useAuth();
 
-  // Fecha del formulario.
+  // Fecha seleccionada en el formulario.
   const [date, setDate] = useState(getTodayDateString());
 
-  // Campos del formulario.
+  // Campos del formulario de progreso diario.
   const [caloriesIn, setCaloriesIn] = useState("");
   const [caloriesOut, setCaloriesOut] = useState("");
   const [weight, setWeight] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Historial completo de progreso.
+  // Historial completo de registros de progreso.
   const [entries, setEntries] = useState([]);
 
-  // Perfil del usuario (para leer el objetivo).
+  // Objetivo del usuario obtenido desde el perfil.
   const [goalRaw, setGoalRaw] = useState(null);
   const [normalizedGoal, setNormalizedGoal] = useState(null);
 
-  // Meta diaria (para aviso si falta).
+  // Meta diaria de ingesta calórica configurada en el perfil.
   const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState(null);
 
-  // Rango de fechas para los gráficos.
+  // Rango de fechas aplicado a gráficos e historial.
   const [range, setRange] = useState("30d");
 
-  // Mensaje de feedback calculado.
+  // Mensaje de feedback calculado a partir del historial.
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
+  // Estados de carga, guardado y mensajes.
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [showForm, setShowForm] = useState(false);
 
-  // Errores por campo (UI).
+  // Validaciones de los campos numéricos.
   const caloriesInError = validateNonNegativeNumber(
     caloriesIn,
     "Calorías consumidas",
@@ -300,8 +303,7 @@ function ProgressPage() {
   }, [user]);
 
   /**
-   * Cada vez que cambian el historial o el objetivo normalizado,
-   * recalculamos el mensaje de feedback.
+   * Recalcula el feedback cuando cambia el historial o el objetivo normalizado.
    */
   useEffect(() => {
     const message = calculateFeedback(normalizedGoal, entries);
@@ -320,6 +322,9 @@ function ProgressPage() {
     return Number.isNaN(num) ? null : num;
   }
 
+  /**
+   * Coloca la fecha actual en el formulario.
+   */
   function handleSetToday() {
     setDate(getTodayDateString());
     setErrorMessage("");
@@ -417,14 +422,15 @@ function ProgressPage() {
     );
   }
 
-  // Aplicamos filtro de rango para los gráficos.
+  // Entradas filtradas según el rango seleccionado.
   const filteredEntries = filterEntriesByRange(entries, range);
 
-  // Datos para los gráficos, ordenados de más antiguo a más reciente.
+  // Datos de los gráficos, ordenados de más antiguo a más reciente.
   const chartData = [...filteredEntries].sort((a, b) =>
     a.date > b.date ? 1 : -1,
   );
 
+  // Comprueba si existen registros de peso para mostrar el gráfico correspondiente.
   const hasWeightData = !chartData.every(
     (entry) => entry.weight === null || entry.weight === undefined,
   );
@@ -435,7 +441,7 @@ function ProgressPage() {
 
   return (
     <Page>
-      {/* Cabecera del dashboard */}
+      {/* Header tipo dashboard */}
       <PageHeader>
         <div className="dashboard-header">
           <div className="dashboard-header-titles">
@@ -453,6 +459,7 @@ function ProgressPage() {
         </div>
       </PageHeader>
 
+      {/* Panel colapsable para registrar progreso diario */}
       {showForm && (
         <section className="progress-form-panel-zone">
           <Card className="progress-form-card progress-form-panel card-relative">
@@ -572,6 +579,7 @@ function ProgressPage() {
         </section>
       )}
 
+      {/* Zona principal de gráficos */}
       <section className="progress-main-zone">
         <div className="progress-charts-section">
           <div className="progress-charts-toolbar">
@@ -685,6 +693,7 @@ function ProgressPage() {
         </div>
       </section>
 
+      {/* Bloque de feedback y análisis personalizado */}
       <section className="progress-secondary-zone">
         <Card className="progress-feedback-card">
           <div className="progress-feedback-header">
@@ -730,6 +739,7 @@ function ProgressPage() {
         </Card>
       </section>
 
+      {/* Historial de registros de progreso */}
       <section className="progress-history-zone">
         <Card className="progress-history-card">
           <div className="progress-history-header">

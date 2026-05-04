@@ -1,3 +1,8 @@
+/**
+ * Datos iniciales de plantillas de rutinas.
+ * Este archivo contiene las plantillas base que se utilizan para crear
+ * rutinas predefinidas dentro de la aplicación.
+ */
 export const routineTemplatesSeed = [
   {
     name: "Día de pecho",

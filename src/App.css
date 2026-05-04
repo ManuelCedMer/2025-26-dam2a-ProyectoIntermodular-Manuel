@@ -1,3 +1,2996 @@
+/* =============================== */
+/* Variables globales de tema [UI-03] */
+/* =============================== */
+
+/* Tema claro: fondo azul muy clarito */
+body.theme-light {
+  --app-bg: #eef2f7;
+  --text: #111827;
+  --muted: #6b7280;
+
+  --surface: #f9fafb;
+
+  /* Cards (global) */
+  --card: #e9f2ff; 
+  --card-2: #ffffff; 
+  --card-text: #111827;
+  --card-border: rgba(17, 24, 39, 0.1);
+
+  /* Inputs */
+  --input-bg: #ffffff;
+  --input-text: #111827;
+  --input-border: #d1d5db;
+
+  --border: #e5e7eb;
+
+  --primary: #4f46e5;
+  --primary-soft: #eef2ff;
+
+  --pill-bg: #e5f2ff;
+  --pill-text: #4b5563;
+
+  --shadow-lg: 0 18px 30px rgba(15, 23, 42, 0.12);
+  --shadow-md: 0 14px 28px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 10px 20px rgba(15, 23, 42, 0.06);
+
+  background-color: var(--app-bg);
+  color: var(--text);
+}
+
+/* Tema oscuro: fondo oscuro, con tarjetas adaptadas al tema */
+body.theme-dark {
+  --app-bg: #0b1220;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+
+  --surface: #111a2b;
+
+  /* Cards (global) */
+  --card: #111a2b; 
+  --card-2: rgba(255, 255, 255, 0.08); 
+  --card-text: #f1f5f9; 
+  --card-border: rgba(255, 255, 255, 0.12);
+
+  /* Inputs */
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-text: #f1f5f9;
+  --input-border: rgba(255, 255, 255, 0.14);
+
+  --border: #22304a;
+
+  --primary: #60a5fa;
+  --primary-soft: rgba(96, 165, 250, 0.12);
+
+  --pill-bg: rgba(96, 165, 250, 0.14);
+  --pill-text: #e2e8f0;
+
+  --shadow-lg: 0 18px 30px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 14px 28px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 10px 20px rgba(0, 0, 0, 0.25);
+
+  background-color: var(--app-bg);
+  color: var(--text);
+}
+
+
+/* =============================== */
+/* Base general */
+/* =============================== */
+
+/* Fuente base global para body para mejorar legibilidad */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =============================== */
+/* Layout principal */
+/* =============================== */
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.app-logo {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.app-nav-link {
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+  color: var(--text);
+  transition: color 0.12s ease, background-color 0.12s ease;
+}
+
+.app-nav-link:hover {
+  color: var(--primary);
+}
+
+.app-nav-link--active {
+  border-color: var(--primary);
+  background-color: var(--primary-soft);
+  color: var(--text);
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+ 
+}
+
+.app-main section {
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .app-nav {
+    width: 100%;
+  }
+
+  .app-nav-link {
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+
+/* =============================== */
+/* Componentes reutilizables (UI) */
+/* =============================== */
+
+.card {
+  background: var(--card);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-md, 0 14px 28px rgba(15, 23, 42, 0.08));
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--input-border);
+  font-size: 0.9rem;
+  background: var(--input-bg);
+  color: var(--input-text);
+  line-height: 1.25rem;
+  vertical-align: middle;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: rgba(79, 70, 229, 0.45);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.btn {
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
+}
+
+
+/* =============================== */
+/* Helpers de layout, botones, formularios y listas */
+/* =============================== */
+
+.page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.page-container--md {
+  max-width: 900px;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text);
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+/* Botones (versión helpers) */
+.btn {
+  width: auto;              
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;    
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
+}
+
+.btn-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid rgba(185, 28, 28, 0.15);
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+
+.form-stack {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+.item-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-2);
+  color: var(--card-text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.badge-pill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--card-text);
+  background-color: var(--primary-soft);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.page-subtitle-strong {
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.text-error {
+  margin-top: 8px;
+  color: #b91c1c;
+}
+
+.stack-16 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+.form-stack-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-mt {
+  margin-top: 12px;
+}
+
+
+.list-stack.block-mt {
+  margin-top: 16px; 
+}
+
+.label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.section-title-sm {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.link-inline {
+  text-decoration: none;
+  color: var(--text);
+}
+.link-inline:hover {
+  text-decoration: underline;
+}
+
+/* Inputs (duplicado intencional: conservar ambas versiones) */
+.input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border, #d1d5db);
+  font-size: 14px;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--input-text, #111827);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(79, 70, 229, 0.45);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.textarea {
+  width: 100%;
+  padding: 8px 10px;
+  min-height: 80px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border, #d1d5db);
+  font-size: 14px;
+  resize: vertical;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--input-text, #111827);
+}
+.textarea:focus {
+  outline: none;
+  border-color: rgba(79, 70, 229, 0.45);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+
+.actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.actions-row-tight {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+
+.link-btn {
+  text-decoration: none;
+}
+
+
+.list-clean {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-stack {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.exercise-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.exercise-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-2);
+  color: var(--card-text);
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip--active {
+  border-color: transparent;
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+
+.rutina-card {
+  position: relative;
+  padding-top: 1.2rem; /* antes 2.5rem, ajusta según lo compacto que desees */
+}
+
+.rutina-delete-btn {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 1;
+}
+.rutina-delete-btn:hover,
+.rutina-delete-btn:focus {
+  transform: none;
+}
+
+.rutina-actions-bottom {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dashboard-tile-title {
+  margin-top: 0; /* elimina margen superior si lo hubiera */
+}
+
+
+.dashboard-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.dashboard-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+/* Espaciado extra para el botón "volver" en cabeceras tipo dashboard.
+   Usado por páginas como RoutineDetailPage y DietDetailPage. */
+.dashboard-back-btn {
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 800px) {
+  .dashboard-header {
+    flex-wrap: wrap !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  .dashboard-header-actions {
+    justify-content: flex-start !important;
+    margin-top: 0.5rem !important;
+  }
+}
+
+
+/* =============================== */
+/* Auth: Login / Register / Recover [LOGIN][UI-02] */
+/* =============================== */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--app-bg);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 3rem 3.25rem;
+  border-radius: 28px;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.auth-brand {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--primary, #4f46e5);
+}
+
+.auth-title {
+  margin: 0.35rem 0 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--card-text);
+}
+
+/* Form en columna (esto evita label+input en fila por CSS previo) */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1.25rem;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+
+.auth-form .input {
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+}
+
+/* Links tipo texto */
+.auth-links {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+  text-align: center;
+}
+
+.auth-textbtn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.auth-textbtn--soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  border: 1px solid var(--card-border);
+}
+
+.auth-strong {
+  font-weight: 800;
+  color: var(--primary, #4f46e5);
+}
+
+.auth-message {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.auth-message--error {
+  color: #b91c1c;
+}
+
+.auth-message--success {
+  color: #047857;
+}
+
+/* Accesibilidad: labels ocultos pero presentes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+    border-radius: 22px;
+  }
+
+  .auth-brand {
+    font-size: 2.2rem;
+  }
+
+  .auth-title {
+    font-size: 1.35rem;
+  }
+}
+
+.auth-forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.25rem;
+}
+
+.auth-forgot-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.auth-forgot-btn:hover {
+  text-decoration: underline;
+}
+
+.auth-forgot-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+
+/* =============================== */
+/* Login (pantalla de inicio de sesión) */
+/* =============================== */
+
+.login-page {
+  min-height: 100vh;
+  background-color: var(--app-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  background-color: var(--card);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 1.5rem 1.4rem;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.login-header {
+  margin-bottom: 0.25rem;
+}
+
+.login-brand {
+  color: var(--primary);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+
+.login-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--card-text);
+}
+
+.login-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.login-mode-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.login-mode-selector button {
+  flex: 1;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-2);
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--card-text);
+}
+
+.login-mode-button--active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--input-border);
+  font-size: 0.9rem;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
+.auth-button,
+.login-card button[type="submit"] {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.6rem;
+  border: none;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.login-link {
+  margin-top: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.login-link strong {
+  color: var(--primary);
+}
+
+.login-error {
+  font-size: 0.8rem;
+  color: #b91c1c;
+  margin-top: 0.25rem;
+}
+
+.login-success {
+  font-size: 0.8rem;
+  color: #15803d;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .login-card {
+    padding-inline: 1.25rem;
+  }
+}
+
+
+/* =============================== */
+/* Pantalla de inicio (HomePage) */
+/* =============================== */
+
+.home-page {
+  display: flex;
+  justify-content: center;
+}
+
+.home-main-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem 1.75rem;
+
+  border-radius: 24px;
+  background: linear-gradient(
+    180deg,
+    var(--primary-soft) 0%,
+    var(--card) 40%,
+    var(--card) 100%
+  );
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--card-border);
+  color: var(--card-text);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.home-greeting {
+  margin-top: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.home-calories-ring {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+
+  /* Por defecto 0% si no hay datos */
+  --ring-pct: 0%;
+
+  /* ring background uses CSS variable so JS can reuse same shade */
+  --ring-bg: #374151; /* dark gray (not black) for stronger contrast */
+  background: conic-gradient(#fb923c 0 var(--ring-pct), var(--ring-bg) var(--ring-pct) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg, 0 20px 40px rgba(15,23,42,0.12));
+}
+
+
+.home-calories-inner {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--card-2);
+  border: 1px solid rgba(0,0,0,0.04);
+  /* Stronger inner bevel + more pronounced outer lift to separate from the ring */
+  box-shadow: inset 0 10px 22px rgba(0,0,0,0.12), 0 18px 40px rgba(0,0,0,0.12);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-calories-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.1rem;
+}
+
+.home-calories-percentage {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.14);
+}
+
+.home-calories-detail {
+  font-size: 0.65rem;
+  color: var(--muted);
+  line-height: 1.1;
+}
+
+/* Toggle simple para HomePage (Consumidas / Gastadas) */
+.view-toggle {
+  display: inline-flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 0.6rem 0 0.8rem;
+}
+
+.view-toggle .btn {
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.45rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+}
+
+.view-toggle .btn.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* New calories summary for HomePage */
+.calories-summary {
+  width: 100%;
+  max-width: 420px;
+  margin: 0.6rem auto 1.2rem;
+}
+
+.calories-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.calories-stat {
+  background: var(--card-2);
+  border: 1px solid var(--card-border);
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.6rem;
+  text-align: center;
+}
+
+.calories-stat-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.calories-stat-value {
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 0.2rem;
+}
+
+.calories-bar {
+  width: 100%;
+  height: 10px;
+  background: var(--card);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.calories-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fb923c, var(--primary));
+  width: 0%;
+  transition: width 320ms ease;
+}
+
+.home-feedback {
+  font-size: 0.85rem;
+  color: var(--pill-text);
+  background-color: var(--pill-bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+}
+
+.home-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.home-action-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  background-color: var(--card-2);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+
+  text-decoration: none;
+  color: var(--card-text);
+  font-size: 0.95rem;
+}
+
+.home-action-icon {
+  font-size: 1.3rem;
+}
+
+.home-action-text {
+  font-weight: 500;
+}
+
+.home-action-card:hover {
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .home-main-card {
+    margin-top: 0.5rem;
+    padding-inline: 1.25rem;
+  }
+}
+
+
+/* =============================== */
+/* Perfil (ProfilePage) [UI-02] */
+/* =============================== */
+
+.profile-page {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Avatar: conservar ambas definiciones (duplicado intencional) */
+.profile-avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--avatar-bg, #e6e6e6);
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-avatar-initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.profile-avatar-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 4px 6px;
+  font-size: 0.75rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+
+.profile-header-text h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.profile-email {
+  margin: 0.1rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.profile-form-row label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.profile-message {
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.profile-message--error {
+  color: #b91c1c;
+}
+
+.profile-message--success {
+  color: #15803d;
+}
+
+.profile-button {
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.profile-divider {
+  border: none;
+  border-top: 1px solid var(--card-border);
+  margin: 0.75rem 0;
+}
+
+.profile-logout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-logout-text {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.profile-button--secondary {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
+}
+
+@media (max-width: 640px) {
+  .profile-card {
+    margin-top: 0.5rem;
+    padding-inline: 1.25rem;
+  }
+}
+
+
+/* =============================== */
+/* RoutinesPage */
+/* =============================== */
+
+.routines-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .routines-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* RoutineDetailPage */
+.routine-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .routine-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+.routine-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.routine-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.routine-header-left > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.routine-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.routine-date-input {
+  max-width: 160px;
+  min-width: 120px;
+  font-size: 1rem;
+  padding: 0.35em 0.7em;
+}
+@media (max-width: 700px) {
+  .routine-detail-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .routine-header-right {
+    justify-content: flex-start;
+  }
+}
+
+
+.exercise-list-card {
+  background: var(--card, #fff);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
+  border: 1px solid var(--border, #e5e7eb);
+  padding: 0;
+}
+
+.exercise-row-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  background: var(--card, #fff);
+  color: var(--text, #111827);
+  transition: background 0.18s;
+  border-radius: 0.85rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .exercise-row-horizontal {
+    padding: 0.7rem 0.7rem;
+  }
+}
+
+.exercise-row-horizontal:last-child {
+  border-bottom: none;
+}
+
+.exercise-row-horizontal:hover {
+  background: var(--card-2, #f3f4f6);
+  filter: brightness(1.04);
+}
+
+.exercise-checkbox {
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.exercise-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.exercise-name {
+  font-weight: 600;
+  font-size: 1.08rem;
+  color: var(--text, #222);
+  letter-spacing: -0.2px;
+  transition: color 0.15s, opacity 0.15s;
+}
+
+.exercise-meta {
+  color: var(--muted, #6b7280);
+  font-size: 0.93rem;
+  font-weight: 400;
+  margin-top: 0.05em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.exercise-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.exercise-edit-btn {
+  color: var(--primary, #4f46e5);
+  background: var(--card, #fff);
+  border: 1px solid var(--primary, #4f46e5);
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+
+body.theme-dark .exercise-edit-btn {
+  color: var(--primary, #a5b4fc);
+  background: var(--card, #23272f);
+  border: 1px solid var(--primary, #a5b4fc);
+}
+
+.exercise-edit-btn:hover,
+.exercise-edit-btn:focus {
+  background: var(--primary-soft, #eef2ff);
+  color: var(--primary, #3730a3);
+  border-color: var(--primary, #3730a3);
+}
+
+.exercise-delete-btn {
+  padding: 0.25rem 0.5rem;
+  min-width: 2rem;
+  font-size: 1.1rem;
+  background: none;
+  border: none;
+  color: #d32f2f;
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+}
+
+.exercise-delete-btn:hover,
+.exercise-delete-btn:focus {
+  background: #ffeaea;
+  color: #b71c1c;
+  outline: none;
+  box-shadow: none;
+}
+
+.exercise-completed .exercise-name {
+  color: var(--muted, #6b7280);
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.exercise-completed {
+  opacity: 0.7;
+  background: var(--card, #23272f);
+}
+
+
+/* =============================== */
+/* DietPage y DietDetailPage */
+/* =============================== */
+
+.diet-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .diet-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* Diet plan row layout para DietPage */
+.dietplan-row {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 0.85rem;
+  background: var(--card, #fff);
+  transition: background 0.15s;
+  margin-bottom: 0.2rem;
+}
+.dietplan-row:last-child {
+  border-bottom: none;
+}
+.dietplan-row:hover {
+  background: var(--card-2, #f3f4f6);
+}
+.dietplan-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+.dietplan-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.dietplan-title {
+  font-weight: 600;
+  font-size: 1.08rem;
+  color: var(--text, #222);
+}
+.dietplan-link-row {
+  margin-top: 0.4rem;
+}
+.dietplan-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
+}
+.dietplan-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dietmeals-list-card {
+  padding: 0.5rem 0.5rem 1.2rem 0.5rem;
+  background: var(--card, #fff);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
+  border: 1px solid var(--border, #e5e7eb);
+}
+
+.dietmeal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--card-border, #e5e7eb);
+  border-radius: 0.85rem;
+  background: var(--card, #fff);
+  transition: background 0.15s;
+}
+.dietmeal-row:last-child {
+  border-bottom: none;
+}
+.dietmeal-row:hover {
+  background: var(--card-2, #f3f4f6);
+}
+
+.dietmeal-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.dietmeal-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+  color: var(--text, #222);
+}
+.dietmeal-name {
+  color: var(--muted, #6b7280);
+  font-size: 0.97rem;
+  font-weight: 400;
+}
+
+.dietmeal-actions {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.kcal-badge {
+  background: var(--primary-soft, #eef2ff);
+  color: var(--primary, #4f46e5);
+  font-weight: 600;
+  font-size: 0.93rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-right: 0.5rem;
+}
+
+/* Thumbnail para filas de comida cuando están enlazadas a una receta */
+.dietmeal-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 0.9rem;
+  flex-shrink: 0;
+}
+
+
+/* =============================== */
+/* Recetas (RecipesPage) */
+/* =============================== */
+
+.recipes-page {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.recipes-layout {
+  width: 100%;
+  max-width: 960px;
+
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1.2fr 1fr;
+}
+
+@media (max-width: 768px) {
+  .recipes-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recipes-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recipes-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.recipes-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.recipes-filters {
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+  color: var(--card-text);
+}
+
+.recipes-list-card {
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--card-text);
+}
+
+.recipes-list-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.recipes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recipes-list-item {
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--card-border);
+  font-size: 0.9rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  cursor: pointer;
+  color: var(--card-text);
+  background: transparent;
+}
+
+.recipes-list-item:hover {
+  background-color: var(--primary-soft);
+}
+
+.recipes-list-item--selected {
+  border-color: var(--primary);
+  background-color: var(--primary-soft);
+}
+
+.recipes-detail-card {
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background-color: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--card-text);
+}
+
+.recipes-detail-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.recipes-detail-title {
+  margin: 0.4rem 0 0.2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.recipes-detail-section-title {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.recipes-detail-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.recipes-detail-text {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.recipes-detail-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.recipes-detail-button {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--primary);
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
+  .recipes-filter-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .recipes-filter-button {
+    align-items: stretch;
+  }
+  
+  .recipes-filter-button .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .recipe-card-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .recipes-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .recipe-card-favorite-btn {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.1rem;
+  }
+}
+
+
+/* =============================== */
+/* RecipeCard component (tarjetas de receta) */
+/* =============================== */
+
+.recipe-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.recipe-card {
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.recipe-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg, 0 18px 30px rgba(15, 23, 42, 0.15));
+}
+
+.recipe-card-image-container {
+  position: relative;
+  width: 100%;
+  padding-top: 66.67%; /* Aspect ratio 3:2 */
+  background: var(--card-2, #f3f4f6);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.recipe-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.recipe-card:hover .recipe-card-image {
+  transform: scale(1.05);
+}
+
+.recipe-card-image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--card-2, #f3f4f6) 0%, var(--card, #e9f2ff) 100%);
+}
+
+.recipe-card-placeholder-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.recipe-card-favorite-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.recipe-card-favorite-btn:hover {
+  transform: scale(1.15);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.recipe-card-favorite-btn:active {
+  transform: scale(0.95);
+}
+
+.recipe-card-favorite-btn.is-favorite {
+  background: rgba(255, 240, 245, 0.95);
+}
+
+body.theme-dark .recipe-card-favorite-btn {
+  background: rgba(30, 35, 45, 0.92);
+}
+
+body.theme-dark .recipe-card-favorite-btn:hover {
+  background: rgba(30, 35, 45, 1);
+}
+
+body.theme-dark .recipe-card-favorite-btn.is-favorite {
+  background: rgba(50, 30, 40, 0.95);
+}
+
+.recipe-card-content {
+  padding: 1rem 1.2rem 1.2rem;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--card-text, #111827);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recipe-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+
+/* Small kcal label under recipe title */
+.recipe-card-kcal {
+  text-align: center;
+  color: var(--muted, #6b7280);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+
+/* =============================== */
+/* RecipeDetailPage */
+/* =============================== */
+
+.recipe-detail-header {
+  margin-bottom: 1.5rem;
+}
+
+.recipe-detail-image-container {
+  width: min(100%, 860px);
+  margin: 2rem auto;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--card-2, #f9fafb);
+  aspect-ratio: 16 / 9;
+  max-height: min(55vh, 480px);
+}
+
+.recipe-detail-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .recipe-detail-image-container {
+    aspect-ratio: 4 / 3;
+    max-height: 40vh;
+  }
+}
+
+.recipe-detail-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text, #222);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.recipe-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--card, #fff);
+  border-radius: 0.75rem;
+  border: 1px solid var(--card-border, #e5e7eb);
+  margin-bottom: 2rem;
+}
+
+.recipe-detail-meta-item {
+  display: block;
+  color: var(--text, #222);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.recipe-detail-meta-item strong {
+  color: var(--primary, #3b82f6);
+  font-weight: 600;
+}
+
+.recipe-detail-section {
+  margin-bottom: 2rem;
+}
+
+.recipe-detail-section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text, #222);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--primary, #3b82f6);
+}
+
+.recipe-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recipe-detail-list li {
+  padding-left: 1.5rem;
+  position: relative;
+  color: var(--text, #222);
+  line-height: 1.6;
+}
+
+.recipe-detail-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary, #3b82f6);
+  font-weight: bold;
+}
+
+.recipe-detail-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  counter-reset: step-counter;
+}
+
+.recipe-detail-steps li {
+  position: relative;
+  padding-left: 2.5rem;
+  color: var(--text, #222);
+  line-height: 1.6;
+}
+
+.recipe-detail-steps li::before {
+  content: counter(step-counter);
+  counter-increment: step-counter;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--primary, #3b82f6);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.text-muted {
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+
+/* =============================== */
+/* ProgressPage */
+/* =============================== */
+
+.progress-main-zone {
+  margin-bottom: 1.5rem;
+}
+
+.progress-form-panel-zone {
+  margin-bottom: 1.25rem;
+}
+
+.progress-form-panel {
+  border: 1px solid var(--card-border);
+}
+
+.progress-secondary-zone {
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.progress-history-zone {
+  margin-bottom: 2rem;
+}
+
+.progress-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .progress-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.progress-left,
+.progress-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Progress-specific form styling */
+.progress-date-group {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.progress-date-input {
+  flex: 1;
+}
+
+.progress-chart-card {
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-chart-card .card-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.progress-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.progress-table thead {
+  background-color: var(--surface-secondary);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.progress-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--card-text);
+}
+
+.progress-table tr:hover {
+  background-color: var(--surface-secondary);
+}
+
+.progress-table .font-mono {
+  
+  font-size: 0.85rem;
+}
+
+.progress-table .positive {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.progress-table .negative {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.progress-table .truncate {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Improved Progress Left Column Styles */
+
+/* Messages container */
+.progress-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Form structure with better spacing */
+.progress-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Date section - compact styling */
+.progress-form-date-section {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--surface-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.progress-form-date-section .field {
+  margin-bottom: 0;
+}
+
+.progress-date-group {
+  display: flex;
+  gap: 0.65rem;
+  align-items: stretch;
+}
+
+.progress-date-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Metrics grouped section */
+.progress-form-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding: 0.75rem 0;
+}
+
+/* Primary submit button styling */
+.btn-progress-submit {
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: var(--primary) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.btn-progress-submit:hover:not(:disabled) {
+  background-color: var(--primary) !important;
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.btn-progress-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Improved table styling */
+.progress-table td.table-calories {
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.progress-table td.table-diff {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.progress-table td.table-diff.positive {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.08);
+  border-radius: 0.3rem;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+.progress-table td.table-diff.negative {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.08);
+  border-radius: 0.3rem;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+
+/* Better table row spacing and separation */
+.progress-table td {
+  padding: 1rem 0.75rem;
+}
+
+.progress-table th {
+  padding: 1rem 0.75rem;
+}
+
+.progress-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.progress-table tbody tr:hover {
+  background-color: var(--surface-soft, rgba(59, 130, 246, 0.05));
+}
+
+/* Alert integration for mejor consistencia visual */
+.progress-messages .alert {
+  margin: 0;
+  padding: 0.95rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.progress-messages--inline {
+  margin-bottom: 0.85rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.empty-state p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.field-error {
+  font-size: 0.85rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
+}
+
+.feedback-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.feedback-goal {
+  padding: 0.875rem;
+  background-color: var(--surface-secondary);
+  border-radius: 0.5rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.feedback-goal strong {
+  color: var(--primary);
+}
+
+.feedback-message {
+  line-height: 1.6;
+  color: var(--card-text);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ========== Progress Right Column - Charts Section ========== */
+
+.progress-charts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.progress-charts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 980px) {
+  .progress-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.progress-charts-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--card-border);
+  gap: 1rem;
+}
+
+.progress-charts-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--card-text);
+  flex: 1;
+}
+
+.progress-period-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.progress-period-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.progress-period-select {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0.375rem;
+  background-color: var(--card);
+  color: var(--card-text);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.progress-period-select:hover,
+.progress-period-select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.progress-chart-card {
+  padding: 0 !important;
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: var(--card);
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-chart-card--featured {
+  grid-column: span 2;
+}
+
+@media (max-width: 980px) {
+  .progress-chart-card--featured {
+    grid-column: span 1;
+  }
+}
+
+.progress-chart-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--surface-secondary);
+  background-color: var(--surface-soft, rgba(0, 0, 0, 0.01));
+}
+
+.progress-chart-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.progress-chart-body {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.progress-chart-body--featured {
+  min-height: 360px;
+}
+
+.progress-chart-body .text-muted {
+  text-align: center;
+}
+
+
+/* ========== Progress Right Column - Feedback Section ========== */
+
+.progress-feedback-card {
+  padding: 0 !important;
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: var(--card);
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-feedback-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--surface-secondary);
+  background-color: var(--surface-soft, rgba(0, 0, 0, 0.01));
+}
+
+.progress-feedback-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.progress-feedback-body {
+  padding: 1.25rem;
+  flex: 1;
+}
+
+.progress-form-card {
+  height: fit-content;
+}
+
+.progress-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.progress-history-card {
+  border: 1px solid var(--card-border);
+}
+
+.progress-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.progress-history-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-text);
+}
+
+.progress-history-header .select {
+  width: auto;
+  flex: 0 0 auto;
+  min-width: 190px;
+  max-width: 220px;
+}
+
+.progress-history-loading {
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+
+.feedback-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.feedback-goal-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1.1rem;
+  background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(79, 70, 229, 0.05) 100%);
+  border: 1px solid var(--primary-soft);
+  border-radius: 0.5rem;
+  border-left: 3px solid var(--primary);
+}
+
+.feedback-goal-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.feedback-goal-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 0.25rem 0.75rem;
+  background-color: rgba(79, 70, 229, 0.1);
+  border-radius: 0.375rem;
+}
+
+.feedback-message-box {
+  padding: 1rem;
+  background-color: var(--surface-secondary);
+  border-left: 3px solid var(--primary);
+  border-radius: 0.5rem;
+  animation: slideInUp 0.3s ease;
+}
+
+.feedback-message {
+  line-height: 1.65;
+  color: var(--card-text);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.feedback-helper {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.feedback-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  text-align: center;
+}
+
+.feedback-empty p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =============================== */
+/* Plantillas y Rutinas (Template / Routine Templates) */
+/* =============================== */
+
+.templates-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+.template-card {
+  padding: 0.9rem;
+  border-radius: 0.8rem;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+}
+.template-card .template-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.45rem;
+  color: var(--muted, #6b7280);
+  font-size: 0.95rem;
+}
+.template-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+}
+.template-desc {
+  color: var(--muted, #6b7280);
+  margin-top: 0.35rem;
+  font-size: 0.96rem;
+}
+.template-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
+}
+
+/* Mejor diseño para tarjetas de plantillas */
+.template-card--col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+}
+.template-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.template-title {
+  font-weight: 700;
+  font-size: 1.06rem;
+  margin: 0;
+}
+.template-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.template-tag {
+  background: var(--pill-bg, #e5f2ff);
+  color: var(--pill-text, #4b5563);
+  font-size: 0.78rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+}
+.template-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.template-desc {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.template-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 0.4rem 0.8rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.meta-item strong { font-weight: 600; margin-right: 0.24rem; }
+.template-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.template-actions-left, .template-actions-right { display: flex; gap: 0.5rem; }
+.template-exercises { border-top: 1px solid var(--card-border); padding-top: 0.6rem; margin-top: 0.4rem; }
+.exercise-row { padding: 0.55rem 0; border-bottom: 1px dashed var(--card-border); }
+.exercise-name { font-weight: 600; }
+.exercise-meta { color: var(--muted); font-size: 0.9rem; display:flex; flex-direction:column; gap:0.25rem; margin-top:0.25rem; }
+.exercise-notes { margin-top:0.4rem; color:var(--muted); font-size:0.9rem; }
+.no-exercises { color: var(--muted); padding: 0.5rem 0; }
+
+/* Summary-style template card */
+.template-card--summary {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.template-card-inner { display:flex; flex-direction:column; height:100%; }
+.template-card-header { padding: 0.6rem 0; }
+.template-card-meta { color: var(--muted); font-size: 0.95rem; display:flex; gap:1rem; padding-top:0.25rem; }
+.template-card-actions { display:flex; gap:0.6rem; margin-top: auto; }
+
+
+/* =============================== */
+/* Otros componentes y utilidades específicas (thumbnails, previews, etc.) */
+/* =============================== */
+
+.rutina-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 0.9rem;
+  flex-shrink: 0;
+}
+.rutina-media-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.routine-muscle-field {
+  width: 100%;
+}
+
+/* Simple recipe preview mostrado bajo el select */
+.recipe-preview {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.4rem;
+}
+.recipe-preview-image {
+  width: 72px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.recipe-preview-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.no-recipes-note {
+  color: var(--muted);
+  font-size: 0.95rem;
+  padding: 0.4rem 0.2rem;
+}
+
+
+/* Modern exercise list: eliminar padding por defecto del ul y list-style */
+.exercise-list-modern {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+/* Header dentro de cada tarjeta de ejercicio: nombre + acciones alineadas */
+.exercise-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.exercise-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Pequeño espaciado superior para tarjeta de edición inline renderizada bajo un ejercicio */
+.inline-edit-card {
+  margin-top: 0.6rem;
+}
+
+
+/* Botón X para cerrar panel de nueva rutina */
+.card-relative {
+  position: relative;
+}
+/* Fila flex para header + X */
+.cardheader-x-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.close-panel-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15em 0.5em;
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+}
+.close-panel-btn:hover,
+.close-panel-btn:focus {
+  background: var(--primary-soft);
+  color: var(--primary);
+  outline: none;
+}
+
+
+/* Example card for DietPage when no plans exist */
+.example-diet-card {
+  max-width: 720px;
+  margin: 1rem auto 0;
+  padding: 1rem;
+  background: var(--card-2);
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+}
+
+.example-diet-header {
+  margin-bottom: 0.6rem;
+}
+
+.example-diet-meals {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 0.6rem 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem 0.8rem;
+}
+
+.example-diet-meal {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.45rem 0.6rem;
+  background: var(--card);
+  border-radius: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.example-diet-day {
+  font-weight: 600;
+  width: 36px;
+}
+
+.example-diet-type {
+  color: var(--muted);
+  flex: 0 0 90px;
+}
+
+.example-diet-name {
+  flex: 1;
+}
+
+.example-diet-note {
+  font-size: 0.85rem;
+  margin-top: 0.45rem;
+}
+
+
+/* =============================== */
+/* Media queries generales si las hubiera */
+/* =============================== */
+
+/* (las media queries están distribuidas junto a las secciones relevantes) */
+
+
+/* =============================== */
+/* Final: bloques reutilizados y duplicados detectados */
+/* =============================== */
+
+/* Lista de selectores duplicados encontrados (no se eliminaron):
+- .dietplan-info (definido dos veces)
+- .profile-avatar (definido dos veces con propiedades distintas)
+- .auth-form (definido en Auth y re-definido en Login)
+- .input (definido en UI y re-definido en Helpers)
+- .btn (definido en UI y re-definido en Helpers)
+- .btn-primary (definido en UI y re-definido en Helpers)
+- .btn-secondary (definido en UI y re-definido en Helpers)
+- .text-muted (varias definiciones)
+- .exercise-row (definido en sección general y re-definido en plantillas)
+- .exercise-actions (definido varias veces con gaps distintos)
+- .exercise-meta (definido varias veces)
+- .progress-date-group (definido dos veces con diferentes gaps)
+- .progress-date-input (definido dos veces)
+- .feedback-content (definido en progress y también más abajo)
+- .template-title (definido dos veces con estilos diferentes)
+- .template-desc (definido dos veces)
+
+*/
 /* Diet plan row layout for DietPage */
 .dietplan-row {
   display: flex;

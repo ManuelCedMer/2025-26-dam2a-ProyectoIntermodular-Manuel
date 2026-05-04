@@ -16,7 +16,7 @@ import {
   PageTitle,
   PageSubtitle,
 } from "../components/ui/Page.jsx";
-import { FormStack, Field, Input } from "../components/ui/Form.jsx";
+import { FormStack, Input } from "../components/ui/Form.jsx";
 
 import CardHeader from "../components/ui/CardHeader.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
@@ -30,7 +30,6 @@ import { confirmDelete } from "../utils/confirm.js";
  * [ROUTINES-01] Lista de ejercicios de la rutina.
  */
 function RoutineDetailPage() {
-  // ...existing code...
   // Estado para mostrar/ocultar el panel de nuevo ejercicio
   const [showCreateExercise, setShowCreateExercise] = useState(false);
   const { routineId } = useParams();

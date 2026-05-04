@@ -1,3 +1,8 @@
+/**
+ * Datos iniciales de recetas.
+ * Este archivo contiene la información base utilizada para cargar recetas
+ * de ejemplo en la base de datos de Firebase.
+ */
 export const recipesSeed = [
   {
     title: "Avena con fruta y yogur",

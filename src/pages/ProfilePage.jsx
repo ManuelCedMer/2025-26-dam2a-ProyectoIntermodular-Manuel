@@ -14,7 +14,9 @@ import Alert from "../components/ui/Alert.jsx";
  * Permite:
  *  - Ver el correo del usuario.
  *  - Editar nombre visible, edad y objetivo principal [LOGIN-03].
- *  - Editar meta calórica diaria (para HOME / progreso).
+ *  - Editar las metas diarias de ingesta y gasto calórico.
+ *  - Cambiar el tema visual de la aplicación.
+ *  - Subir una foto de perfil.
  *  - Cerrar sesión [LOGIN-02].
  *
  * Forma parte de [UI-02]: tarjeta centrada, adaptable en móvil y escritorio.
@@ -22,23 +24,25 @@ import Alert from "../components/ui/Alert.jsx";
 function ProfilePage() {
   const { user, logout, theme, setTheme } = useAuth();
 
+  // Datos principales del perfil.
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [goal, setGoal] = useState("mantener");
 
-  // Meta calórica diaria (kcal).
+  // Metas calóricas diarias.
   const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState("");
-  // Meta de gasto calórico diario (kcal).
   const [dailyCaloriesBurnGoal, setDailyCaloriesBurnGoal] = useState("");
 
-  // Foto de perfil
+  // Estado de la foto de perfil.
   const [photoURL, setPhotoURL] = useState("");
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
 
+  // Tema seleccionado en el formulario antes de guardarlo.
   const [draftTheme, setDraftTheme] = useState(theme || "light");
 
+  // Estados de carga y mensajes del formulario.
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [message, setMessage] = useState("");
@@ -58,7 +62,7 @@ function ProfilePage() {
 
         const profile = await getUserProfile(user.uid);
 
-        // Si algún campo no existe aún, uso valores por defecto.
+        // Si algún campo no existe todavía, se usan valores por defecto.
         setDisplayName(profile.displayName || "");
         setAge(
           profile.age !== null && profile.age !== undefined
@@ -72,14 +76,15 @@ function ProfilePage() {
             : "mantener",
         );
 
-        // Meta calórica diaria (si no existe, dejamos vacío para que el usuario la defina).
+        // Meta de ingesta calórica diaria.
         setDailyCaloriesGoal(
           profile.dailyCaloriesGoal !== null &&
             profile.dailyCaloriesGoal !== undefined
             ? String(profile.dailyCaloriesGoal)
             : "",
         );
-        // Meta de gasto calórico diario (si no existe, dejamos vacío).
+
+        // Meta de gasto calórico diario.
         setDailyCaloriesBurnGoal(
           profile.dailyCaloriesBurnGoal !== null &&
             profile.dailyCaloriesBurnGoal !== undefined
@@ -113,7 +118,7 @@ function ProfilePage() {
       return;
     }
 
-    // Valido la edad
+    // Validación de edad.
     let parsedAge = null;
     if (age.trim() !== "") {
       const n = Number(age);
@@ -125,8 +130,7 @@ function ProfilePage() {
       parsedAge = n;
     }
 
-    // Valido la meta calórica diaria
-    // Permitimos vacío (null) para que no sea obligatorio.
+    // Validación de la meta diaria de ingesta calórica.
     let parsedDailyCaloriesGoal = null;
     if (dailyCaloriesGoal.trim() !== "") {
       const n = Number(dailyCaloriesGoal);
@@ -138,7 +142,7 @@ function ProfilePage() {
       parsedDailyCaloriesGoal = Math.round(n);
     }
 
-    // Valido la meta de gasto calórico diario (permitimos vacío -> null)
+    // Validación de la meta diaria de gasto calórico.
     let parsedDailyCaloriesBurnGoal = null;
     if (dailyCaloriesBurnGoal.trim() !== "") {
       const n2 = Number(dailyCaloriesBurnGoal);
@@ -188,9 +192,13 @@ function ProfilePage() {
     }
   }
 
+  /**
+   * Gestiona la selección y subida de una nueva foto de perfil.
+   */
   async function handleFileChange(event) {
     const file = event.target.files && event.target.files[0];
-    // reset input so same file can be selected again later
+
+    // Reinicia el input para permitir seleccionar de nuevo el mismo archivo.
     event.target.value = "";
 
     if (!file) return;
@@ -208,7 +216,7 @@ function ProfilePage() {
 
       const url = await uploadProfilePhoto(user.uid, file, setUploadProgress);
 
-      // Guardar la URL en el perfil (merge)
+      // Guarda la URL de la imagen en el perfil del usuario.
       await saveUserProfile(user.uid, { photoURL: url });
 
       setPhotoURL(url);
@@ -233,7 +241,7 @@ function ProfilePage() {
   return (
     <div className="profile-page">
       <section className="profile-card card">
-        {/* Cabecera con avatar sencillo y correo */}
+        {/* Cabecera con avatar y correo del usuario */}
         <div className="profile-header">
           <div
             className="profile-avatar"
@@ -362,7 +370,7 @@ function ProfilePage() {
             </select>
           </div>
 
-          {/* Mensajes de estado */}
+          {/* Mensajes de estado del formulario */}
           <Alert
             variant="error"
             className="profile-message profile-message--error"

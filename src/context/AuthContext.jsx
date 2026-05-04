@@ -100,7 +100,7 @@ export function AuthProvider({ children }) {
     user,
     loading,
     theme,
-    setTheme, // IMPORTANTE
+    setTheme,
     register,
     login,
     logout,

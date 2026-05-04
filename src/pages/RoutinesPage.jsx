@@ -27,6 +27,10 @@ import EmptyState from "../components/ui/EmptyState.jsx";
 
 import { confirmDelete } from "../utils/confirm.js";
 
+/**
+ * Mapa de imágenes por grupo muscular.
+ * Se usa para asignar automáticamente una imagen a cada rutina.
+ */
 const MUSCLE_IMAGES = {
   pierna: "/muscles/pierna.jpg",
   pecho: "/muscles/pecho.jpg",
@@ -37,23 +41,35 @@ const MUSCLE_IMAGES = {
   fullbody: "/muscles/fullbody.jpg",
 };
 
+/**
+ * Pantalla de rutinas [ROUTINES].
+ * Permite:
+ *  - Crear, editar y eliminar rutinas.
+ *  - Asignar días de la semana y grupo muscular.
+ *  - Crear rutinas a partir de plantillas.
+ */
 function RoutinesPage() {
   const { user } = useAuth();
 
+  // Lista de rutinas del usuario.
   const [routines, setRoutines] = useState([]);
+
+  // Formulario de creación.
   const [name, setName] = useState("");
   const [daysOfWeek, setDaysOfWeek] = useState([]);
   const [muscleGroup, setMuscleGroup] = useState("");
 
+  // Estado de edición.
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [editDaysOfWeek, setEditDaysOfWeek] = useState([]);
 
+  // Estados generales de UI.
   const [loading, setLoading] = useState(false);
   const [showCreatePanel, setShowCreatePanel] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Templates panel
+  // Panel de plantillas.
   const [showTemplatesPanel, setShowTemplatesPanel] = useState(false);
   const [routineTemplates, setRoutineTemplates] = useState([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
@@ -61,6 +77,10 @@ function RoutinesPage() {
   const [templatesSuccess, setTemplatesSuccess] = useState("");
   const [creatingFromTemplateId, setCreatingFromTemplateId] = useState(null);
 
+  /**
+   * Etiquetas de días de la semana.
+   * Se usan para mostrar valores legibles en la UI.
+   */
   const dayLabels = {
     L: "Lunes",
     M: "Martes",
@@ -71,6 +91,9 @@ function RoutinesPage() {
     D: "Domingo",
   };
 
+  /**
+   * Carga las rutinas del usuario al entrar en la página.
+   */
   useEffect(() => {
     if (!user) return;
 
@@ -78,6 +101,7 @@ function RoutinesPage() {
       try {
         setLoading(true);
         setErrorMessage("");
+
         const routinesFromDb = await getRoutinesByUser(user.uid);
         setRoutines(routinesFromDb);
       } catch (error) {
@@ -91,10 +115,14 @@ function RoutinesPage() {
     loadRoutines();
   }, [user]);
 
+  /**
+   * Carga las plantillas de rutinas desde Firestore.
+   */
   async function loadTemplates() {
     try {
       setTemplatesLoading(true);
       setTemplatesError("");
+
       const templatesFromDb = await getRoutineTemplates();
       setRoutineTemplates(templatesFromDb);
     } catch (error) {
@@ -105,14 +133,22 @@ function RoutinesPage() {
     }
   }
 
+  /**
+   * Abre o cierra el panel de plantillas.
+   * Carga las plantillas solo la primera vez.
+   */
   function handleToggleTemplates() {
     const opening = !showTemplatesPanel;
     setShowTemplatesPanel(opening);
+
     if (opening && routineTemplates.length === 0 && !templatesLoading) {
       loadTemplates();
     }
   }
 
+  /**
+   * Inicia la edición de una rutina.
+   */
   function startEditRoutine(routine) {
     setEditingId(routine.id);
     setEditName(routine.name || "");
@@ -120,12 +156,18 @@ function RoutinesPage() {
     setErrorMessage("");
   }
 
+  /**
+   * Cancela la edición de la rutina.
+   */
   function cancelEdit() {
     setEditingId(null);
     setEditName("");
     setEditDaysOfWeek([]);
   }
 
+  /**
+   * Limpia el formulario de creación.
+   */
   function resetCreatePanel() {
     setName("");
     setDaysOfWeek([]);
@@ -133,6 +175,9 @@ function RoutinesPage() {
     setErrorMessage("");
   }
 
+  /**
+   * Crea una nueva rutina.
+   */
   async function handleCreateRoutine(event) {
     event.preventDefault();
 
@@ -161,6 +206,7 @@ function RoutinesPage() {
       });
 
       setRoutines((prev) => [newRoutine, ...prev]);
+
       resetCreatePanel();
       setShowCreatePanel(false);
     } catch (error) {
@@ -171,6 +217,9 @@ function RoutinesPage() {
     }
   }
 
+  /**
+   * Actualiza una rutina existente.
+   */
   async function handleUpdateRoutine(event) {
     event.preventDefault();
 
@@ -210,6 +259,9 @@ function RoutinesPage() {
     }
   }
 
+  /**
+   * Elimina una rutina tras confirmación del usuario.
+   */
   async function handleDeleteRoutine(id) {
     const ok = confirmDelete("¿Seguro que quieres eliminar esta rutina?");
     if (!ok) return;
@@ -217,9 +269,13 @@ function RoutinesPage() {
     try {
       setLoading(true);
       setErrorMessage("");
+
       await deleteRoutine(id);
       setRoutines((prev) => prev.filter((routine) => routine.id !== id));
-      if (editingId === id) cancelEdit();
+
+      if (editingId === id) {
+        cancelEdit();
+      }
     } catch (error) {
       console.error("Error al eliminar rutina:", error);
       setErrorMessage("No se ha podido eliminar la rutina.");
@@ -230,6 +286,7 @@ function RoutinesPage() {
 
   return (
     <Page>
+      {/* Header principal */}
       <PageHeader>
         <div className="dashboard-header">
           <div className="dashboard-header-titles">
@@ -243,9 +300,7 @@ function RoutinesPage() {
             <Button
               onClick={() => {
                 setShowCreatePanel((v) => !v);
-                if (showCreatePanel) {
-                  resetCreatePanel();
-                }
+                if (showCreatePanel) resetCreatePanel();
               }}
             >
               + Nueva
@@ -254,6 +309,7 @@ function RoutinesPage() {
         </div>
       </PageHeader>
 
+      {/* Panel de plantillas */}
       {showTemplatesPanel && (
         <Card className="dashboard-panel card-relative">
           <div className="cardheader-x-row">
@@ -367,6 +423,7 @@ function RoutinesPage() {
         </Card>
       )}
 
+      {/* Panel de creación */}
       {showCreatePanel && (
         <Card className="dashboard-panel card-relative">
           <div className="cardheader-x-row">
@@ -436,6 +493,7 @@ function RoutinesPage() {
         </Card>
       )}
 
+      {/* Listado de rutinas */}
       <div className="dashboard-list">
         {loading && <LoadingState text="Cargando rutinas..." />}
         {!loading && routines.length === 0 && (

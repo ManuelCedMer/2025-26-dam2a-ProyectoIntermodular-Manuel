@@ -73,13 +73,13 @@ function DietDetailPage() {
   useEffect(() => {
     if (!user) return;
     setLoading(true);
-    // getMealsByDiet expects an object with userId and dietId
+    // Obtiene las comidas de la dieta. getMealsByDiet espera un objeto con userId y dietId
     getMealsByDiet({ userId: user.uid, dietId })
       .then(setMeals)
       .finally(() => setLoading(false));
   }, [user, dietId]);
 
-  // Fetch recipes when creating and a mealType is selected
+  // Obtiene las recetas al crear una comida cuando se ha seleccionado un tipo de comida
   useEffect(() => {
     if (!showCreatePanel || !mealType) {
       setRecipes([]);
@@ -100,7 +100,7 @@ function DietDetailPage() {
     };
   }, [showCreatePanel, mealType]);
 
-  // Fetch recipes for edit panel when meal type changes
+  // Obtiene las recetas del panel de edición cuando cambia el tipo de comida
   useEffect(() => {
     if (!editingId || !editMealType) {
       setEditRecipes([]);
@@ -124,7 +124,7 @@ function DietDetailPage() {
   // Lógica de creación/edición igual que antes
   const handleCreateMeal = async (e) => {
     e.preventDefault();
-    // If recipes are available for the selected mealType, require a recipe selection.
+    // Si hay recetas disponibles para el tipo de comida seleccionado, se exige seleccionar una receta.
     if (!dayOfWeek || !mealType) {
       setErrorMessage("Todos los campos son obligatorios.");
       return;
@@ -143,7 +143,7 @@ function DietDetailPage() {
     setLoading(true);
     setErrorMessage("");
     try {
-      // Determine values depending on whether a recipe was selected
+      // Determina los valores según si se ha seleccionado una receta
       let recipeId = null;
       let recipeImage = null;
       let kcal = null;
@@ -187,7 +187,7 @@ function DietDetailPage() {
     setEditDayOfWeek(meal.dayOfWeek);
     setEditMealType(meal.mealType);
     setEditName(meal.name);
-    // remove estimated calories state (now derived from recipe)
+    // Se elimina el estado de calorías estimadas, ya que ahora se obtiene desde la receta
     setEditSelectedRecipeId(meal.recipeId || "");
     setEditErrorMessage("");
   };
@@ -255,7 +255,7 @@ function DietDetailPage() {
       await deleteMeal(id);
       setMeals((prev) => prev.filter((m) => m.id !== id));
     } catch {
-      // error handling opcional
+      // Gestión de errores opcional
     } finally {
       setLoading(false);
     }

@@ -9,6 +9,11 @@ import {
 import { db } from "../services/firebase.js";
 import { routineTemplatesSeed } from "./routineTemplatesSeed.js";
 
+/**
+ * Script auxiliar para cargar plantillas de rutinas en Firebase.
+ * Utiliza los datos definidos previamente y los inserta en la base de datos
+ * para disponer de contenido inicial en la aplicación.
+ */
 export async function seedRoutineTemplatesOnce() {
   const templatesRef = collection(db, "routineTemplates");
 

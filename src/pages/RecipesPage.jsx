@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { getRecipes } from "../services/recipesService.js";
 import {
@@ -25,24 +24,25 @@ import EmptyState from "../components/ui/EmptyState.jsx";
 
 /**
  * Pantalla de búsqueda de recetas [RECIPES].
- * En este bloque:
- *  - Permito buscar recetas por ingrediente y tipo de comida [RECIPES-01].
- *  - Muestro un listado con enlaces al detalle [RECIPES-02].
- *
+ * Permite buscar recetas por ingrediente y tipo de comida [RECIPES-01],
+ * acceder al detalle de cada receta [RECIPES-02]
+ * y gestionar recetas favoritas [RECIPES-03].
  */
 function RecipesPage() {
   const { user } = useAuth();
 
-  // Filtros de búsqueda.
+  // Filtros de búsqueda de recetas.
   const [ingredientText, setIngredientText] = useState("");
   const [mealType, setMealType] = useState("todos");
 
-  // Resultado de recetas.
+  // Resultado de recetas obtenido desde Firestore.
   const [recipes, setRecipes] = useState([]);
 
+  // Estados de carga y error.
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Tipos de comida disponibles para el filtro.
   const availableMealTypes = [
     { value: "todos", label: "Todos" },
     { value: "desayuno", label: "Desayuno" },
@@ -51,17 +51,17 @@ function RecipesPage() {
     { value: "snack", label: "Snack" },
   ];
 
-  // IDs de recetas favoritas del usuario (para marcar en el listado).
+  // Identificadores de recetas favoritas del usuario.
   const [favoriteIds, setFavoriteIds] = useState([]);
 
-  // Lista de recetas favoritas (para sección "Mis favoritos").
+  // Recetas favoritas mostradas en la sección correspondiente.
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
 
-  // Ref para scroll a favoritos
+  // Referencia usada para hacer scroll hasta la sección de favoritos.
   const favoritesRef = useRef(null);
 
   /**
-   * Scroll a la sección de favoritos
+   * Desplaza la vista hasta la sección de recetas favoritas.
    */
   const scrollToFavorites = () => {
     favoritesRef.current?.scrollIntoView({
@@ -81,14 +81,14 @@ function RecipesPage() {
         setLoading(true);
         setErrorMessage("");
 
-        // 1) Cargar recetas sin filtros (o con los filtros por defecto).
+        // Carga recetas con los filtros iniciales.
         const recipesResult = await getRecipes({
           ingredientText,
           mealType,
         });
         setRecipes(recipesResult);
 
-        // 2) Cargar favoritos del usuario.
+        // Carga los favoritos del usuario.
         const ids = await getFavoriteRecipeIdsByUser(user.uid);
         setFavoriteIds(ids);
 
@@ -106,7 +106,7 @@ function RecipesPage() {
   }, [user]);
 
   /**
-   * Lanza la búsqueda con los filtros actuales.
+   * Ejecuta la búsqueda de recetas con los filtros actuales.
    * [RECIPES-01]
    */
   async function handleSearch(event) {
@@ -134,7 +134,7 @@ function RecipesPage() {
 
   /**
    * Marca o desmarca una receta como favorita.
-   * [RECIPES-03] Guardar y quitar de favoritos.
+   * [RECIPES-03]
    */
   async function handleToggleFavorite(recipe) {
     if (!user) return;
@@ -146,25 +146,25 @@ function RecipesPage() {
       setErrorMessage("");
 
       if (isFavorite) {
-        // Quitar de favoritos.
+        // Elimina la receta de favoritos en Firestore.
         await removeFavoriteRecipe({
           userId: user.uid,
           recipeId: recipe.id,
         });
 
-        // Actualizo estado local.
+        // Actualiza el estado local tras quitar la receta.
         setFavoriteIds((prev) => prev.filter((id) => id !== recipe.id));
         setFavoriteRecipes((prev) =>
           prev.filter((fav) => fav.recipeId !== recipe.id),
         );
       } else {
-        // Añadir a favoritos.
+        // Añade la receta a favoritos en Firestore.
         await addFavoriteRecipe({
           userId: user.uid,
           recipe,
         });
 
-        // Actualizo estado local.
+        // Actualiza el estado local tras añadir la receta.
         setFavoriteIds((prev) => [...prev, recipe.id]);
         setFavoriteRecipes((prev) => [
           ...prev,
@@ -222,7 +222,7 @@ function RecipesPage() {
         </div>
       </PageHeader>
 
-      {/* Filtros de búsqueda */}
+      {/* Panel de filtros de búsqueda */}
       <Card className="recipes-filters-card">
         <h3 className="section-title-sm">Filtros de búsqueda</h3>
         <form onSubmit={handleSearch} className="recipes-filters-form">
@@ -265,7 +265,8 @@ function RecipesPage() {
         </form>
         {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
       </Card>
-      {/* Resultados de búsqueda */}
+
+      {/* Card principal con resultados de búsqueda */}
       <Card className="dashboard-tile recipes-results-card">
         <h3 className="section-title">Resultados</h3>
 
@@ -289,7 +290,7 @@ function RecipesPage() {
         )}
       </Card>
 
-      {/* Favoritos */}
+      {/* Card con recetas favoritas del usuario */}
       <Card className="dashboard-tile recipes-favorites-card">
         <h3 ref={favoritesRef} className="section-title">
           Mis recetas favoritas
@@ -300,7 +301,7 @@ function RecipesPage() {
         ) : (
           <div className="recipes-grid">
             {favoriteRecipes.map((fav) => {
-              // Buscar la receta completa para obtener la imagen
+              // Recupera la receta completa si está disponible en los resultados actuales.
               const recipe = recipes.find((r) => r.id === fav.recipeId) || {
                 id: fav.recipeId,
                 title: fav.title,

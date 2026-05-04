@@ -8,13 +8,16 @@ import EmptyState from "../components/ui/EmptyState.jsx";
 
 /**
  * Pantalla de detalle de una receta [RECIPES-02].
- * Muestra ingredientes, pasos y calorías aproximadas.
+ * Muestra ingredientes, pasos, imagen y calorías aproximadas.
  */
 function RecipeDetailPage() {
   const { recipeId } = useParams();
   const { user } = useAuth();
 
+  // Datos de la receta seleccionada.
   const [recipe, setRecipe] = useState(null);
+
+  // Estados de carga y error.
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -90,7 +93,7 @@ function RecipeDetailPage() {
     );
   }
 
-  // Normalizamos ingredientes y pasos por si son string o array.
+  // Normaliza ingredientes y pasos por si vienen como string o como array.
   const ingredients = Array.isArray(recipe.ingredients)
     ? recipe.ingredients
     : String(recipe.ingredients || "")
@@ -105,16 +108,17 @@ function RecipeDetailPage() {
 
   return (
     <Page>
-      {/* Botón volver */}
+      {/* Botón de vuelta al listado de recetas */}
       <div className="recipe-detail-header">
         <Link to="/recetas" className="btn btn-secondary btn-sm">
           ← Volver a recetas
         </Link>
       </div>
 
-      {/* Título */}
+      {/* Título de la receta */}
       <h1 className="recipe-detail-title">{recipe.title}</h1>
-      {/* Imagen de receta (colocada justo debajo del título) */}
+
+      {/* Imagen principal de la receta */}
       {recipe.image && (
         <div className="recipe-detail-image-container">
           <img
@@ -125,7 +129,7 @@ function RecipeDetailPage() {
         </div>
       )}
 
-      {/* Información meta */}
+      {/* Información general de la receta */}
       <div className="recipe-detail-meta">
         {recipe.mealType && (
           <span className="recipe-detail-meta-item">
@@ -145,7 +149,7 @@ function RecipeDetailPage() {
         )}
       </div>
 
-      {/* Ingredientes */}
+      {/* Listado de ingredientes */}
       <section className="recipe-detail-section">
         <h2 className="recipe-detail-section-title">Ingredientes</h2>
         {ingredients.length === 0 ? (
@@ -159,7 +163,7 @@ function RecipeDetailPage() {
         )}
       </section>
 
-      {/* Pasos */}
+      {/* Pasos de preparación */}
       <section className="recipe-detail-section">
         <h2 className="recipe-detail-section-title">Pasos</h2>
         {steps.length === 0 ? (
@@ -172,8 +176,6 @@ function RecipeDetailPage() {
           </ol>
         )}
       </section>
-
-      {/* (imagen ya renderizada más arriba, junto al título) */}
     </Page>
   );
 }
