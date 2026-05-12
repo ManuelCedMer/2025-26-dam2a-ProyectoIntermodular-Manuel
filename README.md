@@ -1,16 +1,64 @@
-# React + Vite
+**NutriFit**
+NutriFit es una aplicación web responsive orientada a la gestión básica de la salud y el bienestar personal. Permite al usuario registrar y consultar rutinas de ejercicio, planes de alimentación, recetas favoritas y datos de progreso como calorías, peso y notas diarias.
+El proyecto ha sido desarrollado como Proyecto Intermodular de 2º DAM, utilizando React, Vite y Firebase.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Funcionalidades principales**
+Registro, inicio de sesión, cierre de sesión y recuperación de contraseña.
+Edición del perfil de usuario, incluyendo objetivo personal, metas calóricas, tema visual y foto de perfil.
+Gestión de rutinas de ejercicio y ejercicios asociados.
+Uso de plantillas de rutinas predefinidas.
+Gestión de planes de alimentación y comidas asociadas.
+Búsqueda de recetas por ingrediente y tipo de comida.
+Sistema de recetas favoritas.
+Registro diario de calorías consumidas, calorías gastadas, peso y notas.
+Visualización del progreso mediante gráficos interactivos.
+Modo claro/oscuro.
+Diseño responsive adaptado a escritorio y móvil.
 
-Currently, two official plugins are available:
+**Tecnologías utilizadas**
+React
+Vite
+JavaScript
+React Router
+Context API
+Firebase Authentication
+Cloud Firestore
+Firebase Storage
+Firebase Hosting
+Recharts
+CSS propio con componentes reutilizables
+Git y GitHub
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Estructura del proyecto**
+src/
+├── components/ → Componentes reutilizables y de interfaz
+├── context/ → Contexto global de autenticación
+├── layouts/ → Layout principal de la aplicación
+├── pages/ → Pantallas principales
+├── services/ → Comunicación con Firebase
+├── utils/ → Funciones auxiliares
+├── App.jsx → Configuración de rutas
+└── App.css → Estilos globales
 
-## React Compiler
+**Instalación y ejecución local**
+Instalar dependencias:
+npm install
+Ejecutar en entorno de desarrollo:
+npm run dev
+Generar versión de producción:
+npm run build
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Despliegue**
+La aplicación ha sido desplegada mediante Firebase Hosting.
+Para ello, se genera la carpeta dist mediante Vite y posteriormente se publica como una SPA en Firebase Hosting, permitiendo la navegación entre rutas sin recargas completas.
 
-## Expanding the ESLint configuration
+**Estado del proyecto**
+El proyecto se encuentra en una versión funcional de Producto Mínimo Viable.
+Incluye las funcionalidades principales planteadas en la memoria y queda preparado para posibles ampliaciones futuras, como gamificación, comunidad entre usuarios, notificaciones o ampliación del catálogo visual.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Autor**
+Manuel Cedrón Merayo
+Proyecto Intermodular — 2º DAM
+
+**Notas**
+Este repositorio recoge la evolución del desarrollo del proyecto mediante commits asociados a funcionalidades, correcciones, pruebas y mejoras visuales.
