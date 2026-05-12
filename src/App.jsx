@@ -12,7 +12,6 @@ import RequireAuth from "./components/RequireAuth.jsx";
 import RoutineDetailPage from "./pages/RoutineDetailPage.jsx";
 import DietDetailPage from "./pages/DietDetailPage.jsx";
 import RecipeDetailPage from "./pages/RecipeDetailPage.jsx";
-import SeedRecipesPage from "./pages/SeedRecipesPage.jsx";
 import RoutineTemplateDetailPage from "./pages/RoutineTemplateDetailPage.jsx";
 
 function App() {
@@ -37,8 +36,6 @@ function App() {
           <Route path="/recetas/:recipeId" element={<RecipeDetailPage />} />
           <Route path="/progreso" element={<ProgressPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
-          {/* Ruta temporal para insertar recetas de prueba */}
-          <Route path="/admin/seed-recipes" element={<SeedRecipesPage />} />
         </Route>
       </Route>
     </Routes>
